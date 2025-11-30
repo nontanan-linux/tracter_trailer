@@ -90,9 +90,11 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, W=1.5, tractor_width=1.5, tractor_len
                                  linewidth=2, edgecolor='black', facecolor=color, alpha=0.3, label=label)
         ax.add_patch(rect)
 
-    def draw_dashed_ref(ax, center, length=3):
+    def draw_dashed_ref(ax, center, length=1.0, angle=0):
         cx, cy = center
-        ax.plot([cx, cx + length], [cy, cy], 'k--', lw=1, alpha=0.6)
+        dx = length * np.cos(angle)
+        dy = length * np.sin(angle)
+        ax.plot([cx, cx + dx], [cy, cy + dy], 'k--', lw=1, alpha=0.6)
 
     # --- Draw Vehicles ---
 
@@ -126,18 +128,20 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, W=1.5, tractor_width=1.5, tractor_len
     # --- Annotations & Reference Lines ---
     
     # Centerline
-    ax.plot([x0, x0_f], [y0, y0_f], 'k-.', lw=1, alpha=0.4)
-    ax.plot([x1, x2], [y1, y2], 'k-.', lw=1, alpha=0.4)
+    ax.plot([x0, x0_f], [y0, y0_f], color='black', lw=4, alpha=0.4)
+    ax.plot([x1, x2], [y1, y2], color='black', lw=4, alpha=0.4)
 
     # Reference Lines (Horizontal)
     draw_dashed_ref(ax, (x0, y0)) # At Tractor Rear Axle
-    draw_dashed_ref(ax, (xh, yh)) # At Hitch (for Drawbar angle)
     draw_dashed_ref(ax, (x2, y2)) # At Trailer Rear Axle
+    draw_dashed_ref(ax, (x1, y1), angle=theta2) # At Hitch (aligned with L2)
+    draw_dashed_ref(ax, (x0_f, y0_f), angle=theta0) # At Front Axle (aligned with L0)
+    draw_dashed_ref(ax, (x0_f, y0_f), angle=theta0 + delta) # At Front Axle (aligned with wheel)
 
     # Points
-    ax.text(x0, y0-1, '$(x_0, y_0)$', color='blue')
-    ax.text(xh, yh+0.5, 'Hitch', fontsize=8)
-    ax.text(x2, y2-1, '$(x_2, y_2)$', color='red')
+    ax.text(x0+0.05, y0+0.05, '$(x_0, y_0)$', color='blue')
+    ax.text(x1+0.05, y1+0.05, '$(x_1, y_1)$', color='blue')
+    ax.text(x2+0.05, y2+0.05, '$(x_2, y_2)$', color='red')
 
     # Dimensions
     ax.annotate(f'$L_0={L0}$', xy=((x0+x0_f)/2, (y0+y0_f)/2), xytext=(-10, 10), textcoords='offset points')
@@ -147,19 +151,21 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, W=1.5, tractor_width=1.5, tractor_len
     # Angles
     # Theta0 at Tractor Rear Axle (Baselink)
     patches.Arc((x0, y0), 3, 3, angle=0, theta1=0, theta2=np.degrees(theta0), color='blue')
-    ax.text(x0+2, y0+0.5, r'$\theta_0$', color='blue')
+    ax.text(x0+0.5, y0+0.1, r'$\theta_0$', color='blue')
     
     # Theta1 at Hitch (Baselink of Drawbar)
-    patches.Arc((xh, yh), 3, 3, angle=0, theta1=0, theta2=np.degrees(theta1), color='green')
-    ax.text(xh+2, yh+0.5, r'$\theta_1$', color='green')
+    patches.Arc((x1, y1), 3, 3, angle=0, theta1=np.degrees(theta2), theta2=np.degrees(theta1), color='green')
+    ax.text(x1+0.5, y1, r'$\theta_1$', color='green')
     
     # Theta2 at Trailer Rear Axle (Baselink of Trailer)
     patches.Arc((x2, y2), 3, 3, angle=0, theta1=0, theta2=np.degrees(theta2), color='red')
-    ax.text(x2+2, y2-0.5, r'$\theta_2$', color='red')
+    ax.text(x2+0.5, y2+0.1, r'$\theta_2$', color='red')
+    
+    # Delta at Front Axle
+    patches.Arc((x0_f, y0_f), 3, 3, angle=0, theta1=np.degrees(theta0), theta2=np.degrees(theta0+delta), color='orange')
+    ax.text(x0_f+0.5, y0_f+0.5, r'$\delta$', color='orange')
     
     # Delta removed as requested
-    plt.xlim(-10, 50)
-    plt.ylim(-10, 50)
     plt.title("Kinematic Diagram: Tractor + Drawbar Trailer")
     plt.tight_layout()
     plt.savefig(save_path)

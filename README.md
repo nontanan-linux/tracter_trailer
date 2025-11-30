@@ -38,6 +38,11 @@ The system state is defined by 5 variables: $q = [x_0, y_0, \theta_0, \theta_1, 
 *   $v_0$: Longitudinal velocity of the Tractor.
 *   $\delta$: Steering angle of the Tractor's front wheels.
 
+### Constraints
+*   **Tractor Steering Limit**: $\delta \in [-30^\circ, 30^\circ]$.
+*   **Drawbar Steering Limit**: Relative angle between Tractor and Drawbar $\in [-30^\circ, 30^\circ]$.
+*   **Tractor Velocity Limit**: $v_0 \in [-5.0, 5.0]$ m/s (Default).
+
 ## Mathematical Model
 
 The equations of motion are derived assuming **no slip** conditions (non-holonomic constraints) for all wheels. The system is viewed as a chain of rigid bodies.

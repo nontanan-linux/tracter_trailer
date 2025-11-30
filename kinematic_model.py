@@ -1,7 +1,7 @@
 import numpy as np
 
 class TractorTrailerModel:
-    def __init__(self, L0, dh, L1, L2, dt=0.1):
+    def __init__(self, L0, dh, L1, L2, dt=0.1, max_steering_angle=np.radians(30), max_drawbar_angle=np.radians(30), max_velocity=5.0):
         """
         Initialize the kinematic model parameters for Tractor + Dolly + Trailer.
         
@@ -11,12 +11,18 @@ class TractorTrailerModel:
             L1 (float): Drawbar length (Hitch to Dolly Axle).
             L2 (float): Trailer length (Dolly Axle to Trailer Axle).
             dt (float): Time step for discrete update.
+            max_steering_angle (float): Maximum steering angle for tractor (radians).
+            max_drawbar_angle (float): Maximum relative angle for drawbar (radians).
+            max_velocity (float): Maximum longitudinal velocity (m/s).
         """
         self.L0 = L0
         self.dh = dh
         self.L1 = L1
         self.L2 = L2
         self.dt = dt
+        self.max_steering_angle = max_steering_angle
+        self.max_drawbar_angle = max_drawbar_angle
+        self.max_velocity = max_velocity
 
     def get_state_derivative(self, state, v0, delta):
         """
@@ -85,10 +91,36 @@ class TractorTrailerModel:
         """
         Update the state using Euler integration.
         """
+        # Clamp Steering Angle
+        delta = np.clip(delta, -self.max_steering_angle, self.max_steering_angle)
+        
+        # Clamp Velocity
+        v0 = np.clip(v0, -self.max_velocity, self.max_velocity)
+        
         state = np.array(state)
         derivative = self.get_state_derivative(state, v0, delta)
         new_state = state + derivative * self.dt
+        
+        # Clamp Drawbar Angle (relative to Tractor)
+        # theta1 should be within [theta0 - max, theta0 + max]
+        theta0_new = new_state[2]
+        theta1_new = new_state[3]
+        
+        # Normalize relative angle to [-pi, pi]
+        rel_angle = theta1_new - theta0_new
+        while rel_angle > np.pi: rel_angle -= 2*np.pi
+        while rel_angle < -np.pi: rel_angle += 2*np.pi
+        
+        if rel_angle > self.max_drawbar_angle:
+            theta1_new = theta0_new + self.max_drawbar_angle
+        elif rel_angle < -self.max_drawbar_angle:
+            theta1_new = theta0_new - self.max_drawbar_angle
+            
+        new_state[3] = theta1_new
+        
         return new_state
+        
+
 
     def get_coordinates(self, state):
         """
