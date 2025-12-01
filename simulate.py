@@ -12,39 +12,35 @@ def simulate():
     L0 = 2.0        # Tractor Wheelbase
     W = 1.0         # Track Width
     
+    dh = 0.5        # Hitch 1 offset (behind rear axle)
+    L1 = 1.0        # Drawbar 1 Length
+    L2 = 1.2        # Trailer 1 Length (Dolly to Axle)
+    
+    dh2 = 0.5       # Hitch 2 offset (behind Trailer 1 axle)
+    L3 = 1.0        # Drawbar 2 Length
+    L4 = 1.2        # Trailer 2 Length (Dolly to Axle)
+    
     # Vehicle Box Dimensions (User Request)
     tractor_width = 1.5
     tractor_len = 2.8
+    tractor_overhang = 0.4 # Distance from rear axle to rear face
+    
     trailer_width = 1.5
     trailer_len = 2.0
-    
-    # Tractor Geometry
-    # Center body on wheelbase for symmetry (like trailer) or keep previous?
-    # Previous: Rear Overhang 0.4. Front Overhang 0.4.
-    # This is symmetric.
-    tractor_overhang = (tractor_len - L0) / 2 # 0.4
-    tail_ext = 0.15
-    dh = tractor_overhang + tail_ext # Hitch position
-    
-    # Trailer Geometry
-    L1 = 1.0        # Drawbar Length
-    L2 = 1.2        # Dolly Axle to Trailer Axle
     trailer_body_len = trailer_len
-    # Equal margins:
-    trailer_overhang = (trailer_body_len - L2) / 2 # 0.25
+    trailer_overhang = 0.4 # Distance from rear axle to rear face
+    tail_ext = 0.1 # Small extension for hitch point
     
-    # Wheel Radius
-    r_wheel = 10 * 0.0254
-    wheel_diam = 2 * r_wheel
+    wheel_diam = 0.6
     wheel_width = 0.3
 
     dt = 0.05
     T = 30.0
     
-    model = TractorTrailerModel(L0, dh, L1, L2, dt)
+    model = TractorTrailerModel(L0, dh, L1, L2, dh2, L3, L4, dt)
     
-    # Initial state
-    state = np.array([0.0, 0.0, 0.0, 0.0, 0.0])
+    # Initial state [x0, y0, theta0, theta1, theta2, theta3, theta4]
+    state = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
     
     # Simulation
     steps = int(T / dt)
@@ -60,7 +56,8 @@ def simulate():
         
         states.append(state)
         inputs.append([v0, delta])
-        p0, p0_f, h, p1, p2 = model.get_coordinates(state)
+        # Unpack all coordinates
+        p0, p0_f, h1, p1, p2, h2, p3, p4 = model.get_coordinates(state)
         trajectory.append(p0)
         state = model.update(state, v0, delta)
         
@@ -71,11 +68,11 @@ def simulate():
     # --- Visualization ---
     fig, ax = plt.subplots(figsize=(12, 12))
     ax.set_aspect('equal')
-    ax.set_xlim(-5, 25)
-    ax.set_ylim(-5, 40)
+    ax.set_xlim(-10, 30)
+    ax.set_ylim(-10, 40)
     ax.grid(True)
     
-    ax.set_title("Tractor-Trailer Simulation")
+    ax.set_title("Tractor-Trailer Simulation (Double Trailer)")
     ax.set_xlabel("X [m]")
     ax.set_ylabel("Y [m]")
     
@@ -127,57 +124,69 @@ def simulate():
         # Update Status Text
         status_text.set_text(f'Velocity: {v_curr:.2f} m/s\nSteering: {np.degrees(delta_curr):.2f} deg')
         
-        x0, y0, theta0, theta1, theta2 = state
+        x0, y0, theta0, theta1, theta2, theta3, theta4 = state
         
         # --- Coordinates ---
-        p0 = np.array([x0, y0]) # Tractor Rear Axle
-        p0_f = p0 + L0 * np.array([np.cos(theta0), np.sin(theta0)]) # Tractor Front Axle
-        h = p0 - dh * np.array([np.cos(theta0), np.sin(theta0)]) # Hitch
-        p1 = h - L1 * np.array([np.cos(theta1), np.sin(theta1)]) # Dolly Axle
-        p2 = p1 - L2 * np.array([np.cos(theta2), np.sin(theta2)]) # Trailer Axle
+        p0, p0_f, h1, p1, p2, h2, p3, p4 = model.get_coordinates(state)
         
         # --- Tractor Body ---
         # Centered on Wheelbase (Midpoint of p0 and p0_f)
         p_tractor_c = (p0 + p0_f) / 2
-        patches_list.append(draw_box(ax, p_tractor_c, tractor_len, tractor_width, theta0, color='lightblue'))
+        patches_list.append(draw_box(ax, p_tractor_c, tractor_len, tractor_width, theta0, color='red', alpha=0.5))
         
         # Tractor Wheels
         patches_list.extend(draw_wheels_at_axle(ax, p0, theta0, W)) # Rear
-        # Use stored delta for visualization
         patches_list.extend(draw_wheels_at_axle(ax, p0_f, theta0, W, steered_angle=delta_curr)) # Front
         
         # Tractor Tail Extension
         # Rear Face is p0 - overhang * forward
         p_tr_rear_face = p0 - tractor_overhang * np.array([np.cos(theta0), np.sin(theta0)])
-        l_tr_tail, = ax.plot([p_tr_rear_face[0], h[0]], [p_tr_rear_face[1], h[1]], 'k-', lw=2)
+        l_tr_tail, = ax.plot([p_tr_rear_face[0], h1[0]], [p_tr_rear_face[1], h1[1]], 'k-', lw=2)
         patches_list.append(l_tr_tail)
         
-        # --- Drawbar ---
-        l_db, = ax.plot([h[0], p1[0]], [h[1], p1[1]], 'k-', lw=3, color='gray')
-        patches_list.append(l_db)
+        # --- Drawbar 1 ---
+        l_db1, = ax.plot([h1[0], p1[0]], [h1[1], p1[1]], 'k-', lw=3, color='gray')
+        patches_list.append(l_db1)
         
-        # --- Trailer Body ---
+        # --- Trailer 1 Body ---
         # Centered on Wheelbase (Midpoint of p1 and p2)
-        p_trailer_c = (p1 + p2) / 2
-        patches_list.append(draw_box(ax, p_trailer_c, trailer_body_len, trailer_width, theta2, color='lightcoral'))
+        p_trailer1_c = (p1 + p2) / 2
+        patches_list.append(draw_box(ax, p_trailer1_c, trailer_body_len, trailer_width, theta2, color='blue', alpha=0.5))
         
-        # Trailer Wheels
+        # Trailer 1 Wheels
         patches_list.extend(draw_wheels_at_axle(ax, p1, theta1, W, color='black')) # Dolly
         patches_list.extend(draw_wheels_at_axle(ax, p2, theta2, W, color='black')) # Rear
         
-        # Trailer Tail Extension
+        # Trailer 1 Tail Extension (to Hitch 2)
         # Rear Face is p2 - overhang * forward
-        p_tl_rear_face = p2 - trailer_overhang * np.array([np.cos(theta2), np.sin(theta2)])
-        # Tail Hitch is Rear Face - tail_ext * forward
-        p_h2 = p_tl_rear_face - tail_ext * np.array([np.cos(theta2), np.sin(theta2)])
+        p_tl1_rear_face = p2 - trailer_overhang * np.array([np.cos(theta2), np.sin(theta2)])
+        l_tl1_tail, = ax.plot([p_tl1_rear_face[0], h2[0]], [p_tl1_rear_face[1], h2[1]], 'k-', lw=2)
+        patches_list.append(l_tl1_tail)
         
-        l_tl_tail, = ax.plot([p_tl_rear_face[0], p_h2[0]], [p_tl_rear_face[1], p_h2[1]], 'k-', lw=2)
-        patches_list.append(l_tl_tail)
+        # --- Drawbar 2 ---
+        l_db2, = ax.plot([h2[0], p3[0]], [h2[1], p3[1]], 'k-', lw=3, color='gray')
+        patches_list.append(l_db2)
+        
+        # --- Trailer 2 Body ---
+        # Centered on Wheelbase (Midpoint of p3 and p4)
+        p_trailer2_c = (p3 + p4) / 2
+        patches_list.append(draw_box(ax, p_trailer2_c, trailer_body_len, trailer_width, theta4, color='blue', alpha=0.5))
+        
+        # Trailer 2 Wheels
+        patches_list.extend(draw_wheels_at_axle(ax, p3, theta3, W, color='black')) # Dolly
+        patches_list.extend(draw_wheels_at_axle(ax, p4, theta4, W, color='black')) # Rear
+        
+        # Trailer 2 Tail Extension
+        p_tl2_rear_face = p4 - trailer_overhang * np.array([np.cos(theta4), np.sin(theta4)])
+        # Just a small stub for visual consistency
+        p_h3_stub = p_tl2_rear_face - tail_ext * np.array([np.cos(theta4), np.sin(theta4)])
+        l_tl2_tail, = ax.plot([p_tl2_rear_face[0], p_h3_stub[0]], [p_tl2_rear_face[1], p_h3_stub[1]], 'k-', lw=2)
+        patches_list.append(l_tl2_tail)
         
         # Hitch Points
-        h1, = ax.plot(h[0], h[1], 'ko', ms=5)
-        h2, = ax.plot(p_h2[0], p_h2[1], 'ko', ms=5)
-        patches_list.extend([h1, h2])
+        pt_h1, = ax.plot(h1[0], h1[1], 'ko', ms=5)
+        pt_h2, = ax.plot(h2[0], h2[1], 'ko', ms=5)
+        patches_list.extend([pt_h1, pt_h2])
         
         return patches_list + [trace, status_text]
 

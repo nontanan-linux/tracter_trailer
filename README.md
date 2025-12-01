@@ -1,136 +1,132 @@
-# Kinematic Model of Tractor with Drawbar Trailer
+# Kinematic Model of Tractor with Two Drawbar Trailers
 
-This project implements a kinematic model and simulation for a **Tractor-Trailer system** consisting of a tractor, a dolly (drawbar), and a semitrailer. The model is based on standard bicycle model kinematics extended to a multi-body system.
+This project implements a kinematic model and simulation for a **Multi-Trailer System** consisting of a tractor and two drawbar trailers. The model uses standard bicycle kinematics extended to a chain of rigid bodies.
 
-## System Description
+## 1. System Description
 
-The system is modeled as three rigid bodies connected by pivot points (hitches):
+The system consists of five main components connected in a chain:
 1.  **Tractor**: The towing vehicle with front-wheel steering.
-2.  **Dolly (Drawbar)**: A tow bar connected to the tractor's hitch, supporting the front of the trailer.
-3.  **Trailer**: The main cargo unit connected to the dolly.
+2.  **Drawbar 1**: Connects the tractor to the first trailer.
+3.  **Trailer 1**: The first cargo unit.
+4.  **Drawbar 2**: Connects the first trailer to the second trailer.
+5.  **Trailer 2**: The second cargo unit.
 
 ### Kinematic Diagram
-
-The diagram below illustrates the geometric parameters and state variables.
-
 ![Kinematic Diagram](kinematic_diagram_full.png)
 
-### State Variables
-The system state is defined by 5 variables: $q = [x_0, y_0, \theta_0, \theta_1, \theta_2]$
-*   $(x_0, y_0)$: Position of the Tractor's rear axle center (World Frame).
-*   $\theta_0$: Rotation of the Tow Tractor relative to World Coordinate.
-*   $\theta_1$: Angle of the Drawbar (acts as the steering angle for the trailer).
-*   $\theta_2$: Rotation of the Trailer relative to World Coordinate.
-*   $\delta$: Steering Angle (of the Tractor's front wheels).
+---
 
-### Parameters
-*   $L_0 = 2.0$ m: Tractor wheelbase.
-*   $d_h$: Distance from Tractor rear axle to Hitch (approx 0.55 m).
-*   $L_1 = 1.2$ m: Length of the Drawbar (Hitch to Dolly Axle).
-*   $L_2 = 1.2$ m: Length of the Trailer (Dolly Axle to Trailer Axle).
-*   $W = 1.5$ m: Track width (distance between wheels).
-*   **Vehicle Box Dimensions**:
-    *   Tractor: $2.8 \times 1.5$ m (Length x Width).
-    *   Trailer: $2.0 \times 1.5$ m (Length x Width).
-*   $d_{h2} = 0.15$ m: Trailer tail extension (distance from Trailer rear to rear hitch).
+## 2. State Vector
 
-### Inputs
+The system state is defined by **7 variables**:
+$$ \mathbf{x} = [x_0, y_0, \theta_0, \theta_1, \theta_2, \theta_3, \theta_4]^T $$
+
+| Variable | Description | Unit |
+| :--- | :--- | :--- |
+| $x_0, y_0$ | Position of the Tractor's rear axle center (World Frame) | m |
+| $\theta_0$ | Heading of the Tractor | rad |
+| $\theta_1$ | Angle of Drawbar 1 | rad |
+| $\theta_2$ | Heading of Trailer 1 | rad |
+| $\theta_3$ | Angle of Drawbar 2 | rad |
+| $\theta_4$ | Heading of Trailer 2 | rad |
+
+**Inputs**:
 *   $v_0$: Longitudinal velocity of the Tractor.
 *   $\delta$: Steering angle of the Tractor's front wheels.
 
-### Constraints
-*   **Tractor Steering Limit**: $\delta \in [-30^\circ, 30^\circ]$.
-*   **Drawbar Steering Limit**: Relative angle between Tractor and Drawbar $\in [-30^\circ, 30^\circ]$.
-*   **Tractor Velocity Limit**: $v_0 \in [-5.0, 5.0]$ m/s (Default).
+---
 
-## Mathematical Model
+## 3. System Parameters
 
-The equations of motion are derived assuming **no slip** conditions (non-holonomic constraints) for all wheels. The system is viewed as a chain of rigid bodies.
+| Parameter | Symbol | Value (Default) | Description |
+| :--- | :--- | :--- | :--- |
+| **Tractor** | $L_0$ | 2.0 m | Wheelbase |
+| | $d_h$ | 0.55 m | Hitch 1 offset (behind rear axle) |
+| **Trailer 1** | $L_1$ | 1.0 m | Drawbar 1 Length |
+| | $L_2$ | 1.2 m | Trailer 1 Length (Dolly to Axle) |
+| | $d_{h2}$ | 0.5 m | Hitch 2 offset (behind rear axle) |
+| **Trailer 2** | $L_3$ | 1.0 m | Drawbar 2 Length |
+| | $L_4$ | 1.2 m | Trailer 2 Length (Dolly to Axle) |
 
-### 1. Tractor Kinematics
-The tractor is modeled as a kinematic bicycle model.
-*   **Rear Axle Velocity**: The velocity vector at the rear axle $(x_0, y_0)$ is directed along the tractor's heading $\theta_0$.
-    $$ \dot{x}_0 = v_0 \cos\theta_0 $$
-    $$ \dot{y}_0 = v_0 \sin\theta_0 $$
-*   **Yaw Rate**: Determined by the steering angle $\delta$ and wheelbase $L_0$.
-    $$ \dot{\theta}_0 = \frac{v_0}{L_0} \tan\delta $$
+---
 
-### 2. Hitch Velocity
-The hitch is located at a distance $d_h$ behind the tractor's rear axle. Its position is:
-$$ x_h = x_0 - d_h \cos\theta_0 $$
-$$ y_h = y_0 - d_h \sin\theta_0 $$
+## 4. Mathematical Model
 
-Differentiating with respect to time gives the velocity of the hitch $(v_{hx}, v_{hy})$:
-$$ v_{hx} = \dot{x}_0 + d_h \dot{\theta}_0 \sin\theta_0 = v_0 \cos\theta_0 + d_h \dot{\theta}_0 \sin\theta_0 $$
-$$ v_{hy} = \dot{y}_0 - d_h \dot{\theta}_0 \cos\theta_0 = v_0 \sin\theta_0 - d_h \dot{\theta}_0 \cos\theta_0 $$
+The equations of motion are derived assuming **no slip** conditions (non-holonomic constraints) for all wheels.
+
+### 4.1 Tractor Kinematics
+The tractor follows the standard kinematic bicycle model:
+$$ \dot{x}_0 = v_0 \cos\theta_0 $$
+$$ \dot{y}_0 = v_0 \sin\theta_0 $$
+$$ \dot{\theta}_0 = \frac{v_0}{L_0} \tan\delta $$
+
+### 4.2 Trailer 1 Kinematics
+The motion of the first trailer is driven by the velocity of **Hitch 1** ($H_1$).
+
+**Hitch 1 Velocity**:
+$$ v_{hx} = v_0 \cos\theta_0 + d_h \dot{\theta}_0 \sin\theta_0 $$
+$$ v_{hy} = v_0 \sin\theta_0 - d_h \dot{\theta}_0 \cos\theta_0 $$
 
 > **Derivation Note**:
 > The signs differ because of the derivatives of the trigonometric functions.
-> *   For $x_h = x_0 - d_h \cos\theta_0$: The derivative of $\cos\theta_0$ is $-\sin\theta_0 \cdot \dot{\theta}_0$. The two negatives cancel out, resulting in a **positive** sign: $+ d_h \dot{\theta}_0 \sin\theta_0$.
-> *   For $y_h = y_0 - d_h \sin\theta_0$: The derivative of $\sin\theta_0$ is $\cos\theta_0 \cdot \dot{\theta}_0$. The original negative sign remains: $- d_h \dot{\theta}_0 \cos\theta_0$.
-### 3. Drawbar (Dolly) Kinematics
-The drawbar connects the hitch $(x_h, y_h)$ to the dolly axle $(x_1, y_1)$. The length is $L_1$.
-The constraint is that the velocity of the hitch *perpendicular* to the drawbar induces rotation $\dot{\theta}_1$.
-The velocity of the hitch projected onto the direction perpendicular to the drawbar ($-\sin\theta_1, \cos\theta_1$) is:
-$$ v_{h,\perp} = -v_{hx} \sin\theta_1 + v_{hy} \cos\theta_1 $$
+> *   For $x_h = x_0 - d_h \cos\theta_0$: The derivative of $\cos\theta_0$ is $-\sin\theta_0 \cdot \dot{\theta}_0$. The two negatives cancel out $\rightarrow + d_h \dot{\theta}_0 \sin\theta_0$.
+> *   For $y_h = y_0 - d_h \sin\theta_0$: The derivative of $\sin\theta_0$ is $\cos\theta_0 \cdot \dot{\theta}_0$. The negative sign remains $\rightarrow - d_h \dot{\theta}_0 \cos\theta_0$.
 
-Substituting $v_{hx}, v_{hy}$:
-$$ v_{h,\perp} = -(v_0 \cos\theta_0 + d_h \dot{\theta}_0 \sin\theta_0)\sin\theta_1 + (v_0 \sin\theta_0 - d_h \dot{\theta}_0 \cos\theta_0)\cos\theta_1 $$
-$$ v_{h,\perp} = v_0 (\sin\theta_0 \cos\theta_1 - \cos\theta_0 \sin\theta_1) - d_h \dot{\theta}_0 (\cos\theta_0 \cos\theta_1 + \sin\theta_0 \sin\theta_1) $$
-Using trig identities $\sin(A-B)$ and $\cos(A-B)$:
-$$ v_{h,\perp} = v_0 \sin(\theta_0 - \theta_1) - d_h \dot{\theta}_0 \cos(\theta_0 - \theta_1) $$
-
-The angular velocity of the drawbar is this perpendicular velocity divided by the length $L_1$:
+**Drawbar 1 Rotation ($\dot{\theta}_1$)**:
+Driven by the hitch velocity component perpendicular to the drawbar:
 $$ \dot{\theta}_1 = \frac{1}{L_1} \left( v_0 \sin(\theta_0 - \theta_1) - d_h \dot{\theta}_0 \cos(\theta_0 - \theta_1) \right) $$
 
-### 4. Dolly Axle Velocity ($v_1$)
-The velocity of the dolly axle $(x_1, y_1)$ is the component of the hitch velocity *parallel* to the drawbar.
-$$ v_1 = v_{hx} \cos\theta_1 + v_{hy} \sin\theta_1 $$
-$$ v_1 = (v_0 \cos\theta_0 + d_h \dot{\theta}_0 \sin\theta_0)\cos\theta_1 + (v_0 \sin\theta_0 - d_h \dot{\theta}_0 \cos\theta_0)\sin\theta_1 $$
-$$ v_1 = v_0 (\cos\theta_0 \cos\theta_1 + \sin\theta_0 \sin\theta_1) + d_h \dot{\theta}_0 (\sin\theta_0 \cos\theta_1 - \cos\theta_0 \sin\theta_1) $$
+**Trailer 1 Rotation ($\dot{\theta}_2$)**:
+Driven by the velocity of the Dolly 1 axle ($v_1$) pulling the trailer:
 $$ v_1 = v_0 \cos(\theta_0 - \theta_1) + d_h \dot{\theta}_0 \sin(\theta_0 - \theta_1) $$
-
-### 5. Trailer Kinematics
-The trailer is pulled by the dolly axle. The trailer wheelbase is $L_2$.
-Similar to the tractor, the change in trailer angle $\dot{\theta}_2$ depends on the velocity of the pulling point (dolly axle) perpendicular to the trailer orientation.
-However, since the dolly axle is a pivot, we can view it as:
 $$ \dot{\theta}_2 = \frac{v_1}{L_2} \sin(\theta_1 - \theta_2) $$
-*Note: This assumes the dolly wheels steer with $\theta_1$ and the trailer body follows.*
 
-## Code Structure
+### 4.3 Trailer 2 Kinematics
+The motion of the second trailer is driven by the velocity of **Hitch 2** ($H_2$), located at the rear of Trailer 1.
 
-*   `kinematic_model.py`: Contains the `TractorTrailerModel` class implementing the differential equations.
-*   `simulate.py`: Runs a time-stepping simulation (Euler integration) with a sample control input (sine wave steering) and generates an animation.
-*   `create_diagram.py`: Generates the schematic diagram of the system.
+**Hitch 2 Velocity**:
+$$ v_{h2,\perp} = v_2 \sin(\theta_2 - \theta_3) - d_{h2} \dot{\theta}_2 \cos(\theta_2 - \theta_3) $$
+where $v_2 = v_1 \cos(\theta_1 - \theta_2)$ is the velocity of Trailer 1's axle.
 
-## Simulation Result
+**Drawbar 2 Rotation ($\dot{\theta}_3$)**:
+$$ \dot{\theta}_3 = \frac{1}{L_3} \left( v_2 \sin(\theta_2 - \theta_3) - d_{h2} \dot{\theta}_2 \cos(\theta_2 - \theta_3) \right) $$
+
+**Trailer 2 Rotation ($\dot{\theta}_4$)**:
+Driven by the velocity of the Dolly 2 axle ($v_3$):
+$$ v_3 = v_2 \cos(\theta_2 - \theta_3) + d_{h2} \dot{\theta}_2 \sin(\theta_2 - \theta_3) $$
+$$ \dot{\theta}_4 = \frac{v_3}{L_4} \sin(\theta_3 - \theta_4) $$
+
+---
+
+## 5. Constraints
+
+*   **Steering Limit**: $\delta \in [-30^\circ, 30^\circ]$
+*   **Drawbar Limits**: Relative angle between units $\in [-30^\circ, 30^\circ]$
+*   **Velocity Limit**: $v_0 \in [-5.0, 5.0]$ m/s
+
+---
+
+## 6. Usage
+
+### Run Simulation
+```bash
+python3 simulate.py
+```
+*   Displays an interactive animation window.
+*   Close the window to save the result to `simulation_full.gif`.
+*   **Configuration**: Edit `SAVE_ANIMATION` in `simulate.py` to toggle saving.
+
+### Generate Diagram
+```bash
+python3 create_diagram.py
+```
+*   Generates `kinematic_diagram_full.png`.
+*   Supports command-line arguments for dimensions (e.g., `--L0`, `--L1`, etc.).
+
+---
+
+## 7. Simulation Result
 
 Running `simulate.py` produces an animation of the vehicle trajectory.
 
 ![Simulation](simulation_full.gif)
-
-## Usage
-
-1.  **Run Simulation**:
-    ```bash
-    python3 simulate.py
-    ```
-    This will generate `simulation_full.gif`.
-
-2.  **Generate Diagram**:
-    ```bash
-    python3 create_diagram.py
-    ```
-    This will generate `kinematic_diagram_full.png`.
-    
-    You can also specify parameters via command line arguments:
-    ```bash
-    python3 create_diagram.py --L0 2.5 --L1 1.5 --L2 2.0 --W 1.5
-    ```
-    Available arguments:
-    *   `--L0`: Tractor Wheelbase
-    *   `--L1`: Drawbar Length
-    *   `--L2`: Trailer Wheelbase
-    *   `--W`: Track Width
-    *   `--trailer_len`: Trailer Body Length
-    *   `--tail_ext`: Tail Extension Length
