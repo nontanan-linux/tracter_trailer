@@ -47,6 +47,7 @@ def simulate():
     trajectory = []
     states = []
     inputs = []
+    velocities = [] # [v1, v2, v3, v4]
     
     for i in range(steps):
         t = i * dt
@@ -56,6 +57,12 @@ def simulate():
         
         states.append(state)
         inputs.append([v0, delta])
+        
+        # Get full kinematic vector
+        q_kin = model.get_kinematic_vector(state, v0, delta)
+        # Extract velocities: v1 (3), v2 (5), v3 (7), v4 (9)
+        velocities.append([q_kin[3], q_kin[5], q_kin[7], q_kin[9]])
+        
         # Unpack all coordinates
         p0, p0_f, h1, p1, p2, h2, p3, p4 = model.get_coordinates(state)
         trajectory.append(p0)
@@ -64,6 +71,7 @@ def simulate():
     trajectory = np.array(trajectory)
     states = np.array(states)
     inputs = np.array(inputs)
+    velocities = np.array(velocities)
     
     # --- Visualization ---
     fig, ax = plt.subplots(figsize=(12, 12))
@@ -120,9 +128,12 @@ def simulate():
         state = states[i]
         v_curr = inputs[i, 0]
         delta_curr = inputs[i, 1]
+        vels = velocities[i] # [v1, v2, v3, v4]
         
         # Update Status Text
-        status_text.set_text(f'Velocity: {v_curr:.2f} m/s\nSteering: {np.degrees(delta_curr):.2f} deg')
+        status_text.set_text(f'Tractor V: {v_curr:.2f} m/s\nSteering: {np.degrees(delta_curr):.2f} deg\n'
+                             f'Dolly 1 V: {vels[0]:.2f} m/s\nTrailer 1 V: {vels[1]:.2f} m/s\n'
+                             f'Dolly 2 V: {vels[2]:.2f} m/s\nTrailer 2 V: {vels[3]:.2f} m/s')
         
         x0, y0, theta0, theta1, theta2, theta3, theta4 = state
         

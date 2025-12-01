@@ -42,69 +42,95 @@ class TractorTrailerModel:
         Returns:
             np.array: Time derivative [dx0, dy0, dtheta0, dtheta1, dtheta2, dtheta3, dtheta4]
         """
+        # Compute full kinematic vector
+        q_kin = self.get_kinematic_vector(state, v0, delta)
+        
+        # Extract state derivatives: [dx0, dy0, dtheta0, dtheta1, dtheta2, dtheta3, dtheta4]
+        # Indices in q_kin: 0, 1, 2, 4, 6, 8, 10
+        dx = q_kin[[0, 1, 2, 4, 6, 8, 10]]
+        
+        return dx
+
+    def get_kinematic_vector(self, state, v0, delta):
+        """
+        Calculate the full 11-element kinematic vector including linear velocities.
+        
+        Args:
+            state (list or np.array): [x0, y0, theta0, theta1, theta2, theta3, theta4]
+            v0 (float): Longitudinal velocity of the tractor.
+            delta (float): Steering angle of the tractor.
+            
+        Returns:
+            np.array: [dx0, dy0, dtheta0, v1, dtheta1, v2, dtheta2, v3, dtheta3, v4, dtheta4]
+        """
         x0, y0, theta0, theta1, theta2, theta3, theta4 = state
         
         # Pre-compute angle differences
-        theta01 = theta0 - theta1
-        theta12 = theta1 - theta2
-        theta23 = theta2 - theta3
-        theta34 = theta3 - theta4
+        t01 = theta0 - theta1
+        t12 = theta1 - theta2
+        t23 = theta2 - theta3
+        t34 = theta3 - theta4
         
-        # Input vector u' = [v0, dtheta0]
+        # Input vector u' = [v0, dtheta0] (Tractor Velocity Vector)
         dtheta0 = (v0 / self.L0) * np.tan(delta)
         u_prime = np.array([v0, dtheta0])
         
-        # Initialize Matrix S (7x2)
-        S = np.zeros((7, 2))
+        # Initialize Matrix S (11x2)
+        S = np.zeros((11, 2))
         
-        # Row 0 (x0): [cos(theta0), 0]
+        # Row 0 (dx0): [cos(theta0), 0]
         S[0, 0] = np.cos(theta0)
         
-        # Row 1 (y0): [sin(theta0), 0]
+        # Row 1 (dy0): [sin(theta0), 0]
         S[1, 0] = np.sin(theta0)
         
-        # Row 2 (theta0): [0, 1]
+        # Row 2 (dtheta0): [0, 1]
         S[2, 1] = 1.0
         
-        # Row 3 (theta1)
-        # dtheta1 = (1/L1) * (v0*sin(theta01) - dh*dtheta0*cos(theta01))
-        S[3, 0] = (1 / self.L1) * np.sin(theta01)
-        S[3, 1] = -(self.dh / self.L1) * np.cos(theta01)
+        # Row 3 (v1): [cos(t01), dh*sin(t01)]
+        S[3, 0] = np.cos(t01)
+        S[3, 1] = self.dh * np.sin(t01)
         
-        # Helper for v1 coefficients (v1 = v0*c01 + dtheta0*dh*s01)
-        # v1 = C_v1_v0 * v0 + C_v1_w0 * dtheta0
-        C_v1_v0 = np.cos(theta01)
-        C_v1_w0 = self.dh * np.sin(theta01)
+        # Row 4 (dtheta1): [1/L1 * sin(t01), -dh/L1 * cos(t01)]
+        S[4, 0] = (1 / self.L1) * np.sin(t01)
+        S[4, 1] = -(self.dh / self.L1) * np.cos(t01)
         
-        # Row 4 (theta2)
-        # dtheta2 = (v1/L2) * sin(theta12)
-        S[4, 0] = (C_v1_v0 / self.L2) * np.sin(theta12)
-        S[4, 1] = (C_v1_w0 / self.L2) * np.sin(theta12)
+        # Row 5 (v2): [cos(t01)cos(t12), dh*sin(t01)cos(t12)]
+        S[5, 0] = np.cos(t01) * np.cos(t12)
+        S[5, 1] = self.dh * np.sin(t01) * np.cos(t12)
         
-        # Helper for v2 coefficients (v2 = v1 * cos(theta12))
-        C_v2_v0 = C_v1_v0 * np.cos(theta12)
-        C_v2_w0 = C_v1_w0 * np.cos(theta12)
+        # Row 6 (dtheta2): [1/L2 * cos(t01)sin(t12), dh/L2 * sin(t01)sin(t12)]
+        S[6, 0] = (1 / self.L2) * np.cos(t01) * np.sin(t12)
+        S[6, 1] = (self.dh / self.L2) * np.sin(t01) * np.sin(t12)
         
-        # Row 5 (theta3)
-        # dtheta3 = (1/L3) * (v2*sin(theta23) - dh2*dtheta2*cos(theta23))
-        # Substitute v2 and dtheta2 (from S[4])
-        S[5, 0] = (1 / self.L3) * (C_v2_v0 * np.sin(theta23) - self.dh2 * S[4, 0] * np.cos(theta23))
-        S[5, 1] = (1 / self.L3) * (C_v2_w0 * np.sin(theta23) - self.dh2 * S[4, 1] * np.cos(theta23))
+        # Row 7 (v3)
+        # Term M from previous derivation logic, now expanded
+        # M = cos(t12)cos(t23) + (dh2/L2)sin(t12)sin(t23)
+        M = np.cos(t12) * np.cos(t23) + (self.dh2 / self.L2) * np.sin(t12) * np.sin(t23)
+        S[7, 0] = np.cos(t01) * M
+        S[7, 1] = self.dh * np.sin(t01) * M
         
-        # Helper for v3 coefficients
-        # v3 = v2*cos(theta23) + dh2*dtheta2*sin(theta23)
-        C_v3_v0 = C_v2_v0 * np.cos(theta23) + self.dh2 * S[4, 0] * np.sin(theta23)
-        C_v3_w0 = C_v2_w0 * np.cos(theta23) + self.dh2 * S[4, 1] * np.sin(theta23)
+        # Row 8 (dtheta3)
+        # Term N from previous derivation logic, now expanded
+        # N = cos(t12)sin(t23) - (dh2/L2)sin(t12)cos(t23)
+        N = np.cos(t12) * np.sin(t23) - (self.dh2 / self.L2) * np.sin(t12) * np.cos(t23)
+        S[8, 0] = (1 / self.L3) * np.cos(t01) * N
+        S[8, 1] = (self.dh / self.L3) * np.sin(t01) * N
         
-        # Row 6 (theta4)
-        # dtheta4 = (v3/L4) * sin(theta34)
-        S[6, 0] = (C_v3_v0 / self.L4) * np.sin(theta34)
-        S[6, 1] = (C_v3_w0 / self.L4) * np.sin(theta34)
+        # Row 9 (v4)
+        # v4 = v3 * cos(t34) -> Row 9 = Row 7 * cos(t34)
+        S[9, 0] = S[7, 0] * np.cos(t34)
+        S[9, 1] = S[7, 1] * np.cos(t34)
         
-        # Compute state derivative
-        dx = S @ u_prime
+        # Row 10 (dtheta4)
+        # dtheta4 = v3/L4 * sin(t34) -> Row 10 = Row 7 * sin(t34)/L4
+        S[10, 0] = S[7, 0] * (np.sin(t34) / self.L4)
+        S[10, 1] = S[7, 1] * (np.sin(t34) / self.L4)
         
-        return dx
+        # Compute kinematic vector
+        q_kin = S @ u_prime
+        
+        return q_kin
 
     def update(self, state, v0, delta):
         """

@@ -16,19 +16,23 @@ The system consists of five main components connected in a chain:
 
 ---
 
-## 2. State Vector
+## 2. System Kinematics Vector
 
-The system state is defined by **7 variables**:
-$$ \mathbf{x} = [x_0, y_0, \theta_0, \theta_1, \theta_2, \theta_3, \theta_4]^T $$
+The system kinematics is defined by **11 variables**:
+$$ \mathbf{q}_{kin} = [\dot{x}_0, \dot{y}_0, \dot{\theta}_0, v_1, \dot{\theta}_1, v_2, \dot{\theta}_2, v_3, \dot{\theta}_3, v_4, \dot{\theta}_4]^T $$
 
 | Variable | Description | Unit |
 | :--- | :--- | :--- |
-| $x_0, y_0$ | Position of the Tractor's rear axle center (World Frame) | m |
-| $\theta_0$ | Heading of the Tractor | rad |
-| $\theta_1$ | Angle of Drawbar 1 | rad |
-| $\theta_2$ | Heading of Trailer 1 | rad |
-| $\theta_3$ | Angle of Drawbar 2 | rad |
-| $\theta_4$ | Heading of Trailer 2 | rad |
+| $\dot{x}_0, \dot{y}_0$ | Velocity of the Tractor's rear axle center (World Frame) | m/s |
+| $\dot{\theta}_0$ | Angular Velocity of the Tractor | rad/s |
+| $v_1$ | Longitudinal Velocity of Dolly 1 | m/s |
+| $\dot{\theta}_1$ | Angular Velocity of Drawbar 1 | rad/s |
+| $v_2$ | Longitudinal Velocity of Trailer 1 | m/s |
+| $\dot{\theta}_2$ | Angular Velocity of Trailer 1 | rad/s |
+| $v_3$ | Longitudinal Velocity of Dolly 2 | m/s |
+| $\dot{\theta}_3$ | Angular Velocity of Drawbar 2 | rad/s |
+| $v_4$ | Longitudinal Velocity of Trailer 2 | m/s |
+| $\dot{\theta}_4$ | Angular Velocity of Trailer 2 | rad/s |
 
 **Inputs**:
 *   $v_0$: Longitudinal velocity of the Tractor.
@@ -47,6 +51,7 @@ $$ \mathbf{x} = [x_0, y_0, \theta_0, \theta_1, \theta_2, \theta_3, \theta_4]^T $
 | | $d_{h2}$ | 0.5 m | Hitch 2 offset (behind rear axle) |
 | **Trailer 2** | $L_3$ | 1.0 m | Drawbar 2 Length |
 | | $L_4$ | 1.2 m | Trailer 2 Length (Dolly to Axle) |
+| **General** | $W$ | 1.5 m | Track Width (for visualization) |
 
 ---
 
@@ -81,6 +86,12 @@ Driven by the velocity of the Dolly 1 axle ($v_1$) pulling the trailer:
 $$ v_1 = v_0 \cos(\theta_0 - \theta_1) + d_h \dot{\theta}_0 \sin(\theta_0 - \theta_1) $$
 $$ \dot{\theta}_2 = \frac{v_1}{L_2} \sin(\theta_1 - \theta_2) $$
 
+**Linear Velocities**:
+*   **Dolly 1 Velocity ($v_1$)**:
+    $$ v_1 = v_0 \cos(\theta_0 - \theta_1) + d_h \dot{\theta}_0 \sin(\theta_0 - \theta_1) $$
+*   **Trailer 1 Axle Velocity ($v_2$)**:
+    $$ v_2 = v_1 \cos(\theta_1 - \theta_2) $$
+
 ### 4.3 Trailer 2 Kinematics
 The motion of the second trailer is driven by the velocity of **Hitch 2** ($H_2$), located at the rear of Trailer 1.
 
@@ -96,27 +107,38 @@ Driven by the velocity of the Dolly 2 axle ($v_3$):
 $$ v_3 = v_2 \cos(\theta_2 - \theta_3) + d_{h2} \dot{\theta}_2 \sin(\theta_2 - \theta_3) $$
 $$ \dot{\theta}_4 = \frac{v_3}{L_4} \sin(\theta_3 - \theta_4) $$
 
+**Linear Velocities**:
+*   **Dolly 2 Velocity ($v_3$)**:
+    $$ v_3 = v_2 \cos(\theta_2 - \theta_3) + d_{h2} \dot{\theta}_2 \sin(\theta_2 - \theta_3) $$
+*   **Trailer 2 Axle Velocity ($v_4$)**:
+    $$ v_4 = v_3 \cos(\theta_3 - \theta_4) $$
+
 ---
 
 ## 5. Matrix Form
 
-The system dynamics can be expressed in the matrix form:
-$$ \dot{\mathbf{x}} = S(\mathbf{x}) \mathbf{u}' $$
-where $\mathbf{u}' = [v_0, \dot{\theta}_0]^T$ is the input vector.
+The system kinematics can be expressed in the matrix form:
+where $\mathbf{u}_{tractor} = [v_0, \dot{\theta}_0]^T$ is the tractor's velocity vector.
+The angular velocity $\dot{\theta}_0$ is determined by the inputs $v_0$ and steering angle $\delta$:
+$$ \dot{\theta}_0 = \frac{v_0}{L_0} \tan\delta $$
 
 $$
 \begin{bmatrix}
-\dot{x}_0 \\ \dot{y}_0 \\ \dot{\theta}_0 \\ \dot{\theta}_1 \\ \dot{\theta}_2 \\ \dot{\theta}_3 \\ \dot{\theta}_4
+\dot{x}_0 \\ \dot{y}_0 \\ \dot{\theta}_0 \\ v_1 \\ \dot{\theta}_1 \\ v_2 \\ \dot{\theta}_2 \\ v_3 \\ \dot{\theta}_3 \\ v_4 \\ \dot{\theta}_4
 \end{bmatrix}
 =
 \begin{bmatrix}
 \cos\theta_0 & 0 \\
 \sin\theta_0 & 0 \\
 0 & 1 \\
+\cos(\theta_0 - \theta_1) & d_h \sin(\theta_0 - \theta_1) \\
 \frac{1}{L_1} \sin(\theta_0 - \theta_1) & -\frac{d_h}{L_1} \cos(\theta_0 - \theta_1) \\
+\cos(\theta_0 - \theta_1)\cos(\theta_1 - \theta_2) & d_h \sin(\theta_0 - \theta_1)\cos(\theta_1 - \theta_2) \\
 \frac{1}{L_2} \cos(\theta_0 - \theta_1) \sin(\theta_1 - \theta_2) & \frac{d_h}{L_2} \sin(\theta_0 - \theta_1) \sin(\theta_1 - \theta_2) \\
-\frac{1}{L_3} \cos(\theta_0 - \theta_1) \left[ \cos(\theta_1 - \theta_2) \sin(\theta_2 - \theta_3) - \frac{d_{h2}}{L_2} \sin(\theta_1 - \theta_2) \cos(\theta_2 - \theta_3) \right] & \frac{d_h}{L_3} \sin(\theta_0 - \theta_1) \left[ \cos(\theta_1 - \theta_2) \sin(\theta_2 - \theta_3) - \frac{d_{h2}}{L_2} \sin(\theta_1 - \theta_2) \cos(\theta_2 - \theta_3) \right] \\
-\frac{1}{L_4} \cos(\theta_0 - \theta_1) \sin(\theta_3 - \theta_4) \left[ \cos(\theta_1 - \theta_2) \cos(\theta_2 - \theta_3) + \frac{d_{h2}}{L_2} \sin(\theta_1 - \theta_2) \sin(\theta_2 - \theta_3) \right] & \frac{d_h}{L_4} \sin(\theta_0 - \theta_1) \sin(\theta_3 - \theta_4) \left[ \cos(\theta_1 - \theta_2) \cos(\theta_2 - \theta_3) + \frac{d_{h2}}{L_2} \sin(\theta_1 - \theta_2) \sin(\theta_2 - \theta_3) \right]
+\cos(\theta_0 - \theta_1) \left[ \cos(\theta_1 - \theta_2)\cos(\theta_2 - \theta_3) + \frac{d_{h2}}{L_2}\sin(\theta_1 - \theta_2)\sin(\theta_2 - \theta_3) \right] & d_h \sin(\theta_0 - \theta_1) \left[ \cos(\theta_1 - \theta_2)\cos(\theta_2 - \theta_3) + \frac{d_{h2}}{L_2}\sin(\theta_1 - \theta_2)\sin(\theta_2 - \theta_3) \right] \\
+\frac{1}{L_3} \cos(\theta_0 - \theta_1) \left[ \cos(\theta_1 - \theta_2)\sin(\theta_2 - \theta_3) - \frac{d_{h2}}{L_2}\sin(\theta_1 - \theta_2)\cos(\theta_2 - \theta_3) \right] & \frac{d_h}{L_3} \sin(\theta_0 - \theta_1) \left[ \cos(\theta_1 - \theta_2)\sin(\theta_2 - \theta_3) - \frac{d_{h2}}{L_2}\sin(\theta_1 - \theta_2)\cos(\theta_2 - \theta_3) \right] \\
+\cos(\theta_0 - \theta_1) \cos(\theta_3 - \theta_4) \left[ \cos(\theta_1 - \theta_2)\cos(\theta_2 - \theta_3) + \frac{d_{h2}}{L_2}\sin(\theta_1 - \theta_2)\sin(\theta_2 - \theta_3) \right] & d_h \sin(\theta_0 - \theta_1) \cos(\theta_3 - \theta_4) \left[ \cos(\theta_1 - \theta_2)\cos(\theta_2 - \theta_3) + \frac{d_{h2}}{L_2}\sin(\theta_1 - \theta_2)\sin(\theta_2 - \theta_3) \right] \\
+\frac{1}{L_4} \cos(\theta_0 - \theta_1) \sin(\theta_3 - \theta_4) \left[ \cos(\theta_1 - \theta_2)\cos(\theta_2 - \theta_3) + \frac{d_{h2}}{L_2}\sin(\theta_1 - \theta_2)\sin(\theta_2 - \theta_3) \right] & \frac{d_h}{L_4} \sin(\theta_0 - \theta_1) \sin(\theta_3 - \theta_4) \left[ \cos(\theta_1 - \theta_2)\cos(\theta_2 - \theta_3) + \frac{d_{h2}}{L_2}\sin(\theta_1 - \theta_2)\sin(\theta_2 - \theta_3) \right]
 \end{bmatrix}
 \begin{bmatrix}
 v_0 \\ \dot{\theta}_0
@@ -133,7 +155,7 @@ $$
 
 ---
 
-## 6. Usage
+## 7. Usage
 
 ### Run Simulation
 ```bash
@@ -152,7 +174,7 @@ python3 create_diagram.py
 
 ---
 
-## 7. Simulation Result
+## 8. Simulation Result
 
 Running `simulate.py` produces an animation of the vehicle trajectory.
 
