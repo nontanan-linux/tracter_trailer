@@ -98,7 +98,34 @@ $$ \dot{\theta}_4 = \frac{v_3}{L_4} \sin(\theta_3 - \theta_4) $$
 
 ---
 
-## 5. Constraints
+## 5. Matrix Form
+
+The system dynamics can be expressed in the matrix form:
+$$ \dot{\mathbf{x}} = S(\mathbf{x}) \mathbf{u}' $$
+where $\mathbf{u}' = [v_0, \dot{\theta}_0]^T$ is the input vector.
+
+$$
+\begin{bmatrix}
+\dot{x}_0 \\ \dot{y}_0 \\ \dot{\theta}_0 \\ \dot{\theta}_1 \\ \dot{\theta}_2 \\ \dot{\theta}_3 \\ \dot{\theta}_4
+\end{bmatrix}
+=
+\begin{bmatrix}
+\cos\theta_0 & 0 \\
+\sin\theta_0 & 0 \\
+0 & 1 \\
+\frac{1}{L_1} \sin(\theta_0 - \theta_1) & -\frac{d_h}{L_1} \cos(\theta_0 - \theta_1) \\
+\frac{1}{L_2} \cos(\theta_0 - \theta_1) \sin(\theta_1 - \theta_2) & \frac{d_h}{L_2} \sin(\theta_0 - \theta_1) \sin(\theta_1 - \theta_2) \\
+\frac{1}{L_3} \cos(\theta_0 - \theta_1) \left[ \cos(\theta_1 - \theta_2) \sin(\theta_2 - \theta_3) - \frac{d_{h2}}{L_2} \sin(\theta_1 - \theta_2) \cos(\theta_2 - \theta_3) \right] & \frac{d_h}{L_3} \sin(\theta_0 - \theta_1) \left[ \cos(\theta_1 - \theta_2) \sin(\theta_2 - \theta_3) - \frac{d_{h2}}{L_2} \sin(\theta_1 - \theta_2) \cos(\theta_2 - \theta_3) \right] \\
+\frac{1}{L_4} \cos(\theta_0 - \theta_1) \sin(\theta_3 - \theta_4) \left[ \cos(\theta_1 - \theta_2) \cos(\theta_2 - \theta_3) + \frac{d_{h2}}{L_2} \sin(\theta_1 - \theta_2) \sin(\theta_2 - \theta_3) \right] & \frac{d_h}{L_4} \sin(\theta_0 - \theta_1) \sin(\theta_3 - \theta_4) \left[ \cos(\theta_1 - \theta_2) \cos(\theta_2 - \theta_3) + \frac{d_{h2}}{L_2} \sin(\theta_1 - \theta_2) \sin(\theta_2 - \theta_3) \right]
+\end{bmatrix}
+\begin{bmatrix}
+v_0 \\ \dot{\theta}_0
+\end{bmatrix}
+$$
+
+---
+
+## 6. Constraints
 
 *   **Steering Limit**: $\delta \in [-30^\circ, 30^\circ]$
 *   **Drawbar Limits**: Relative angle between units $\in [-30^\circ, 30^\circ]$

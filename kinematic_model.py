@@ -44,55 +44,67 @@ class TractorTrailerModel:
         """
         x0, y0, theta0, theta1, theta2, theta3, theta4 = state
         
-        # --- Tractor ---
-        dx0 = v0 * np.cos(theta0)
-        dy0 = v0 * np.sin(theta0)
+        # Pre-compute angle differences
+        theta01 = theta0 - theta1
+        theta12 = theta1 - theta2
+        theta23 = theta2 - theta3
+        theta34 = theta3 - theta4
+        
+        # Input vector u' = [v0, dtheta0]
         dtheta0 = (v0 / self.L0) * np.tan(delta)
+        u_prime = np.array([v0, dtheta0])
         
-        # --- Trailer 1 ---
-        # Hitch 1 Velocity
-        # v_h1_perp = v0 * sin(theta0 - theta1) - dh * dtheta0 * cos(theta0 - theta1)
-        term1 = v0 * np.sin(theta0 - theta1)
-        term2 = self.dh * dtheta0 * np.cos(theta0 - theta1)
-        dtheta1 = (1 / self.L1) * (term1 - term2)
+        # Initialize Matrix S (7x2)
+        S = np.zeros((7, 2))
         
-        # Dolly 1 Velocity (v1)
-        v1 = v0 * np.cos(theta0 - theta1) + self.dh * dtheta0 * np.sin(theta0 - theta1)
+        # Row 0 (x0): [cos(theta0), 0]
+        S[0, 0] = np.cos(theta0)
         
-        # Trailer 1 Rotation
-        dtheta2 = (v1 / self.L2) * np.sin(theta1 - theta2)
+        # Row 1 (y0): [sin(theta0), 0]
+        S[1, 0] = np.sin(theta0)
         
-        # --- Trailer 2 ---
-        # Hitch 2 is at distance dh2 behind Trailer 1 axle (P2)
-        # Similar to Tractor->Hitch1, but source is Trailer 1 (v2, theta2)
-        # Velocity of Trailer 1 Axle is v2 (along theta2).
-        # Wait, v2 is velocity of P2.
-        # v2 = v1 * cos(theta1 - theta2) (Projected along trailer)
-        # Actually, let's re-derive v2 properly.
-        # Velocity of P1 is v1 along theta1.
-        # Velocity of P2 (Trailer 1 Axle) along theta2 is v2.
-        # v2 = v1 * np.cos(theta1 - theta2)
+        # Row 2 (theta0): [0, 1]
+        S[2, 1] = 1.0
         
-        v2 = v1 * np.cos(theta1 - theta2)
+        # Row 3 (theta1)
+        # dtheta1 = (1/L1) * (v0*sin(theta01) - dh*dtheta0*cos(theta01))
+        S[3, 0] = (1 / self.L1) * np.sin(theta01)
+        S[3, 1] = -(self.dh / self.L1) * np.cos(theta01)
         
-        # Hitch 2 Velocity components relative to Drawbar 2 (theta3)
-        # Source is P2 with velocity v2 along theta2, and rotation dtheta2.
-        # Hitch 2 is dh2 behind P2.
-        # This is exactly analogous to Tractor (v0, theta0, dtheta0, dh) -> Drawbar 1 (theta1).
-        # Replace: v0->v2, theta0->theta2, dtheta0->dtheta2, dh->dh2, theta1->theta3, L1->L3.
+        # Helper for v1 coefficients (v1 = v0*c01 + dtheta0*dh*s01)
+        # v1 = C_v1_v0 * v0 + C_v1_w0 * dtheta0
+        C_v1_v0 = np.cos(theta01)
+        C_v1_w0 = self.dh * np.sin(theta01)
         
-        term1_2 = v2 * np.sin(theta2 - theta3)
-        term2_2 = self.dh2 * dtheta2 * np.cos(theta2 - theta3)
-        dtheta3 = (1 / self.L3) * (term1_2 - term2_2)
+        # Row 4 (theta2)
+        # dtheta2 = (v1/L2) * sin(theta12)
+        S[4, 0] = (C_v1_v0 / self.L2) * np.sin(theta12)
+        S[4, 1] = (C_v1_w0 / self.L2) * np.sin(theta12)
         
-        # Dolly 2 Velocity (v3)
-        v3 = v2 * np.cos(theta2 - theta3) + self.dh2 * dtheta2 * np.sin(theta2 - theta3)
+        # Helper for v2 coefficients (v2 = v1 * cos(theta12))
+        C_v2_v0 = C_v1_v0 * np.cos(theta12)
+        C_v2_w0 = C_v1_w0 * np.cos(theta12)
         
-        # Trailer 2 Rotation
-        # Replace: v1->v3, L2->L4, theta1->theta3, theta2->theta4
-        dtheta4 = (v3 / self.L4) * np.sin(theta3 - theta4)
+        # Row 5 (theta3)
+        # dtheta3 = (1/L3) * (v2*sin(theta23) - dh2*dtheta2*cos(theta23))
+        # Substitute v2 and dtheta2 (from S[4])
+        S[5, 0] = (1 / self.L3) * (C_v2_v0 * np.sin(theta23) - self.dh2 * S[4, 0] * np.cos(theta23))
+        S[5, 1] = (1 / self.L3) * (C_v2_w0 * np.sin(theta23) - self.dh2 * S[4, 1] * np.cos(theta23))
         
-        return np.array([dx0, dy0, dtheta0, dtheta1, dtheta2, dtheta3, dtheta4])
+        # Helper for v3 coefficients
+        # v3 = v2*cos(theta23) + dh2*dtheta2*sin(theta23)
+        C_v3_v0 = C_v2_v0 * np.cos(theta23) + self.dh2 * S[4, 0] * np.sin(theta23)
+        C_v3_w0 = C_v2_w0 * np.cos(theta23) + self.dh2 * S[4, 1] * np.sin(theta23)
+        
+        # Row 6 (theta4)
+        # dtheta4 = (v3/L4) * sin(theta34)
+        S[6, 0] = (C_v3_v0 / self.L4) * np.sin(theta34)
+        S[6, 1] = (C_v3_w0 / self.L4) * np.sin(theta34)
+        
+        # Compute state derivative
+        dx = S @ u_prime
+        
+        return dx
 
     def update(self, state, v0, delta):
         """

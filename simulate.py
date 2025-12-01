@@ -6,7 +6,7 @@ from kinematic_model import TractorTrailerModel
 
 def simulate():
     # --- Parameters ---
-    SAVE_ANIMATION = True
+    SAVE_ANIMATION = False
     
     # Dimensions (meters)
     L0 = 2.0        # Tractor Wheelbase
