@@ -6,9 +6,11 @@ from kinematic_model import TractorTrailerModel
 
 def simulate():
     # --- Parameters ---
+    SAVE_ANIMATION = True
+    
     # Dimensions (meters)
     L0 = 2.0        # Tractor Wheelbase
-    W = 1.5         # Track Width
+    W = 1.0         # Track Width
     
     # Vehicle Box Dimensions (User Request)
     tractor_width = 1.5
@@ -48,20 +50,23 @@ def simulate():
     steps = int(T / dt)
     trajectory = []
     states = []
+    inputs = []
     
     for i in range(steps):
         t = i * dt
         v0 = 2.0
+        # Infinity-like pattern
         delta = np.radians(30) * np.sin(0.5 * t)
         
         states.append(state)
+        inputs.append([v0, delta])
         p0, p0_f, h, p1, p2 = model.get_coordinates(state)
         trajectory.append(p0)
         state = model.update(state, v0, delta)
         
     trajectory = np.array(trajectory)
-    # trajectory = [[0,0],[100, 0],[200,50],[300, 50],[400, 0],[500, 0],[600, -50],[700, -50],[800, 0],[900, 0]]
     states = np.array(states)
+    inputs = np.array(inputs)
     
     # --- Visualization ---
     fig, ax = plt.subplots(figsize=(12, 12))
@@ -70,8 +75,16 @@ def simulate():
     ax.set_ylim(-5, 40)
     ax.grid(True)
     
+    ax.set_title("Tractor-Trailer Simulation")
+    ax.set_xlabel("X [m]")
+    ax.set_ylabel("Y [m]")
+    
+    # Status Text
+    status_text = ax.text(0.05, 0.95, '', transform=ax.transAxes, fontsize=12,
+                          verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+    
     # Trace
-    ax.plot(trajectory[:, 0], trajectory[:, 1], 'b--', alpha=0.3)
+    trace, = ax.plot([], [], 'b--', alpha=0.5)
 
     # Drawing Helpers
     def draw_box(ax, center, length, width, angle, color='gray', alpha=0.5):
@@ -104,7 +117,16 @@ def simulate():
             p.remove()
         patches_list.clear()
         
+        # Update Trace
+        trace.set_data(trajectory[:i, 0], trajectory[:i, 1])
+        
         state = states[i]
+        v_curr = inputs[i, 0]
+        delta_curr = inputs[i, 1]
+        
+        # Update Status Text
+        status_text.set_text(f'Velocity: {v_curr:.2f} m/s\nSteering: {np.degrees(delta_curr):.2f} deg')
+        
         x0, y0, theta0, theta1, theta2 = state
         
         # --- Coordinates ---
@@ -121,8 +143,8 @@ def simulate():
         
         # Tractor Wheels
         patches_list.extend(draw_wheels_at_axle(ax, p0, theta0, W)) # Rear
-        delta_t = np.radians(30) * np.sin(0.5 * i * dt)
-        patches_list.extend(draw_wheels_at_axle(ax, p0_f, theta0, W, steered_angle=delta_t)) # Front
+        # Use stored delta for visualization
+        patches_list.extend(draw_wheels_at_axle(ax, p0_f, theta0, W, steered_angle=delta_curr)) # Front
         
         # Tractor Tail Extension
         # Rear Face is p0 - overhang * forward
@@ -157,13 +179,20 @@ def simulate():
         h2, = ax.plot(p_h2[0], p_h2[1], 'ko', ms=5)
         patches_list.extend([h1, h2])
         
-        return patches_list
+        return patches_list + [trace, status_text]
 
-    ani = animation.FuncAnimation(fig, update_plot, frames=len(states), interval=dt*1000, blit=True)
+    ani = animation.FuncAnimation(fig, update_plot, frames=len(states), interval=dt*1000, blit=True, repeat=False)
     
-    writer = animation.PillowWriter(fps=20)
-    ani.save('simulation_full.gif', writer=writer)
-    print("Simulation saved to simulation_full.gif")
+    print("Showing simulation... Close the window to continue.")
+    plt.show()
+    
+    if SAVE_ANIMATION:
+        print("Saving animation...")
+        writer = animation.PillowWriter(fps=20)
+        ani.save('simulation_full.gif', writer=writer)
+        print("Simulation saved to simulation_full.gif")
+    else:
+        print("Animation save skipped.")
 
 if __name__ == "__main__":
     simulate()

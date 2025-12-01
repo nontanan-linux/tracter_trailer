@@ -127,20 +127,14 @@ class TractorTrailerModel:
         Calculate coordinates of all key points for visualization.
         """
         x0, y0, theta0, theta1, theta2 = state
-        
         # Tractor Rear Axle
         p0 = np.array([x0, y0])
-        
         # Tractor Front Axle
         p0_f = p0 + self.L0 * np.array([np.cos(theta0), np.sin(theta0)])
-        
         # Hitch
         h = p0 - self.dh * np.array([np.cos(theta0), np.sin(theta0)])
-        
         # Dolly Axle
         p1 = h - self.L1 * np.array([np.cos(theta1), np.sin(theta1)])
-        
         # Trailer Axle
         p2 = p1 - self.L2 * np.array([np.cos(theta2), np.sin(theta2)])
-        
         return p0, p0_f, h, p1, p2

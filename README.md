@@ -64,6 +64,10 @@ Differentiating with respect to time gives the velocity of the hitch $(v_{hx}, v
 $$ v_{hx} = \dot{x}_0 + d_h \dot{\theta}_0 \sin\theta_0 = v_0 \cos\theta_0 + d_h \dot{\theta}_0 \sin\theta_0 $$
 $$ v_{hy} = \dot{y}_0 - d_h \dot{\theta}_0 \cos\theta_0 = v_0 \sin\theta_0 - d_h \dot{\theta}_0 \cos\theta_0 $$
 
+> **Derivation Note**:
+> The signs differ because of the derivatives of the trigonometric functions.
+> *   For $x_h = x_0 - d_h \cos\theta_0$: The derivative of $\cos\theta_0$ is $-\sin\theta_0 \cdot \dot{\theta}_0$. The two negatives cancel out, resulting in a **positive** sign: $+ d_h \dot{\theta}_0 \sin\theta_0$.
+> *   For $y_h = y_0 - d_h \sin\theta_0$: The derivative of $\sin\theta_0$ is $\cos\theta_0 \cdot \dot{\theta}_0$. The original negative sign remains: $- d_h \dot{\theta}_0 \cos\theta_0$.
 ### 3. Drawbar (Dolly) Kinematics
 The drawbar connects the hitch $(x_h, y_h)$ to the dolly axle $(x_1, y_1)$. The length is $L_1$.
 The constraint is that the velocity of the hitch *perpendicular* to the drawbar induces rotation $\dot{\theta}_1$.
