@@ -1,15 +1,19 @@
 # Kinematic Model of Tractor with Two Drawbar Trailers
 
-This project implements a kinematic model and simulation for a **Multi-Trailer System** consisting of a tractor and two drawbar trailers. The model uses standard bicycle kinematics extended to a chain of rigid bodies.
+This project implements a kinematic model and simulation for a **Multi-Trailer System** consisting of a tractor and **four** drawbar trailers. The model uses standard bicycle kinematics extended to a chain of rigid bodies.
 
 ## 1. System Description
 
-The system consists of five main components connected in a chain:
+The system consists of nine main components connected in a chain:
 1.  **Tractor**: The towing vehicle with front-wheel steering.
 2.  **Drawbar 1**: Connects the tractor to the first trailer.
 3.  **Trailer 1**: The first cargo unit.
 4.  **Drawbar 2**: Connects the first trailer to the second trailer.
 5.  **Trailer 2**: The second cargo unit.
+6.  **Drawbar 3**: Connects the second trailer to the third trailer.
+7.  **Trailer 3**: The third cargo unit.
+8.  **Drawbar 4**: Connects the third trailer to the fourth trailer.
+9.  **Trailer 4**: The fourth cargo unit.
 
 ### Kinematic Diagram
 ![Kinematic Diagram](kinematic_diagram_full.png)
@@ -18,8 +22,8 @@ The system consists of five main components connected in a chain:
 
 ## 2. System Kinematics Vector
 
-The system kinematics is defined by **11 variables**:
-$$ \mathbf{q}_{kin} = [\dot{x}_0, \dot{y}_0, \dot{\theta}_0, v_1, \dot{\theta}_1, v_2, \dot{\theta}_2, v_3, \dot{\theta}_3, v_4, \dot{\theta}_4]^T $$
+The system kinematics is defined by **19 variables**:
+$$ \mathbf{q}_{kin} = [\dot{x}_0, \dot{y}_0, \dot{\theta}_0, v_1, \dot{\theta}_1, v_2, \dot{\theta}_2, v_3, \dot{\theta}_3, v_4, \dot{\theta}_4, v_5, \dot{\theta}_5, v_6, \dot{\theta}_6, v_7, \dot{\theta}_7, v_8, \dot{\theta}_8]^T $$
 
 | Variable | Description | Unit |
 | :--- | :--- | :--- |
@@ -33,6 +37,14 @@ $$ \mathbf{q}_{kin} = [\dot{x}_0, \dot{y}_0, \dot{\theta}_0, v_1, \dot{\theta}_1
 | $\dot{\theta}_3$ | Angular Velocity of Drawbar 2 | rad/s |
 | $v_4$ | Longitudinal Velocity of Trailer 2 | m/s |
 | $\dot{\theta}_4$ | Angular Velocity of Trailer 2 | rad/s |
+| $v_5$ | Longitudinal Velocity of Dolly 3 | m/s |
+| $\dot{\theta}_5$ | Angular Velocity of Drawbar 3 | rad/s |
+| $v_6$ | Longitudinal Velocity of Trailer 3 | m/s |
+| $\dot{\theta}_6$ | Angular Velocity of Trailer 3 | rad/s |
+| $v_7$ | Longitudinal Velocity of Dolly 4 | m/s |
+| $\dot{\theta}_7$ | Angular Velocity of Drawbar 4 | rad/s |
+| $v_8$ | Longitudinal Velocity of Trailer 4 | m/s |
+| $\dot{\theta}_8$ | Angular Velocity of Trailer 4 | rad/s |
 
 **Inputs**:
 *   $v_0$: Longitudinal velocity of the Tractor.
@@ -51,6 +63,12 @@ $$ \mathbf{q}_{kin} = [\dot{x}_0, \dot{y}_0, \dot{\theta}_0, v_1, \dot{\theta}_1
 | | $d_{h2}$ | 0.5 m | Hitch 2 offset (behind rear axle) |
 | **Trailer 2** | $L_3$ | 1.0 m | Drawbar 2 Length |
 | | $L_4$ | 1.2 m | Trailer 2 Length (Dolly to Axle) |
+| | $d_{h3}$ | 0.5 m | Hitch 3 offset (behind rear axle) |
+| **Trailer 3** | $L_5$ | 1.0 m | Drawbar 3 Length |
+| | $L_6$ | 1.2 m | Trailer 3 Length (Dolly to Axle) |
+| | $d_{h4}$ | 0.5 m | Hitch 4 offset (behind rear axle) |
+| **Trailer 4** | $L_7$ | 1.0 m | Drawbar 4 Length |
+| | $L_8$ | 1.2 m | Trailer 4 Length (Dolly to Axle) |
 | **General** | $W$ | 1.5 m | Track Width (for visualization) |
 
 ---
@@ -178,6 +196,24 @@ $$ H_2 = P_2 - d_{h2} \begin{bmatrix} \cos\theta_2 \\ \sin\theta_2 \end{bmatrix}
     $$ P_3 = H_2 - L_3 \begin{bmatrix} \cos\theta_3 \\ \sin\theta_3 \end{bmatrix} $$
 2.  **Axle 2 ($P_4$)**:
     $$ P_4 = P_3 - L_4 \begin{bmatrix} \cos\theta_4 \\ \sin\theta_4 \end{bmatrix} $$
+
+#### Hitch 3 ($H_3$)
+$$ H_3 = P_4 - d_{h3} \begin{bmatrix} \cos\theta_4 \\ \sin\theta_4 \end{bmatrix} $$
+
+#### Trailer 3
+1.  **Dolly 3 ($P_5$)**:
+    $$ P_5 = H_3 - L_5 \begin{bmatrix} \cos\theta_5 \\ \sin\theta_5 \end{bmatrix} $$
+2.  **Axle 3 ($P_6$)**:
+    $$ P_6 = P_5 - L_6 \begin{bmatrix} \cos\theta_6 \\ \sin\theta_6 \end{bmatrix} $$
+
+#### Hitch 4 ($H_4$)
+$$ H_4 = P_6 - d_{h4} \begin{bmatrix} \cos\theta_6 \\ \sin\theta_6 \end{bmatrix} $$
+
+#### Trailer 4
+1.  **Dolly 4 ($P_7$)**:
+    $$ P_7 = H_4 - L_7 \begin{bmatrix} \cos\theta_7 \\ \sin\theta_7 \end{bmatrix} $$
+2.  **Axle 4 ($P_8$)**:
+    $$ P_8 = P_7 - L_8 \begin{bmatrix} \cos\theta_8 \\ \sin\theta_8 \end{bmatrix} $$
 
 ### Generalized Recursive Step: $k$-th Trailer Unit
 For any trailer unit $k$ (where $k=1, 2, \dots, N$), consisting of Drawbar $k$ and Trailer $k$:

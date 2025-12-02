@@ -3,7 +3,7 @@ import matplotlib.patches as patches
 import numpy as np
 import argparse
 
-def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, W=1.5, 
+def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, L5=1.0, L6=1.2, L7=1.0, L8=1.2, W=1.5, 
                    tractor_width=1.5, tractor_len=2.8, 
                    trailer_width=1.5, trailer_len=2.0, 
                    tail_ext=0.15, save_path='kinematic_diagram_full.png'):
@@ -24,6 +24,17 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, W=1.5,
     trailer2_len = trailer_len
     trailer2_width = trailer_width
     trailer2_overhang = (trailer2_len - L4) / 2
+    
+    # Trailer 3 Geometry
+    trailer3_len = trailer_len
+    trailer3_width = trailer_width
+    trailer3_overhang = (trailer3_len - L6) / 2
+    dh3 = trailer3_overhang + tail_ext
+    
+    # Trailer 4 Geometry
+    trailer4_len = trailer_len
+    trailer4_width = trailer_width
+    trailer4_overhang = (trailer4_len - L8) / 2
 
     # Wheel Dimensions
     r_wheel = 10 * 0.0254
@@ -36,6 +47,10 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, W=1.5,
     theta2 = np.radians(-5)
     theta3 = np.radians(5)
     theta4 = np.radians(-10)
+    theta5 = np.radians(0)
+    theta6 = np.radians(5)
+    theta7 = np.radians(-5)
+    theta8 = np.radians(0)
     
     delta = np.radians(25) 
     
@@ -70,11 +85,35 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, W=1.5,
     # Trailer 2 Rear Axle
     x4 = x3 - L4 * np.cos(theta4)
     y4 = y3 - L4 * np.sin(theta4)
+    # Hitch 3
+    dist_hitch3 = trailer2_overhang + tail_ext
+    xh3 = x4 - dist_hitch3 * np.cos(theta4)
+    yh3 = y4 - dist_hitch3 * np.sin(theta4)
     
-    # Trailer 2 Tail
-    dist_tail_hitch2 = trailer2_overhang + tail_ext
-    x_tail2 = x4 - dist_tail_hitch2 * np.cos(theta4)
-    y_tail2 = y4 - dist_tail_hitch2 * np.sin(theta4)
+    # Trailer 3
+    # Dolly 3
+    x5 = xh3 - L5 * np.cos(theta5)
+    y5 = yh3 - L5 * np.sin(theta5)
+    # Trailer 3 Rear Axle
+    x6 = x5 - L6 * np.cos(theta6)
+    y6 = y5 - L6 * np.sin(theta6)
+    # Hitch 4
+    dist_hitch4 = trailer3_overhang + tail_ext
+    xh4 = x6 - dist_hitch4 * np.cos(theta6)
+    yh4 = y6 - dist_hitch4 * np.sin(theta6)
+    
+    # Trailer 4
+    # Dolly 4
+    x7 = xh4 - L7 * np.cos(theta7)
+    y7 = yh4 - L7 * np.sin(theta7)
+    # Trailer 4 Rear Axle
+    x8 = x7 - L8 * np.cos(theta8)
+    y8 = y7 - L8 * np.sin(theta8)
+    
+    # Trailer 4 Tail
+    dist_tail_hitch4 = trailer4_overhang + tail_ext
+    x_tail4 = x8 - dist_tail_hitch4 * np.cos(theta8)
+    y_tail4 = y8 - dist_tail_hitch4 * np.sin(theta8)
 
     # --- Drawing Helpers ---
     
@@ -154,11 +193,37 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, W=1.5,
     draw_wheel_pair(ax, (x3, y3), theta3, W, color='black')
     draw_wheel_pair(ax, (x4, y4), theta4, W, color='black')
     
-    ax.plot([x4, x_tail2], [y4, y_tail2], 'k-', lw=2) # Tail stub
+    ax.plot([x4, xh3], [y4, yh3], 'k-', lw=2)
+    
+    # 6. Drawbar 3
+    ax.plot([xh3, x5], [yh3, y5], 'k-', lw=4)
+    
+    # 7. Trailer 3
+    p_tl3_c = (np.array([x5, y5]) + np.array([x6, y6])) / 2
+    draw_chassis(ax, p_tl3_c, trailer3_len, trailer3_width, theta6, color='blue', label='Trailer 3')
+    
+    draw_wheel_pair(ax, (x5, y5), theta5, W, color='black')
+    draw_wheel_pair(ax, (x6, y6), theta6, W, color='black')
+    
+    ax.plot([x6, xh4], [y6, yh4], 'k-', lw=2)
+    
+    # 8. Drawbar 4
+    ax.plot([xh4, x7], [yh4, y7], 'k-', lw=4)
+    
+    # 9. Trailer 4
+    p_tl4_c = (np.array([x7, y7]) + np.array([x8, y8])) / 2
+    draw_chassis(ax, p_tl4_c, trailer4_len, trailer4_width, theta8, color='blue', label='Trailer 4')
+    
+    draw_wheel_pair(ax, (x7, y7), theta7, W, color='black')
+    draw_wheel_pair(ax, (x8, y8), theta8, W, color='black')
+    
+    ax.plot([x8, x_tail4], [y8, y_tail4], 'k-', lw=2)
 
     # Hitch Points
     ax.plot(xh1, yh1, 'ko', ms=6)
     ax.plot(xh2, yh2, 'ko', ms=6)
+    ax.plot(xh3, yh3, 'ko', ms=6)
+    ax.plot(xh4, yh4, 'ko', ms=6)
 
     # --- Annotations & Reference Lines ---
     
@@ -166,11 +231,15 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, W=1.5,
     ax.plot([x0, x0_f], [y0, y0_f], color='black', lw=4, alpha=0.4)
     ax.plot([x1, x2], [y1, y2], color='black', lw=4, alpha=0.4)
     ax.plot([x3, x4], [y3, y4], color='black', lw=4, alpha=0.4)
+    ax.plot([x5, x6], [y5, y6], color='black', lw=4, alpha=0.4)
+    ax.plot([x7, x8], [y7, y8], color='black', lw=4, alpha=0.4)
 
     # Reference Lines
     draw_dashed_ref(ax, (x0, y0)) 
     draw_dashed_ref(ax, (x2, y2)) 
     draw_dashed_ref(ax, (x4, y4))
+    draw_dashed_ref(ax, (x6, y6))
+    draw_dashed_ref(ax, (x8, y8))
     
     # Points
     ax.text(x0+0.05, y0+0.05, '$(x_0, y_0)$', color='blue')
@@ -178,6 +247,10 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, W=1.5,
     ax.text(x2+0.05, y2+0.05, '$(x_2, y_2)$', color='red')
     ax.text(x3+0.05, y3+0.05, '$(x_3, y_3)$', color='blue')
     ax.text(x4+0.05, y4+0.05, '$(x_4, y_4)$', color='red')
+    ax.text(x5+0.05, y5+0.05, '$(x_5, y_5)$', color='blue')
+    ax.text(x6+0.05, y6+0.05, '$(x_6, y_6)$', color='red')
+    ax.text(x7+0.05, y7+0.05, '$(x_7, y_7)$', color='blue')
+    ax.text(x8+0.05, y8+0.05, '$(x_8, y_8)$', color='red')
 
     # Dimensions
     ax.annotate(f'$L_0={L0}$', xy=((x0+x0_f)/2, (y0+y0_f)/2), xytext=(-10, 10), textcoords='offset points')
@@ -185,6 +258,10 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, W=1.5,
     ax.annotate(f'$L_2={L2}$', xy=((x1+x2)/2, (y1+y2)/2), xytext=(-10, 10), textcoords='offset points')
     ax.annotate(f'$L_3={L3}$', xy=((xh2+x3)/2, (yh2+y3)/2), xytext=(-10, 10), textcoords='offset points')
     ax.annotate(f'$L_4={L4}$', xy=((x3+x4)/2, (y3+y4)/2), xytext=(-10, 10), textcoords='offset points')
+    ax.annotate(f'$L_5={L5}$', xy=((xh3+x5)/2, (yh3+y5)/2), xytext=(-10, 10), textcoords='offset points')
+    ax.annotate(f'$L_6={L6}$', xy=((x5+x6)/2, (y5+y6)/2), xytext=(-10, 10), textcoords='offset points')
+    ax.annotate(f'$L_7={L7}$', xy=((xh4+x7)/2, (yh4+y7)/2), xytext=(-10, 10), textcoords='offset points')
+    ax.annotate(f'$L_8={L8}$', xy=((x7+x8)/2, (y7+y8)/2), xytext=(-10, 10), textcoords='offset points')
     
     # Angles
     # Theta0
@@ -207,6 +284,22 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, W=1.5,
     patches.Arc((x4, y4), 3, 3, angle=0, theta1=0, theta2=np.degrees(theta4), color='red')
     ax.text(x4+0.5, y4+0.1, r'$\theta_4$', color='red')
     
+    # Theta5
+    patches.Arc((x5, y5), 3, 3, angle=0, theta1=np.degrees(theta6), theta2=np.degrees(theta5), color='green')
+    ax.text(x5+0.5, y5, r'$\theta_5$', color='green')
+    
+    # Theta6
+    patches.Arc((x6, y6), 3, 3, angle=0, theta1=0, theta2=np.degrees(theta6), color='red')
+    ax.text(x6+0.5, y6+0.1, r'$\theta_6$', color='red')
+    
+    # Theta7
+    patches.Arc((x7, y7), 3, 3, angle=0, theta1=np.degrees(theta8), theta2=np.degrees(theta7), color='green')
+    ax.text(x7+0.5, y7, r'$\theta_7$', color='green')
+    
+    # Theta8
+    patches.Arc((x8, y8), 3, 3, angle=0, theta1=0, theta2=np.degrees(theta8), color='red')
+    ax.text(x8+0.5, y8+0.1, r'$\theta_8$', color='red')
+    
     # Delta
     patches.Arc((x0_f, y0_f), 3, 3, angle=0, theta1=np.degrees(theta0), theta2=np.degrees(theta0+delta), color='orange')
     ax.text(x0_f+0.5, y0_f+0.5, r'$\delta$', color='orange')
@@ -223,6 +316,10 @@ if __name__ == "__main__":
     parser.add_argument('--L2', type=float, default=1.2, help='Trailer 1 Wheelbase')
     parser.add_argument('--L3', type=float, default=1.0, help='Drawbar 2 Length')
     parser.add_argument('--L4', type=float, default=1.2, help='Trailer 2 Wheelbase')
+    parser.add_argument('--L5', type=float, default=1.0, help='Drawbar 3 Length')
+    parser.add_argument('--L6', type=float, default=1.2, help='Trailer 3 Wheelbase')
+    parser.add_argument('--L7', type=float, default=1.0, help='Drawbar 4 Length')
+    parser.add_argument('--L8', type=float, default=1.2, help='Trailer 4 Wheelbase')
     parser.add_argument('--W', type=float, default=1.0, help='Track Width')
     parser.add_argument('--tractor_width', type=float, default=1.5, help='Tractor Body Width')
     parser.add_argument('--tractor_len', type=float, default=2.8, help='Tractor Body Length')
@@ -232,7 +329,8 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
-    create_diagram(L0=args.L0, L1=args.L1, L2=args.L2, L3=args.L3, L4=args.L4, W=args.W, 
+    create_diagram(L0=args.L0, L1=args.L1, L2=args.L2, L3=args.L3, L4=args.L4, 
+                   L5=args.L5, L6=args.L6, L7=args.L7, L8=args.L8, W=args.W, 
                    tractor_width=args.tractor_width, tractor_len=args.tractor_len,
                    trailer_width=args.trailer_width, trailer_len=args.trailer_len, 
                    tail_ext=args.tail_ext)
