@@ -53,7 +53,7 @@ class TractorTrailerModel:
 
     def get_kinematic_vector(self, state, v0, delta):
         """
-        Calculate the full 11-element kinematic vector including linear velocities.
+        Calculate the full 11-element kinematic vector using recursive matrix formulation.
         
         Args:
             state (list or np.array): [x0, y0, theta0, theta1, theta2, theta3, theta4]
@@ -65,70 +65,58 @@ class TractorTrailerModel:
         """
         x0, y0, theta0, theta1, theta2, theta3, theta4 = state
         
-        # Pre-compute angle differences
-        t01 = theta0 - theta1
-        t12 = theta1 - theta2
-        t23 = theta2 - theta3
-        t34 = theta3 - theta4
-        
-        # Input vector u' = [v0, dtheta0] (Tractor Velocity Vector)
+        # 1. Tractor Input
         dtheta0 = (v0 / self.L0) * np.tan(delta)
-        u_prime = np.array([v0, dtheta0])
+        v0_vec = np.array([v0, dtheta0]) # [v0, dtheta0]
         
-        # Initialize Matrix S (11x2)
-        S = np.zeros((11, 2))
+        # Helper: Transform A (Tractor/Trailer -> Drawbar)
+        def transform_A(v_prev, theta_prev, theta_curr, L_bar, d_h_prev):
+            delta_theta = theta_prev - theta_curr
+            c, s = np.cos(delta_theta), np.sin(delta_theta)
+            # M_A matrix
+            M_A = np.array([
+                [c, d_h_prev * s],
+                [(1/L_bar) * s, -(d_h_prev/L_bar) * c]
+            ])
+            return M_A @ v_prev
+
+        # Helper: Transform B (Drawbar -> Trailer)
+        def transform_B(v_prev, theta_prev, theta_curr, L_trl):
+            delta_theta = theta_prev - theta_curr
+            c, s = np.cos(delta_theta), np.sin(delta_theta)
+            # M_B matrix
+            M_B = np.array([
+                [c, 0],
+                [(1/L_trl) * s, 0]
+            ])
+            return M_B @ v_prev
+
+        # 2. Recursive Calculation
+        # Unit 1: Drawbar 1 (from Tractor)
+        v1_vec = transform_A(v0_vec, theta0, theta1, self.L1, self.dh) # [v1, dtheta1]
         
-        # Row 0 (dx0): [cos(theta0), 0]
-        S[0, 0] = np.cos(theta0)
+        # Unit 2: Trailer 1 (from Drawbar 1)
+        v2_vec = transform_B(v1_vec, theta1, theta2, self.L2) # [v2, dtheta2]
         
-        # Row 1 (dy0): [sin(theta0), 0]
-        S[1, 0] = np.sin(theta0)
+        # Unit 3: Drawbar 2 (from Trailer 1)
+        v3_vec = transform_A(v2_vec, theta2, theta3, self.L3, self.dh2) # [v3, dtheta3]
         
-        # Row 2 (dtheta0): [0, 1]
-        S[2, 1] = 1.0
+        # Unit 4: Trailer 2 (from Drawbar 2)
+        v4_vec = transform_B(v3_vec, theta3, theta4, self.L4) # [v4, dtheta4]
         
-        # Row 3 (v1): [cos(t01), dh*sin(t01)]
-        S[3, 0] = np.cos(t01)
-        S[3, 1] = self.dh * np.sin(t01)
+        # 3. Assemble Full Vector
+        # [dx0, dy0]
+        dx0 = v0 * np.cos(theta0)
+        dy0 = v0 * np.sin(theta0)
         
-        # Row 4 (dtheta1): [1/L1 * sin(t01), -dh/L1 * cos(t01)]
-        S[4, 0] = (1 / self.L1) * np.sin(t01)
-        S[4, 1] = -(self.dh / self.L1) * np.cos(t01)
-        
-        # Row 5 (v2): [cos(t01)cos(t12), dh*sin(t01)cos(t12)]
-        S[5, 0] = np.cos(t01) * np.cos(t12)
-        S[5, 1] = self.dh * np.sin(t01) * np.cos(t12)
-        
-        # Row 6 (dtheta2): [1/L2 * cos(t01)sin(t12), dh/L2 * sin(t01)sin(t12)]
-        S[6, 0] = (1 / self.L2) * np.cos(t01) * np.sin(t12)
-        S[6, 1] = (self.dh / self.L2) * np.sin(t01) * np.sin(t12)
-        
-        # Row 7 (v3)
-        # Term M from previous derivation logic, now expanded
-        # M = cos(t12)cos(t23) + (dh2/L2)sin(t12)sin(t23)
-        M = np.cos(t12) * np.cos(t23) + (self.dh2 / self.L2) * np.sin(t12) * np.sin(t23)
-        S[7, 0] = np.cos(t01) * M
-        S[7, 1] = self.dh * np.sin(t01) * M
-        
-        # Row 8 (dtheta3)
-        # Term N from previous derivation logic, now expanded
-        # N = cos(t12)sin(t23) - (dh2/L2)sin(t12)cos(t23)
-        N = np.cos(t12) * np.sin(t23) - (self.dh2 / self.L2) * np.sin(t12) * np.cos(t23)
-        S[8, 0] = (1 / self.L3) * np.cos(t01) * N
-        S[8, 1] = (self.dh / self.L3) * np.sin(t01) * N
-        
-        # Row 9 (v4)
-        # v4 = v3 * cos(t34) -> Row 9 = Row 7 * cos(t34)
-        S[9, 0] = S[7, 0] * np.cos(t34)
-        S[9, 1] = S[7, 1] * np.cos(t34)
-        
-        # Row 10 (dtheta4)
-        # dtheta4 = v3/L4 * sin(t34) -> Row 10 = Row 7 * sin(t34)/L4
-        S[10, 0] = S[7, 0] * (np.sin(t34) / self.L4)
-        S[10, 1] = S[7, 1] * (np.sin(t34) / self.L4)
-        
-        # Compute kinematic vector
-        q_kin = S @ u_prime
+        q_kin = np.array([
+            dx0, dy0, 
+            v0_vec[1],      # dtheta0
+            v1_vec[0], v1_vec[1], # v1, dtheta1
+            v2_vec[0], v2_vec[1], # v2, dtheta2
+            v3_vec[0], v3_vec[1], # v3, dtheta3
+            v4_vec[0], v4_vec[1]  # v4, dtheta4
+        ])
         
         return q_kin
 

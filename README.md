@@ -115,62 +115,88 @@ $$ \dot{\theta}_4 = \frac{v_3}{L_4} \sin(\theta_3 - \theta_4) $$
 
 ---
 
-## 5. Matrix Form
+## 5. Matrix Form (Recursive Formulation)
 
-The system kinematics can be expressed in the matrix form:
-where $\mathbf{u}_{tractor} = [v_0, \dot{\theta}_0]^T$ is the tractor's velocity vector.
-The angular velocity $\dot{\theta}_0$ is determined by the inputs $v_0$ and steering angle $\delta$:
-$$ \dot{\theta}_0 = \frac{v_0}{L_0} \tan\delta $$
+To support an arbitrary number of trailers, the system kinematics can be formulated recursively. Let $\mathbf{v}_i = [v_i, \dot{\theta}_i]^T$ be the velocity vector of the $i$-th unit (where $i=0$ is the tractor, $i=1$ is Drawbar 1, $i=2$ is Trailer 1, etc.).
 
-$$
-\begin{bmatrix}
-\dot{x}_0 \\ \dot{y}_0 \\ \dot{\theta}_0 \\ v_1 \\ \dot{\theta}_1 \\ v_2 \\ \dot{\theta}_2 \\ v_3 \\ \dot{\theta}_3 \\ v_4 \\ \dot{\theta}_4
-\end{bmatrix}
-=
-\begin{bmatrix}
-\cos\theta_0 & 0 \\
-\sin\theta_0 & 0 \\
-0 & 1 \\
-\cos(\theta_0 - \theta_1) & d_h \sin(\theta_0 - \theta_1) \\
-\frac{1}{L_1} \sin(\theta_0 - \theta_1) & -\frac{d_h}{L_1} \cos(\theta_0 - \theta_1) \\
-\cos(\theta_0 - \theta_1)\cos(\theta_1 - \theta_2) & d_h \sin(\theta_0 - \theta_1)\cos(\theta_1 - \theta_2) \\
-\frac{1}{L_2} \cos(\theta_0 - \theta_1) \sin(\theta_1 - \theta_2) & \frac{d_h}{L_2} \sin(\theta_0 - \theta_1) \sin(\theta_1 - \theta_2) \\
-\cos(\theta_0 - \theta_1) \left[ \cos(\theta_1 - \theta_2)\cos(\theta_2 - \theta_3) + \frac{d_{h2}}{L_2}\sin(\theta_1 - \theta_2)\sin(\theta_2 - \theta_3) \right] & d_h \sin(\theta_0 - \theta_1) \left[ \cos(\theta_1 - \theta_2)\cos(\theta_2 - \theta_3) + \frac{d_{h2}}{L_2}\sin(\theta_1 - \theta_2)\sin(\theta_2 - \theta_3) \right] \\
-\frac{1}{L_3} \cos(\theta_0 - \theta_1) \left[ \cos(\theta_1 - \theta_2)\sin(\theta_2 - \theta_3) - \frac{d_{h2}}{L_2}\sin(\theta_1 - \theta_2)\cos(\theta_2 - \theta_3) \right] & \frac{d_h}{L_3} \sin(\theta_0 - \theta_1) \left[ \cos(\theta_1 - \theta_2)\sin(\theta_2 - \theta_3) - \frac{d_{h2}}{L_2}\sin(\theta_1 - \theta_2)\cos(\theta_2 - \theta_3) \right] \\
-\cos(\theta_0 - \theta_1) \cos(\theta_3 - \theta_4) \left[ \cos(\theta_1 - \theta_2)\cos(\theta_2 - \theta_3) + \frac{d_{h2}}{L_2}\sin(\theta_1 - \theta_2)\sin(\theta_2 - \theta_3) \right] & d_h \sin(\theta_0 - \theta_1) \cos(\theta_3 - \theta_4) \left[ \cos(\theta_1 - \theta_2)\cos(\theta_2 - \theta_3) + \frac{d_{h2}}{L_2}\sin(\theta_1 - \theta_2)\sin(\theta_2 - \theta_3) \right] \\
-\frac{1}{L_4} \cos(\theta_0 - \theta_1) \sin(\theta_3 - \theta_4) \left[ \cos(\theta_1 - \theta_2)\cos(\theta_2 - \theta_3) + \frac{d_{h2}}{L_2}\sin(\theta_1 - \theta_2)\sin(\theta_2 - \theta_3) \right] & \frac{d_h}{L_4} \sin(\theta_0 - \theta_1) \sin(\theta_3 - \theta_4) \left[ \cos(\theta_1 - \theta_2)\cos(\theta_2 - \theta_3) + \frac{d_{h2}}{L_2}\sin(\theta_1 - \theta_2)\sin(\theta_2 - \theta_3) \right]
-\end{bmatrix}
-\begin{bmatrix}
-v_0 \\ \dot{\theta}_0
-\end{bmatrix}
-$$
+The relationship between consecutive units is given by linear transformations:
+
+### 1. Tractor Input
+The tractor's velocity vector $\mathbf{v}_0$ is determined by the inputs $v_0$ and $\delta$:
+$$ \mathbf{v}_0 = \begin{bmatrix} v_0 \\ \dot{\theta}_0 \end{bmatrix} = \begin{bmatrix} 1 \\ \frac{1}{L_0}\tan\delta \end{bmatrix} v_0 $$
+
+### 2. Transformation A: Tractor/Trailer $\to$ Drawbar
+Calculates the velocity of a Drawbar ($i=2k-1$) from the preceding Tractor or Trailer ($i-1$).
+Let $\Delta\theta = \theta_{i-1} - \theta_i$.
+
+$$ \mathbf{v}_i = M_{A}(\Delta\theta) \mathbf{v}_{i-1} $$
+
+$$ \begin{bmatrix} v_i \\ \dot{\theta}_i \end{bmatrix} = \begin{bmatrix} \cos\Delta\theta & d_h \sin\Delta\theta \\ \frac{1}{L_{bar}}\sin\Delta\theta & -\frac{d_h}{L_{bar}}\cos\Delta\theta \end{bmatrix} \begin{bmatrix} v_{i-1} \\ \dot{\theta}_{i-1} \end{bmatrix} $$
+*   $L_{bar}$: Length of the drawbar ($L_1, L_3, \dots$)
+*   $d_h$: Hitch offset of the preceding unit ($d_h, d_{h2}, \dots$)
+
+### 3. Transformation B: Drawbar $\to$ Trailer
+Calculates the velocity of a Trailer ($i=2k$) from the preceding Drawbar ($i-1$).
+Let $\Delta\theta = \theta_{i-1} - \theta_i$.
+
+$$ \mathbf{v}_i = M_{B}(\Delta\theta) \mathbf{v}_{i-1} $$
+
+$$ \begin{bmatrix} v_i \\ \dot{\theta}_i \end{bmatrix} = \begin{bmatrix} \cos\Delta\theta & 0 \\ \frac{1}{L_{trl}}\sin\Delta\theta & 0 \end{bmatrix} \begin{bmatrix} v_{i-1} \\ \dot{\theta}_{i-1} \end{bmatrix} $$
+*   $L_{trl}$: Length of the trailer ($L_2, L_4, \dots$)
+
+### System Kinematics Vector
+The full system kinematics vector $\mathbf{q}_{kin}$ is constructed by stacking these sub-vectors:
+$$ \mathbf{q}_{kin} = [\dot{x}_0, \dot{y}_0, \mathbf{v}_0^T, \mathbf{v}_1^T, \mathbf{v}_2^T, \mathbf{v}_3^T, \mathbf{v}_4^T]^T $$
+where $\dot{x}_0 = v_0 \cos\theta_0$ and $\dot{y}_0 = v_0 \sin\theta_0$.
 
 ---
 
 ## 6. Coordinate Calculation (Forward Kinematics)
 
-The global coordinates $(x, y)$ of key points are calculated from the state vector for visualization:
+The global coordinates $(x, y)$ of key points are calculated recursively from the state vector.
 
+### Base Case: Tractor
 1.  **Tractor Front Axle ($P_{0,f}$)**:
     $$ P_{0,f} = P_0 + L_0 \begin{bmatrix} \cos\theta_0 \\ \sin\theta_0 \end{bmatrix} $$
 
 2.  **Hitch 1 ($H_1$)**:
     $$ H_1 = P_0 - d_h \begin{bmatrix} \cos\theta_0 \\ \sin\theta_0 \end{bmatrix} $$
 
-3.  **Trailer 1**:
-    *   **Dolly 1 ($P_1$)**:
-        $$ P_1 = H_1 - L_1 \begin{bmatrix} \cos\theta_1 \\ \sin\theta_1 \end{bmatrix} $$
-    *   **Axle 1 ($P_2$)**:
-        $$ P_2 = P_1 - L_2 \begin{bmatrix} \cos\theta_2 \\ \sin\theta_2 \end{bmatrix} $$
+### Specific Examples
 
-4.  **Hitch 2 ($H_2$)**:
-    $$ H_2 = P_2 - d_{h2} \begin{bmatrix} \cos\theta_2 \\ \sin\theta_2 \end{bmatrix} $$
+#### Trailer 1
+1.  **Dolly 1 ($P_1$)**:
+    $$ P_1 = H_1 - L_1 \begin{bmatrix} \cos\theta_1 \\ \sin\theta_1 \end{bmatrix} $$
+2.  **Axle 1 ($P_2$)**:
+    $$ P_2 = P_1 - L_2 \begin{bmatrix} \cos\theta_2 \\ \sin\theta_2 \end{bmatrix} $$
 
-5.  **Trailer 2**:
-    *   **Dolly 2 ($P_3$)**:
-        $$ P_3 = H_2 - L_3 \begin{bmatrix} \cos\theta_3 \\ \sin\theta_3 \end{bmatrix} $$
-    *   **Axle 2 ($P_4$)**:
-        $$ P_4 = P_3 - L_4 \begin{bmatrix} \cos\theta_4 \\ \sin\theta_4 \end{bmatrix} $$
+#### Hitch 2 ($H_2$)
+$$ H_2 = P_2 - d_{h2} \begin{bmatrix} \cos\theta_2 \\ \sin\theta_2 \end{bmatrix} $$
+
+#### Trailer 2
+1.  **Dolly 2 ($P_3$)**:
+    $$ P_3 = H_2 - L_3 \begin{bmatrix} \cos\theta_3 \\ \sin\theta_3 \end{bmatrix} $$
+2.  **Axle 2 ($P_4$)**:
+    $$ P_4 = P_3 - L_4 \begin{bmatrix} \cos\theta_4 \\ \sin\theta_4 \end{bmatrix} $$
+
+### Generalized Recursive Step: $k$-th Trailer Unit
+For any trailer unit $k$ (where $k=1, 2, \dots, N$), consisting of Drawbar $k$ and Trailer $k$:
+
+1.  **Dolly $k$ ($P_{2k-1}$)**:
+    Calculated from the preceding hitch $H_k$.
+    $$ P_{2k-1} = H_k - L_{bar,k} \begin{bmatrix} \cos\theta_{2k-1} \\ \sin\theta_{2k-1} \end{bmatrix} $$
+
+2.  **Axle $k$ ($P_{2k}$)**:
+    Calculated from Dolly $k$.
+    $$ P_{2k} = P_{2k-1} - L_{trl,k} \begin{bmatrix} \cos\theta_{2k} \\ \sin\theta_{2k} \end{bmatrix} $$
+
+3.  **Next Hitch ($H_{k+1}$)**:
+    Calculated from Axle $k$ (if another trailer follows).
+    $$ H_{k+1} = P_{2k} - d_{h,k} \begin{bmatrix} \cos\theta_{2k} \\ \sin\theta_{2k} \end{bmatrix} $$
+
+*   $L_{bar,k}$: Length of Drawbar $k$ ($L_1, L_3, \dots$)
+*   $L_{trl,k}$: Length of Trailer $k$ ($L_2, L_4, \dots$)
+*   $d_{h,k}$: Hitch offset of Trailer $k$ ($d_{h2}, \dots$)
 
 ---
 
