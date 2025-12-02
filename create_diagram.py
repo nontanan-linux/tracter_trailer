@@ -122,7 +122,7 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, W=1.5,
     p_tr_front_face = np.array([x0_f, y0_f]) + tractor_overhang * np.array([np.cos(theta0), np.sin(theta0)])
     p_tr_rear_face = np.array([x0, y0]) - tractor_overhang * np.array([np.cos(theta0), np.sin(theta0)])
     p_tr_c = (p_tr_front_face + p_tr_rear_face) / 2
-    draw_chassis(ax, p_tr_c, tractor_len, tractor_width, theta0, color='red', label='Tractor')
+    draw_chassis(ax, p_tr_c, tractor_len, tractor_width, theta0, color='orangered', label='Tractor')
     
     draw_wheel_pair(ax, (x0_f, y0_f), theta0, W, steered_angle=delta, color='black')
     draw_wheel_pair(ax, (x0, y0), theta0, W, color='black')
@@ -130,7 +130,7 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, W=1.5,
     ax.plot([p_tr_rear_face[0], xh1], [p_tr_rear_face[1], yh1], 'k-', lw=2)
     
     # 2. Drawbar 1
-    ax.plot([xh1, x1], [yh1, y1], 'k-', lw=4, color='gray')
+    ax.plot([xh1, x1], [yh1, y1], 'k-', lw=4)
     
     # 3. Trailer 1
     p_tl1_rear_face = np.array([x2, y2]) - trailer_overhang * np.array([np.cos(theta2), np.sin(theta2)])
@@ -145,7 +145,7 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, W=1.5,
     ax.plot([p_tl1_rear_face[0], xh2], [p_tl1_rear_face[1], yh2], 'k-', lw=2)
     
     # 4. Drawbar 2
-    ax.plot([xh2, x3], [yh2, y3], 'k-', lw=4, color='gray')
+    ax.plot([xh2, x3], [yh2, y3], 'k-', lw=4)
     
     # 5. Trailer 2
     p_tl2_c = (np.array([x3, y3]) + np.array([x4, y4])) / 2

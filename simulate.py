@@ -6,7 +6,7 @@ from kinematic_model import TractorTrailerModel
 
 def simulate():
     # --- Parameters ---
-    SAVE_ANIMATION = False
+    SAVE_ANIMATION = True
     
     # Dimensions (meters)
     L0 = 2.0        # Tractor Wheelbase
@@ -130,10 +130,20 @@ def simulate():
         delta_curr = inputs[i, 1]
         vels = velocities[i] # [v1, v2, v3, v4]
         
+        # Calculate Relative Angles
+        # Drawbar 1 Angle (relative to Tractor)
+        psi1 = state[2] - state[3]
+        # Drawbar 2 Angle (relative to Trailer 1)
+        psi2 = state[4] - state[5]
+        
+        # Normalize angles to [-pi, pi] for display
+        psi1 = (psi1 + np.pi) % (2 * np.pi) - np.pi
+        psi2 = (psi2 + np.pi) % (2 * np.pi) - np.pi
+        
         # Update Status Text
         status_text.set_text(f'Tractor V: {v_curr:.2f} m/s\nSteering: {np.degrees(delta_curr):.2f} deg\n'
-                             f'Dolly 1 V: {vels[0]:.2f} m/s\nTrailer 1 V: {vels[1]:.2f} m/s\n'
-                             f'Dolly 2 V: {vels[2]:.2f} m/s\nTrailer 2 V: {vels[3]:.2f} m/s')
+                             f'Trailer 1 V: {vels[1]:.2f} m/s\nDrawbar 1 Ang: {np.degrees(psi1):.2f} deg\n'
+                             f'Trailer 2 V: {vels[3]:.2f} m/s\nDrawbar 2 Ang: {np.degrees(psi2):.2f} deg')
         
         x0, y0, theta0, theta1, theta2, theta3, theta4 = state
         
@@ -143,7 +153,7 @@ def simulate():
         # --- Tractor Body ---
         # Centered on Wheelbase (Midpoint of p0 and p0_f)
         p_tractor_c = (p0 + p0_f) / 2
-        patches_list.append(draw_box(ax, p_tractor_c, tractor_len, tractor_width, theta0, color='red', alpha=0.5))
+        patches_list.append(draw_box(ax, p_tractor_c, tractor_len, tractor_width, theta0, color='orangered', alpha=0.5))
         
         # Tractor Wheels
         patches_list.extend(draw_wheels_at_axle(ax, p0, theta0, W)) # Rear
@@ -156,7 +166,7 @@ def simulate():
         patches_list.append(l_tr_tail)
         
         # --- Drawbar 1 ---
-        l_db1, = ax.plot([h1[0], p1[0]], [h1[1], p1[1]], 'k-', lw=3, color='gray')
+        l_db1, = ax.plot([h1[0], p1[0]], [h1[1], p1[1]], 'k-', lw=3)
         patches_list.append(l_db1)
         
         # --- Trailer 1 Body ---
@@ -175,7 +185,7 @@ def simulate():
         patches_list.append(l_tl1_tail)
         
         # --- Drawbar 2 ---
-        l_db2, = ax.plot([h2[0], p3[0]], [h2[1], p3[1]], 'k-', lw=3, color='gray')
+        l_db2, = ax.plot([h2[0], p3[0]], [h2[1], p3[1]], 'k-', lw=3)
         patches_list.append(l_db2)
         
         # --- Trailer 2 Body ---

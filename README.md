@@ -147,7 +147,34 @@ $$
 
 ---
 
-## 6. Constraints
+## 6. Coordinate Calculation (Forward Kinematics)
+
+The global coordinates $(x, y)$ of key points are calculated from the state vector for visualization:
+
+1.  **Tractor Front Axle ($P_{0,f}$)**:
+    $$ P_{0,f} = P_0 + L_0 \begin{bmatrix} \cos\theta_0 \\ \sin\theta_0 \end{bmatrix} $$
+
+2.  **Hitch 1 ($H_1$)**:
+    $$ H_1 = P_0 - d_h \begin{bmatrix} \cos\theta_0 \\ \sin\theta_0 \end{bmatrix} $$
+
+3.  **Trailer 1**:
+    *   **Dolly 1 ($P_1$)**:
+        $$ P_1 = H_1 - L_1 \begin{bmatrix} \cos\theta_1 \\ \sin\theta_1 \end{bmatrix} $$
+    *   **Axle 1 ($P_2$)**:
+        $$ P_2 = P_1 - L_2 \begin{bmatrix} \cos\theta_2 \\ \sin\theta_2 \end{bmatrix} $$
+
+4.  **Hitch 2 ($H_2$)**:
+    $$ H_2 = P_2 - d_{h2} \begin{bmatrix} \cos\theta_2 \\ \sin\theta_2 \end{bmatrix} $$
+
+5.  **Trailer 2**:
+    *   **Dolly 2 ($P_3$)**:
+        $$ P_3 = H_2 - L_3 \begin{bmatrix} \cos\theta_3 \\ \sin\theta_3 \end{bmatrix} $$
+    *   **Axle 2 ($P_4$)**:
+        $$ P_4 = P_3 - L_4 \begin{bmatrix} \cos\theta_4 \\ \sin\theta_4 \end{bmatrix} $$
+
+---
+
+## 7. Constraints
 
 *   **Steering Limit**: $\delta \in [-30^\circ, 30^\circ]$
 *   **Drawbar Limits**: Relative angle between units $\in [-30^\circ, 30^\circ]$
@@ -155,7 +182,7 @@ $$
 
 ---
 
-## 7. Usage
+## 8. Usage
 
 ### Run Simulation
 ```bash
@@ -174,7 +201,7 @@ python3 create_diagram.py
 
 ---
 
-## 8. Simulation Result
+## 9. Simulation Result
 
 Running `simulate.py` produces an animation of the vehicle trajectory.
 
