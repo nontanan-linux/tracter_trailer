@@ -1,50 +1,30 @@
-# Kinematic Model of Tractor with Two Drawbar Trailers
+# Kinematic Model of Tractor with Drawbar Trailers
 
-This project implements a kinematic model and simulation for a **Multi-Trailer System** consisting of a tractor and **four** drawbar trailers. The model uses standard bicycle kinematics extended to a chain of rigid bodies.
+This project implements a kinematic model and simulation for a **Multi-Trailer System** consisting of a tractor and **N** drawbar trailers. The model uses standard bicycle kinematics extended to a chain of rigid bodies using a recursive formulation.
 
 ## 1. System Description
 
-The system consists of nine main components connected in a chain:
-1.  **Tractor**: The towing vehicle with front-wheel steering.
-2.  **Drawbar 1**: Connects the tractor to the first trailer.
-3.  **Trailer 1**: The first cargo unit.
-4.  **Drawbar 2**: Connects the first trailer to the second trailer.
-5.  **Trailer 2**: The second cargo unit.
-6.  **Drawbar 3**: Connects the second trailer to the third trailer.
-7.  **Trailer 3**: The third cargo unit.
-8.  **Drawbar 4**: Connects the third trailer to the fourth trailer.
-9.  **Trailer 4**: The fourth cargo unit.
+The system consists of a Tractor followed by $N$ trailer units. Each trailer unit consists of a Drawbar and a Trailer Body.
+The system is fully configurable, allowing for an arbitrary number of trailers with custom dimensions.
 
-### Kinematic Diagram
+### Kinematic Diagram (Example with 4 Trailers)
 ![Kinematic Diagram](kinematic_diagram_full.png)
 
 ---
 
 ## 2. System Kinematics Vector
 
-The system kinematics is defined by **19 variables**:
-$$ \mathbf{q}_{kin} = [\dot{x}_0, \dot{y}_0, \dot{\theta}_0, v_1, \dot{\theta}_1, v_2, \dot{\theta}_2, v_3, \dot{\theta}_3, v_4, \dot{\theta}_4, v_5, \dot{\theta}_5, v_6, \dot{\theta}_6, v_7, \dot{\theta}_7, v_8, \dot{\theta}_8]^T $$
+The system kinematics is defined by **$3 + 4N$ variables** (where $N$ is the number of trailers):
+$$ \mathbf{q}_{kin} = [\dot{x}_0, \dot{y}_0, \dot{\theta}_0, \underbrace{v_1, \dot{\theta}_1, v_2, \dot{\theta}_2}_{\text{Trailer 1}}, \dots, \underbrace{v_{2N-1}, \dot{\theta}_{2N-1}, v_{2N}, \dot{\theta}_{2N}}_{\text{Trailer N}}]^T $$
 
 | Variable | Description | Unit |
 | :--- | :--- | :--- |
 | $\dot{x}_0, \dot{y}_0$ | Velocity of the Tractor's rear axle center (World Frame) | m/s |
 | $\dot{\theta}_0$ | Angular Velocity of the Tractor | rad/s |
-| $v_1$ | Longitudinal Velocity of Dolly 1 | m/s |
-| $\dot{\theta}_1$ | Angular Velocity of Drawbar 1 | rad/s |
-| $v_2$ | Longitudinal Velocity of Trailer 1 | m/s |
-| $\dot{\theta}_2$ | Angular Velocity of Trailer 1 | rad/s |
-| $v_3$ | Longitudinal Velocity of Dolly 2 | m/s |
-| $\dot{\theta}_3$ | Angular Velocity of Drawbar 2 | rad/s |
-| $v_4$ | Longitudinal Velocity of Trailer 2 | m/s |
-| $\dot{\theta}_4$ | Angular Velocity of Trailer 2 | rad/s |
-| $v_5$ | Longitudinal Velocity of Dolly 3 | m/s |
-| $\dot{\theta}_5$ | Angular Velocity of Drawbar 3 | rad/s |
-| $v_6$ | Longitudinal Velocity of Trailer 3 | m/s |
-| $\dot{\theta}_6$ | Angular Velocity of Trailer 3 | rad/s |
-| $v_7$ | Longitudinal Velocity of Dolly 4 | m/s |
-| $\dot{\theta}_7$ | Angular Velocity of Drawbar 4 | rad/s |
-| $v_8$ | Longitudinal Velocity of Trailer 4 | m/s |
-| $\dot{\theta}_8$ | Angular Velocity of Trailer 4 | rad/s |
+| $v_{2i-1}$ | Longitudinal Velocity of Dolly $i$ | m/s |
+| $\dot{\theta}_{2i-1}$ | Angular Velocity of Drawbar $i$ | rad/s |
+| $v_{2i}$ | Longitudinal Velocity of Trailer $i$ | m/s |
+| $\dot{\theta}_{2i}$ | Angular Velocity of Trailer $i$ | rad/s |
 
 **Inputs**:
 *   $v_0$: Longitudinal velocity of the Tractor.
@@ -54,22 +34,16 @@ $$ \mathbf{q}_{kin} = [\dot{x}_0, \dot{y}_0, \dot{\theta}_0, v_1, \dot{\theta}_1
 
 ## 3. System Parameters
 
-| Parameter | Symbol | Value (Default) | Description |
-| :--- | :--- | :--- | :--- |
-| **Tractor** | $L_0$ | 2.0 m | Wheelbase |
-| | $d_h$ | 0.55 m | Hitch 1 offset (behind rear axle) |
-| **Trailer 1** | $L_1$ | 1.0 m | Drawbar 1 Length |
-| | $L_2$ | 1.2 m | Trailer 1 Length (Dolly to Axle) |
-| | $d_{h2}$ | 0.5 m | Hitch 2 offset (behind rear axle) |
-| **Trailer 2** | $L_3$ | 1.0 m | Drawbar 2 Length |
-| | $L_4$ | 1.2 m | Trailer 2 Length (Dolly to Axle) |
-| | $d_{h3}$ | 0.5 m | Hitch 3 offset (behind rear axle) |
-| **Trailer 3** | $L_5$ | 1.0 m | Drawbar 3 Length |
-| | $L_6$ | 1.2 m | Trailer 3 Length (Dolly to Axle) |
-| | $d_{h4}$ | 0.5 m | Hitch 4 offset (behind rear axle) |
-| **Trailer 4** | $L_7$ | 1.0 m | Drawbar 4 Length |
-| | $L_8$ | 1.2 m | Trailer 4 Length (Dolly to Axle) |
-| **General** | $W$ | 1.5 m | Track Width (for visualization) |
+The system is configured via a list of trailer parameters. For each trailer unit $i$ (where $i=1 \dots N$):
+
+| Parameter | Symbol | Description |
+| :--- | :--- | :--- |
+| **Tractor** | $L_0$ | Wheelbase |
+| | $d_h$ | Hitch offset (behind rear axle) |
+| **Trailer $i$** | $L_{bar,i}$ | Drawbar Length |
+| | $L_{trl,i}$ | Trailer Length (Dolly to Axle) |
+| | $d_{h,i}$ | Hitch offset (behind rear axle of Trailer $i$) |
+| **General** | $W$ | Track Width (for visualization) |
 
 ---
 
