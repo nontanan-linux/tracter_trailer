@@ -15,7 +15,9 @@ The system is fully configurable, allowing for an arbitrary number of trailers w
 ## 2. System Kinematics Vector
 
 The system kinematics is defined by **$3 + 4N$ variables** (where $N$ is the number of trailers):
-$$ \mathbf{q}_{kin} = [\dot{x}_0, \dot{y}_0, \dot{\theta}_0, \underbrace{v_1, \dot{\theta}_1, v_2, \dot{\theta}_2}_{\text{Trailer 1}}, \dots, \underbrace{v_{2N-1}, \dot{\theta}_{2N-1}, v_{2N}, \dot{\theta}_{2N}}_{\text{Trailer N}}]^T $$
+$$
+ \mathbf{q}_{kin} = [\dot{x}_0, \dot{y}_0, \dot{\theta}_0, \underbrace{v_1, \dot{\theta}_1, v_2, \dot{\theta}_2}_{\text{Trailer 1}}, \dots, \underbrace{v_{2N-1}, \dot{\theta}_{2N-1}, v_{2N}, \dot{\theta}_{2N}}_{\text{Trailer N}}]^T 
+$$
 
 | Variable | Description | Unit |
 | :--- | :--- | :--- |
