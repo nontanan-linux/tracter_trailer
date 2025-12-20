@@ -6,7 +6,11 @@ import argparse
 def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, L5=1.0, L6=1.2, L7=1.0, L8=1.2, W=1.5, 
                    tractor_width=1.5, tractor_len=2.8, 
                    trailer_width=1.5, trailer_len=2.0, 
-                   tail_ext=0.15, save_path='kinematic_diagram_full.png'):
+                   tail_ext=0.15, 
+                   theta0_deg=45.0, theta1_deg=25.0, theta2_deg=10.0, 
+                   theta3_deg=-10.0, theta4_deg=-25.0, theta5_deg=-45.0, 
+                   theta6_deg=-25.0, theta7_deg=-10.0, theta8_deg=25.0,
+                   save_path='kinematic_diagram_full.png'):
     fig, ax = plt.subplots(figsize=(16, 10))
     ax.set_aspect('equal')
     ax.axis('off')
@@ -42,15 +46,15 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, L5=1.0, L6=1.2, L7=1.
     wheel_width = 0.3
 
     # Visualization Angles
-    theta0 = np.radians(30)
-    theta1 = np.radians(10)
-    theta2 = np.radians(-5)
-    theta3 = np.radians(5)
-    theta4 = np.radians(-10)
-    theta5 = np.radians(0)
-    theta6 = np.radians(5)
-    theta7 = np.radians(-5)
-    theta8 = np.radians(0)
+    theta0 = np.radians(theta0_deg)
+    theta1 = np.radians(theta1_deg)
+    theta2 = np.radians(theta2_deg)
+    theta3 = np.radians(theta3_deg)
+    theta4 = np.radians(theta4_deg)
+    theta5 = np.radians(theta5_deg)
+    theta6 = np.radians(theta6_deg)
+    theta7 = np.radians(theta7_deg)
+    theta8 = np.radians(theta8_deg)
     
     delta = np.radians(25) 
     
@@ -149,11 +153,11 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, L5=1.0, L6=1.2, L7=1.
                                  linewidth=2, edgecolor='black', facecolor=color, alpha=0.3, label=label)
         ax.add_patch(rect)
 
-    def draw_dashed_ref(ax, center, length=1.0, angle=0):
+    def draw_dashed_ref(ax, center, length=1.0, angle=0, color='k', style='--'):
         cx, cy = center
         dx = length * np.cos(angle)
         dy = length * np.sin(angle)
-        ax.plot([cx, cx + dx], [cy, cy + dy], 'k--', lw=1, alpha=0.6)
+        ax.plot([cx, cx + dx], [cy, cy + dy], color=color, linestyle=style, lw=1, alpha=0.6)
 
     # --- Draw Vehicles ---
 
@@ -234,12 +238,36 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, L5=1.0, L6=1.2, L7=1.
     ax.plot([x5, x6], [y5, y6], color='black', lw=4, alpha=0.4)
     ax.plot([x7, x8], [y7, y8], color='black', lw=4, alpha=0.4)
 
-    # Reference Lines
+    # Reference Lines (Global Zero)
     draw_dashed_ref(ax, (x0, y0)) 
     draw_dashed_ref(ax, (x2, y2)) 
     draw_dashed_ref(ax, (x4, y4))
     draw_dashed_ref(ax, (x6, y6))
     draw_dashed_ref(ax, (x8, y8))
+
+    # Steering Angle Reference Lines
+    draw_dashed_ref(ax, (x0_f, y0_f), length=1.5, angle=theta0, color='orange')
+    draw_dashed_ref(ax, (x0_f, y0_f), length=1.5, angle=theta0+delta, color='orange')
+
+    # Drawbar 1 Reference Lines (at Dolly 1)
+    # Relative angle between Trailer 1 (theta2) and Drawbar 1 (theta1)
+    draw_dashed_ref(ax, (x1, y1), length=1.5, angle=theta2, color='green')
+    draw_dashed_ref(ax, (x1, y1), length=1.5, angle=theta1, color='green')
+
+    # Drawbar 2 Reference Lines (at Dolly 2)
+    # Relative angle between Trailer 2 (theta4) and Drawbar 2 (theta3)
+    draw_dashed_ref(ax, (x3, y3), length=1.5, angle=theta4, color='green')
+    draw_dashed_ref(ax, (x3, y3), length=1.5, angle=theta3, color='green')
+
+    # Drawbar 3 Reference Lines (at Dolly 3)
+    # Relative angle between Trailer 3 (theta6) and Drawbar 3 (theta5)
+    draw_dashed_ref(ax, (x5, y5), length=1.5, angle=theta6, color='green')
+    draw_dashed_ref(ax, (x5, y5), length=1.5, angle=theta5, color='green')
+
+    # Drawbar 4 Reference Lines (at Dolly 4)
+    # Relative angle between Trailer 4 (theta8) and Drawbar 4 (theta7)
+    draw_dashed_ref(ax, (x7, y7), length=1.5, angle=theta8, color='green')
+    draw_dashed_ref(ax, (x7, y7), length=1.5, angle=theta7, color='green')
     
     # Points
     ax.text(x0+0.05, y0+0.05, '$(x_0, y_0)$', color='blue')
@@ -304,8 +332,10 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, L5=1.0, L6=1.2, L7=1.
     patches.Arc((x0_f, y0_f), 3, 3, angle=0, theta1=np.degrees(theta0), theta2=np.degrees(theta0+delta), color='orange')
     ax.text(x0_f+0.5, y0_f+0.5, r'$\delta$', color='orange')
     
-    plt.title("Kinematic Diagram: Tractor + 2 Drawbar Trailers")
-    plt.tight_layout()
+    
+    # plt.title("Kinematic Diagram: Tractor + 2 Drawbar Trailers")
+    fig.suptitle("Kinematic Diagram: Tractor with Drawbar Trailers", fontsize=24, y=0.95)
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
     plt.savefig(save_path)
     print(f"Diagram saved to {save_path}")
 
@@ -327,10 +357,27 @@ if __name__ == "__main__":
     parser.add_argument('--trailer_len', type=float, default=2.0, help='Trailer Body Length')
     parser.add_argument('--tail_ext', type=float, default=0.15, help='Tail Extension')
     
+    # Angles
+    parser.add_argument('--theta0', type=float, default=45.0, help='Tractor Yaw (deg)')
+    parser.add_argument('--theta1', type=float, default=25.0, help='Drawbar 1 Yaw (deg)')
+    parser.add_argument('--theta2', type=float, default=10.0, help='Trailer 1 Yaw (deg)')
+    parser.add_argument('--theta3', type=float, default=-10.0, help='Drawbar 2 Yaw (deg)')
+    parser.add_argument('--theta4', type=float, default=-25.0, help='Trailer 2 Yaw (deg)')
+    parser.add_argument('--theta5', type=float, default=-45.0, help='Drawbar 3 Yaw (deg)')
+    parser.add_argument('--theta6', type=float, default=-25.0, help='Trailer 3 Yaw (deg)')
+    parser.add_argument('--theta7', type=float, default=-10.0, help='Drawbar 4 Yaw (deg)')
+    parser.add_argument('--theta8', type=float, default=25.0, help='Trailer 4 Yaw (deg)')
+    
+    parser.add_argument('--save_path', type=str, default='kinematic_diagram_full.png', help='Path to save the diagram')
+
     args = parser.parse_args()
     
     create_diagram(L0=args.L0, L1=args.L1, L2=args.L2, L3=args.L3, L4=args.L4, 
                    L5=args.L5, L6=args.L6, L7=args.L7, L8=args.L8, W=args.W, 
                    tractor_width=args.tractor_width, tractor_len=args.tractor_len,
                    trailer_width=args.trailer_width, trailer_len=args.trailer_len, 
-                   tail_ext=args.tail_ext)
+                   tail_ext=args.tail_ext,
+                   theta0_deg=args.theta0, theta1_deg=args.theta1, theta2_deg=args.theta2,
+                   theta3_deg=args.theta3, theta4_deg=args.theta4, theta5_deg=args.theta5,
+                   theta6_deg=args.theta6, theta7_deg=args.theta7, theta8_deg=args.theta8,
+                   save_path=args.save_path)

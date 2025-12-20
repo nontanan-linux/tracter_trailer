@@ -6,7 +6,8 @@ from kinematic_model import TractorTrailerModel
 
 def simulate():
     # --- Parameters ---
-    SAVE_ANIMATION = False
+    SAVE_ANIMATION = True
+    PLOT_DRAWBAR_TRAJECTORY = True
     
     # Dimensions (meters)
     L0 = 2.0        # Tractor Wheelbase
@@ -19,8 +20,6 @@ def simulate():
         {'L_bar': 1.0, 'L_trl': 1.2, 'dh_prev': 0.5}, # Trailer 2 (dh_prev from Trailer 1)
         {'L_bar': 1.0, 'L_trl': 1.2, 'dh_prev': 0.5}, # Trailer 3
         {'L_bar': 1.0, 'L_trl': 1.2, 'dh_prev': 0.5}, # Trailer 4
-        {'L_bar': 1.0, 'L_trl': 1.2, 'dh_prev': 0.5}, # Trailer 5
-        {'L_bar': 1.0, 'L_trl': 1.2, 'dh_prev': 0.5}, # Trailer 6
     ]
     
     num_trailers = len(trailers)
@@ -51,6 +50,7 @@ def simulate():
     # Simulation
     steps = int(T / dt)
     trajectory = []
+    drawbar_trajectories = [] # List to store list of drawbar coords per step
     states = []
     inputs = []
     velocities = [] 
@@ -81,9 +81,17 @@ def simulate():
         coords = model.get_coordinates(state)
         trajectory.append(coords[0]) # p0
         
+        # Collect Drawbar Coordinates (Dolly Positions)
+        current_drawbars = []
+        for k in range(num_trailers):
+            idx_dolly = 3 + 3*k
+            current_drawbars.append(coords[idx_dolly])
+        drawbar_trajectories.append(current_drawbars)
+        
         state = model.update(state, v0, delta)
         
     trajectory = np.array(trajectory)
+    drawbar_trajectories = np.array(drawbar_trajectories) # Shape: (steps, num_trailers, 2)
     states = np.array(states)
     inputs = np.array(inputs)
     velocities = np.array(velocities)
@@ -99,12 +107,36 @@ def simulate():
     ax.set_xlabel("X [m]")
     ax.set_ylabel("Y [m]")
     
-    # Status Text
-    status_text = ax.text(0.05, 0.95, '', transform=ax.transAxes, fontsize=10,
-                          verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+    # Status Texts (Multiple objects for colors)
+    status_texts = []
     
-    # Trace
-    trace, = ax.plot([], [], 'b--', alpha=0.5)
+    # 1. Tractor Text
+    t_text = ax.text(0.05, 0.95, '', transform=ax.transAxes, fontsize=10, color='blue',
+                     verticalalignment='top', fontweight='bold', bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.6, edgecolor='none'))
+    status_texts.append(t_text)
+    
+    # Colors for trailers
+    cmap = plt.get_cmap('jet')
+    trailer_colors = [cmap(float(k) / num_trailers) for k in range(num_trailers)]
+    
+    # 2. Trailer Texts
+    for k in range(num_trailers):
+        # Offset y position
+        y_pos = 0.90 - (k * 0.05) # Adjust spacing as needed
+        tr_text = ax.text(0.05, y_pos, '', transform=ax.transAxes, fontsize=10, color=trailer_colors[k],
+                          verticalalignment='top', fontweight='bold', bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.6, edgecolor='none'))
+        status_texts.append(tr_text)
+    
+    # Trace (Tractor)
+    trace, = ax.plot([], [], 'b--', alpha=0.5, label='Tractor Path')
+    
+    # Drawbar Traces
+    drawbar_traces = []
+    if PLOT_DRAWBAR_TRAJECTORY:
+        for k in range(num_trailers):
+            color = trailer_colors[k]
+            d_trace, = ax.plot([], [], '--', color=color, alpha=0.4, linewidth=1)
+            drawbar_traces.append(d_trace)
 
     # Drawing Helpers
     def draw_box(ax, center, length, width, angle, color='gray', alpha=0.5):
@@ -140,13 +172,19 @@ def simulate():
         # Update Trace
         trace.set_data(trajectory[:i, 0], trajectory[:i, 1])
         
+        # Update Drawbar Traces
+        if PLOT_DRAWBAR_TRAJECTORY:
+            for k, d_trace in enumerate(drawbar_traces):
+                d_trace.set_data(drawbar_trajectories[:i, k, 0], drawbar_trajectories[:i, k, 1])
+        
         state = states[i]
         v_curr = inputs[i, 0]
         delta_curr = inputs[i, 1]
         vels = velocities[i]
         
-        # Build Status Text
-        status_str = f'Tractor V: {v_curr:.2f} m/s\nSteering: {np.degrees(delta_curr):.2f} deg\n'
+        # Update Status Texts
+        # Tractor
+        status_texts[0].set_text(f'Tractor V: {v_curr:.2f} m/s\nSteering: {np.degrees(delta_curr):.2f} deg')
         
         for k in range(num_trailers):
             # Indices for angles
@@ -161,9 +199,8 @@ def simulate():
             psi = theta_prev_val - theta_curr
             psi = (psi + np.pi) % (2 * np.pi) - np.pi
             
-            status_str += f'Trailer {k+1} V: {vels[k]:.2f} m/s\nDrawbar {k+1} Ang: {np.degrees(psi):.2f} deg\n'
-            
-        status_text.set_text(status_str)
+            status_texts[k+1].set_text(f'Trailer {k+1} V: {vels[k]:.2f} m/s\nDrawbar {k+1} Ang: {np.degrees(psi):.2f} deg')
+
         
         # --- Coordinates ---
         # coords = [p0, p0_f, h1, p1, p2, h2, p3, p4, ...]
@@ -239,7 +276,7 @@ def simulate():
                 l_tail, = ax.plot([p_tl_rear_face[0], p_stub[0]], [p_tl_rear_face[1], p_stub[1]], 'k-', lw=2)
                 patches_list.append(l_tail)
 
-        return patches_list + [trace, status_text]
+        return patches_list + [trace] + status_texts + drawbar_traces
 
     ani = animation.FuncAnimation(fig, update_plot, frames=len(states), interval=dt*1000, blit=True, repeat=False)
     
