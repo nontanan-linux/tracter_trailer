@@ -15,9 +15,11 @@ The system is fully configurable, allowing for an arbitrary number of trailers w
 ## 2. System Kinematics Vector
 
 The system kinematics is defined by **$3 + 4N$ variables** (where $N$ is the number of trailers):
+
 $$
 \mathbf{q}_{kin} = [\dot{x}_0, \dot{y}_0, \dot{\theta}_0, \underbrace{v_1, \dot{\theta}_1, v_2, \dot{\theta}_2}_{\text{Trailer 1}}, \dots, \underbrace{v_{2N-1}, \dot{\theta}_{2N-1}, v_{2N}, \dot{\theta}_{2N}}_{\text{Trailer N}}]^T 
-$$
+$$ 
+
 
 | Variable | Description | Unit |
 | :--- | :--- | :--- |
@@ -55,15 +57,20 @@ The equations of motion are derived assuming **no slip** conditions (non-holonom
 
 ### 4.1 Tractor Kinematics
 The tractor follows the standard kinematic bicycle model:
+
 $$ \dot{x}_0 = v_0 \cos\theta_0 $$
+
 $$ \dot{y}_0 = v_0 \sin\theta_0 $$
+
 $$ \dot{\theta}_0 = \frac{v_0}{L_0} \tan\delta $$
 
 ### 4.2 Trailer 1 Kinematics
 The motion of the first trailer is driven by the velocity of **Hitch 1** ($H_1$).
 
 **Hitch 1 Velocity**:
+
 $$ v_{hx} = v_0 \cos\theta_0 + d_h \dot{\theta}_0 \sin\theta_0 $$
+
 $$ v_{hy} = v_0 \sin\theta_0 - d_h \dot{\theta}_0 \cos\theta_0 $$
 
 > **Derivation Note**:
@@ -73,11 +80,14 @@ $$ v_{hy} = v_0 \sin\theta_0 - d_h \dot{\theta}_0 \cos\theta_0 $$
 
 **Drawbar 1 Rotation ($\dot{\theta}_1$)**:
 Driven by the hitch velocity component perpendicular to the drawbar:
+
 $$ \dot{\theta}_1 = \frac{1}{L_1} \left( v_0 \sin(\theta_0 - \theta_1) - d_h \dot{\theta}_0 \cos(\theta_0 - \theta_1) \right) $$
 
 **Trailer 1 Rotation ($\dot{\theta}_2$)**:
 Driven by the velocity of the Dolly 1 axle ($v_1$) pulling the trailer:
+
 $$ v_1 = v_0 \cos(\theta_0 - \theta_1) + d_h \dot{\theta}_0 \sin(\theta_0 - \theta_1) $$
+
 $$ \dot{\theta}_2 = \frac{v_1}{L_2} \sin(\theta_1 - \theta_2) $$
 
 **Linear Velocities**:
@@ -90,15 +100,19 @@ $$ \dot{\theta}_2 = \frac{v_1}{L_2} \sin(\theta_1 - \theta_2) $$
 The motion of the second trailer is driven by the velocity of **Hitch 2** ($H_2$), located at the rear of Trailer 1.
 
 **Hitch 2 Velocity**:
+
 $$ v_{h2,\perp} = v_2 \sin(\theta_2 - \theta_3) - d_{h2} \dot{\theta}_2 \cos(\theta_2 - \theta_3) $$
 where $v_2 = v_1 \cos(\theta_1 - \theta_2)$ is the velocity of Trailer 1's axle.
 
 **Drawbar 2 Rotation ($\dot{\theta}_3$)**:
+
 $$ \dot{\theta}_3 = \frac{1}{L_3} \left( v_2 \sin(\theta_2 - \theta_3) - d_{h2} \dot{\theta}_2 \cos(\theta_2 - \theta_3) \right) $$
 
 **Trailer 2 Rotation ($\dot{\theta}_4$)**:
 Driven by the velocity of the Dolly 2 axle ($v_3$):
+
 $$ v_3 = v_2 \cos(\theta_2 - \theta_3) + d_{h2} \dot{\theta}_2 \sin(\theta_2 - \theta_3) $$
+
 $$ \dot{\theta}_4 = \frac{v_3}{L_4} \sin(\theta_3 - \theta_4) $$
 
 **Linear Velocities**:
@@ -117,6 +131,7 @@ The relationship between consecutive units is given by linear transformations:
 
 ### 1. Tractor Input
 The tractor's velocity vector $\mathbf{v}_0$ is determined by the inputs $v_0$ and $\delta$:
+
 $$ \mathbf{v}_0 = \begin{bmatrix} v_0 \\ \dot{\theta}_0 \end{bmatrix} = \begin{bmatrix} 1 \\ \frac{1}{L_0}\tan\delta \end{bmatrix} v_0 $$
 
 ### 2. Transformation A: Tractor/Trailer $\to$ Drawbar
@@ -140,7 +155,9 @@ $$ \begin{bmatrix} v_i \\ \dot{\theta}_i \end{bmatrix} = \begin{bmatrix} \cos\De
 
 ### System Kinematics Vector
 The full system kinematics vector $\mathbf{q}_{kin}$ is constructed by stacking these sub-vectors:
+
 $$ \mathbf{q}_{kin} = [\dot{x}_0, \dot{y}_0, \mathbf{v}_0^T, \mathbf{v}_1^T, \mathbf{v}_2^T, \mathbf{v}_3^T, \mathbf{v}_4^T]^T $$
+
 where $\dot{x}_0 = v_0 \cos\theta_0$ and $\dot{y}_0 = v_0 \sin\theta_0$.
 
 ---
