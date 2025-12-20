@@ -128,6 +128,62 @@ $$ \dot{\theta}_4 = \frac{v_3}{L_4} \sin(\theta_3 - \theta_4) $$
 
     $$ v_4 = v_3 \cos(\theta_3 - \theta_4) $$
 
+### 4.4 Trailer 3 Kinematics
+The motion of the third trailer is driven by the velocity of **Hitch 3** ($H_3$), located at the rear of Trailer 2.
+
+**Hitch 3 Velocity**:
+
+$$ v_{h3,\perp} = v_4 \sin(\theta_4 - \theta_5) - d_{h3} \dot{\theta}_4 \cos(\theta_4 - \theta_5) $$
+where $v_4 = v_3 \cos(\theta_3 - \theta_4)$ is the velocity of Trailer 2's axle.
+
+**Drawbar 3 Rotation ($\dot{\theta}_5$)**:
+
+$$ \dot{\theta}_5 = \frac{1}{L_5} \left( v_4 \sin(\theta_4 - \theta_5) - d_{h3} \dot{\theta}_4 \cos(\theta_4 - \theta_5) \right) $$
+
+**Trailer 3 Rotation ($\dot{\theta}_6$)**:
+Driven by the velocity of the Dolly 3 axle ($v_5$):
+
+$$ v_5 = v_4 \cos(\theta_4 - \theta_5) + d_{h3} \dot{\theta}_4 \sin(\theta_4 - \theta_5) $$
+
+$$ \dot{\theta}_6 = \frac{v_5}{L_6} \sin(\theta_5 - \theta_6) $$
+
+**Linear Velocities**:
+*   **Dolly 3 Velocity ($v_5$)**:
+
+    $$ v_5 = v_4 \cos(\theta_4 - \theta_5) + d_{h3} \dot{\theta}_4 \sin(\theta_4 - \theta_5) $$
+
+*   **Trailer 3 Axle Velocity ($v_6$)**:
+
+    $$ v_6 = v_5 \cos(\theta_5 - \theta_6) $$
+
+### 4.5 Trailer 4 Kinematics
+The motion of the fourth trailer is driven by the velocity of **Hitch 4** ($H_4$), located at the rear of Trailer 3.
+
+**Hitch 4 Velocity**:
+
+$$ v_{h4,\perp} = v_6 \sin(\theta_6 - \theta_7) - d_{h4} \dot{\theta}_6 \cos(\theta_6 - \theta_7) $$
+where $v_6 = v_5 \cos(\theta_5 - \theta_6)$ is the velocity of Trailer 3's axle.
+
+**Drawbar 4 Rotation ($\dot{\theta}_7$)**:
+
+$$ \dot{\theta}_7 = \frac{1}{L_7} \left( v_6 \sin(\theta_6 - \theta_7) - d_{h4} \dot{\theta}_6 \cos(\theta_6 - \theta_7) \right) $$
+
+**Trailer 4 Rotation ($\dot{\theta}_8$)**:
+Driven by the velocity of the Dolly 4 axle ($v_7$):
+
+$$ v_7 = v_6 \cos(\theta_6 - \theta_7) + d_{h4} \dot{\theta}_6 \sin(\theta_6 - \theta_7) $$
+
+$$ \dot{\theta}_8 = \frac{v_7}{L_8} \sin(\theta_7 - \theta_8) $$
+
+**Linear Velocities**:
+*   **Dolly 4 Velocity ($v_7$)**:
+
+    $$ v_7 = v_6 \cos(\theta_6 - \theta_7) + d_{h4} \dot{\theta}_6 \sin(\theta_6 - \theta_7) $$
+
+*   **Trailer 4 Axle Velocity ($v_8$)**:
+
+    $$ v_8 = v_7 \cos(\theta_7 - \theta_8) $$
+
 ---
 
 ## 5. Matrix Form (Recursive Formulation)
