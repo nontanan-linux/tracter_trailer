@@ -93,11 +93,11 @@ $$ \dot{\theta}_2 = \frac{v_1}{L_2} \sin(\theta_1 - \theta_2) $$
 **Linear Velocities**:
 *   **Dolly 1 Velocity ($v_1$)**:
 
-    $$ v_1 = v_0 \cos(\theta_0 - \theta_1) + d_h \dot{\theta}_0 \sin(\theta_0 - \theta_1) $$
+$$ v_1 = v_0 \cos(\theta_0 - \theta_1) + d_h \dot{\theta}_0 \sin(\theta_0 - \theta_1) $$
 
 *   **Trailer 1 Axle Velocity ($v_2$)**:
 
-    $$ v_2 = v_1 \cos(\theta_1 - \theta_2) $$
+$$ v_2 = v_1 \cos(\theta_1 - \theta_2) $$
 
 ### 4.3 Trailer 2 Kinematics
 The motion of the second trailer is driven by the velocity of **Hitch 2** ($H_2$), located at the rear of Trailer 1.
@@ -122,11 +122,11 @@ $$ \dot{\theta}_4 = \frac{v_3}{L_4} \sin(\theta_3 - \theta_4) $$
 **Linear Velocities**:
 *   **Dolly 2 Velocity ($v_3$)**:
 
-    $$ v_3 = v_2 \cos(\theta_2 - \theta_3) + d_{h2} \dot{\theta}_2 \sin(\theta_2 - \theta_3 $$
+$$ v_3 = v_2 \cos(\theta_2 - \theta_3) + d_{h2} \dot{\theta}_2 \sin(\theta_2 - \theta_3 $$
 
 *   **Trailer 2 Axle Velocity ($v_4$)**:
 
-    $$ v_4 = v_3 \cos(\theta_3 - \theta_4) $$
+$$ v_4 = v_3 \cos(\theta_3 - \theta_4) $$
 
 ### 4.4 Trailer 3 Kinematics
 The motion of the third trailer is driven by the velocity of **Hitch 3** ($H_3$), located at the rear of Trailer 2.
@@ -134,6 +134,7 @@ The motion of the third trailer is driven by the velocity of **Hitch 3** ($H_3$)
 **Hitch 3 Velocity**:
 
 $$ v_{h3,\perp} = v_4 \sin(\theta_4 - \theta_5) - d_{h3} \dot{\theta}_4 \cos(\theta_4 - \theta_5) $$
+
 where $v_4 = v_3 \cos(\theta_3 - \theta_4)$ is the velocity of Trailer 2's axle.
 
 **Drawbar 3 Rotation ($\dot{\theta}_5$)**:
@@ -150,11 +151,11 @@ $$ \dot{\theta}_6 = \frac{v_5}{L_6} \sin(\theta_5 - \theta_6) $$
 **Linear Velocities**:
 *   **Dolly 3 Velocity ($v_5$)**:
 
-    $$ v_5 = v_4 \cos(\theta_4 - \theta_5) + d_{h3} \dot{\theta}_4 \sin(\theta_4 - \theta_5) $$
+$$ v_5 = v_4 \cos(\theta_4 - \theta_5) + d_{h3} \dot{\theta}_4 \sin(\theta_4 - \theta_5) $$
 
 *   **Trailer 3 Axle Velocity ($v_6$)**:
 
-    $$ v_6 = v_5 \cos(\theta_5 - \theta_6) $$
+$$ v_6 = v_5 \cos(\theta_5 - \theta_6) $$
 
 ### 4.5 Trailer 4 Kinematics
 The motion of the fourth trailer is driven by the velocity of **Hitch 4** ($H_4$), located at the rear of Trailer 3.
@@ -162,6 +163,7 @@ The motion of the fourth trailer is driven by the velocity of **Hitch 4** ($H_4$
 **Hitch 4 Velocity**:
 
 $$ v_{h4,\perp} = v_6 \sin(\theta_6 - \theta_7) - d_{h4} \dot{\theta}_6 \cos(\theta_6 - \theta_7) $$
+
 where $v_6 = v_5 \cos(\theta_5 - \theta_6)$ is the velocity of Trailer 3's axle.
 
 **Drawbar 4 Rotation ($\dot{\theta}_7$)**:
@@ -178,11 +180,11 @@ $$ \dot{\theta}_8 = \frac{v_7}{L_8} \sin(\theta_7 - \theta_8) $$
 **Linear Velocities**:
 *   **Dolly 4 Velocity ($v_7$)**:
 
-    $$ v_7 = v_6 \cos(\theta_6 - \theta_7) + d_{h4} \dot{\theta}_6 \sin(\theta_6 - \theta_7) $$
+$$ v_7 = v_6 \cos(\theta_6 - \theta_7) + d_{h4} \dot{\theta}_6 \sin(\theta_6 - \theta_7) $$
 
 *   **Trailer 4 Axle Velocity ($v_8$)**:
 
-    $$ v_8 = v_7 \cos(\theta_7 - \theta_8) $$
+$$ v_8 = v_7 \cos(\theta_7 - \theta_8) $$
 
 ---
 
@@ -232,22 +234,22 @@ The global coordinates $(x, y)$ of key points are calculated recursively from th
 ### Base Case: Tractor
 1.  **Tractor Front Axle ($P_{0,f}$)**:
 
-    $$ P_{0,f} = P_0 + L_0 \begin{bmatrix} \cos\theta_0 \\ \sin\theta_0 \end{bmatrix} $$
+$$ P_{0,f} = P_0 + L_0 \begin{bmatrix} \cos\theta_0 \\ \sin\theta_0 \end{bmatrix} $$
 
 2.  **Hitch 1 ($H_1$)**:
 
-    $$ H_1 = P_0 - d_h \begin{bmatrix} \cos\theta_0 \\ \sin\theta_0 \end{bmatrix} $$
+$$ H_1 = P_0 - d_h \begin{bmatrix} \cos\theta_0 \\ \sin\theta_0 \end{bmatrix} $$
 
 ### Specific Examples
 
 #### Trailer 1
 1.  **Dolly 1 ($P_1$)**:
 
-    $$ P_1 = H_1 - L_1 \begin{bmatrix} \cos\theta_1 \\ \sin\theta_1 \end{bmatrix} $$
+$$ P_1 = H_1 - L_1 \begin{bmatrix} \cos\theta_1 \\ \sin\theta_1 \end{bmatrix} $$
 
 2.  **Axle 1 ($P_2$)**:
 
-    $$ P_2 = P_1 - L_2 \begin{bmatrix} \cos\theta_2 \\ \sin\theta_2 \end{bmatrix} $$
+$$ P_2 = P_1 - L_2 \begin{bmatrix} \cos\theta_2 \\ \sin\theta_2 \end{bmatrix} $$
 
 #### Hitch 2 ($H_2$)
 
