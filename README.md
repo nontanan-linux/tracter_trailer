@@ -17,7 +17,7 @@ The system is fully configurable, allowing for an arbitrary number of trailers w
 The system kinematics is defined by **$3 + 4N$ variables** (where $N$ is the number of trailers):
 
 $$
-\mathbf{q}_{kin} = [\dot{x}_0, \dot{y}_0, \dot{\theta}_0, \underbrace{v_1, \dot{\theta}_1, v_2, \dot{\theta}_2}_{\text{Trailer 1}}, \dots, \underbrace{v_{2N-1}, \dot{\theta}_{2N-1}, v_{2N}, \dot{\theta}_{2N}}_{\text{Trailer N}}]^T \tag{1} 
+\mathbf{q}_{kin} = [\dot{x}_0, \dot{y}_0, \dot{\theta}_0, \underbrace{v_1, \dot{\theta}_1, v_2, \dot{\theta}_2}_{\text{Trailer 1}}, \dots, \underbrace{v_{2N-1}, \dot{\theta}_{2N-1}, v_{2N}, \dot{\theta}_{2N}}_{\text{Trailer N}}]^T 
 $$ 
 
 
@@ -58,20 +58,20 @@ The equations of motion are derived assuming **no slip** conditions (non-holonom
 ### 4.1 Tractor Kinematics
 The tractor follows the standard kinematic bicycle model:
 
-$$ \dot{x}_0 = v_0 \cos\theta_0 \tag{2} $$
+$$ \dot{x}_0 = v_0 \cos\theta_0 $$
 
-$$ \dot{y}_0 = v_0 \sin\theta_0 \tag{3} $$
+$$ \dot{y}_0 = v_0 \sin\theta_0 $$
 
-$$ \dot{\theta}_0 = \frac{v_0}{L_0} \tan\delta \tag{4} $$
+$$ \dot{\theta}_0 = \frac{v_0}{L_0} \tan\delta $$
 
 ### 4.2 Trailer 1 Kinematics
 The motion of the first trailer is driven by the velocity of **Hitch 1** ($H_1$).
 
 **Hitch 1 Velocity**:
 
-$$ v_{hx} = v_0 \cos\theta_0 + d_h \dot{\theta}_0 \sin\theta_0 \tag{5} $$
+$$ v_{hx} = v_0 \cos\theta_0 + d_h \dot{\theta}_0 \sin\theta_0 $$
 
-$$ v_{hy} = v_0 \sin\theta_0 - d_h \dot{\theta}_0 \cos\theta_0 \tag{6} $$
+$$ v_{hy} = v_0 \sin\theta_0 - d_h \dot{\theta}_0 \cos\theta_0 $$
 
 > **Derivation Note**:
 > The signs differ because of the derivatives of the trigonometric functions.
@@ -81,110 +81,110 @@ $$ v_{hy} = v_0 \sin\theta_0 - d_h \dot{\theta}_0 \cos\theta_0 \tag{6} $$
 **Drawbar 1 Rotation ($\dot{\theta}_1$)**:
 Driven by the hitch velocity component perpendicular to the drawbar:
 
-$$ \dot{\theta}_1 = \frac{1}{L_1} \left( v_0 \sin(\theta_0 - \theta_1) - d_h \dot{\theta}_0 \cos(\theta_0 - \theta_1) \right) \tag{7} $$
+$$ \dot{\theta}_1 = \frac{1}{L_1} \left( v_0 \sin(\theta_0 - \theta_1) - d_h \dot{\theta}_0 \cos(\theta_0 - \theta_1) \right) $$
 
 **Trailer 1 Rotation ($\dot{\theta}_2$)**:
 Driven by the velocity of the Dolly 1 axle ($v_1$) pulling the trailer:
 
-$$ v_1 = v_0 \cos(\theta_0 - \theta_1) + d_h \dot{\theta}_0 \sin(\theta_0 - \theta_1) \tag{8} $$
+$$ v_1 = v_0 \cos(\theta_0 - \theta_1) + d_h \dot{\theta}_0 \sin(\theta_0 - \theta_1) $$
 
-$$ \dot{\theta}_2 = \frac{v_1}{L_2} \sin(\theta_1 - \theta_2) \tag{9} $$
+$$ \dot{\theta}_2 = \frac{v_1}{L_2} \sin(\theta_1 - \theta_2) $$
 
 **Linear Velocities**:
 *   **Dolly 1 Velocity ($v_1$)**:
 
-$$ v_1 = v_0 \cos(\theta_0 - \theta_1) + d_h \dot{\theta}_0 \sin(\theta_0 - \theta_1) \tag{10} $$
+$$ v_1 = v_0 \cos(\theta_0 - \theta_1) + d_h \dot{\theta}_0 \sin(\theta_0 - \theta_1) $$
 
 *   **Trailer 1 Axle Velocity ($v_2$)**:
 
-$$ v_2 = v_1 \cos(\theta_1 - \theta_2) \tag{11} $$
+$$ v_2 = v_1 \cos(\theta_1 - \theta_2) $$
 
 ### 4.3 Trailer 2 Kinematics
 The motion of the second trailer is driven by the velocity of **Hitch 2** ($H_2$), located at the rear of Trailer 1.
 
 **Hitch 2 Velocity**:
 
-$$ v_{h2,\perp} = v_2 \sin(\theta_2 - \theta_3) - d_{h2} \dot{\theta}_2 \cos(\theta_2 - \theta_3) \tag{12} $$
+$$ v_{h2,\perp} = v_2 \sin(\theta_2 - \theta_3) - d_{h2} \dot{\theta}_2 \cos(\theta_2 - \theta_3) $$
 
 where $v_2 = v_1 \cos(\theta_1 - \theta_2)$ is the velocity of Trailer 1's axle.
 
 **Drawbar 2 Rotation ($\dot{\theta}_3$)**:
 
-$$ \dot{\theta}_3 = \frac{1}{L_3} \left( v_2 \sin(\theta_2 - \theta_3) - d_{h2} \dot{\theta}_2 \cos(\theta_2 - \theta_3) \right) \tag{13} $$
+$$ \dot{\theta}_3 = \frac{1}{L_3} \left( v_2 \sin(\theta_2 - \theta_3) - d_{h2} \dot{\theta}_2 \cos(\theta_2 - \theta_3) \right) $$
 
 **Trailer 2 Rotation ($\dot{\theta}_4$)**:
 Driven by the velocity of the Dolly 2 axle ($v_3$):
 
-$$ v_3 = v_2 \cos(\theta_2 - \theta_3) + d_{h2} \dot{\theta}_2 \sin(\theta_2 - \theta_3) \tag{14} $$
+$$ v_3 = v_2 \cos(\theta_2 - \theta_3) + d_{h2} \dot{\theta}_2 \sin(\theta_2 - \theta_3) $$
 
-$$ \dot{\theta}_4 = \frac{v_3}{L_4} \sin(\theta_3 - \theta_4) \tag{15} $$
+$$ \dot{\theta}_4 = \frac{v_3}{L_4} \sin(\theta_3 - \theta_4) $$
 
 **Linear Velocities**:
 *   **Dolly 2 Velocity ($v_3$)**:
 
-$$ v_3 = v_2 \cos(\theta_2 - \theta_3) + d_{h2} \dot{\theta}_2 \sin(\theta_2 - \theta_3 \tag{16} $$
+$$ v_3 = v_2 \cos(\theta_2 - \theta_3) + d_{h2} \dot{\theta}_2 \sin(\theta_2 - \theta_3 $$
 
 *   **Trailer 2 Axle Velocity ($v_4$)**:
 
-$$ v_4 = v_3 \cos(\theta_3 - \theta_4) \tag{17} $$
+$$ v_4 = v_3 \cos(\theta_3 - \theta_4) $$
 
 ### 4.4 Trailer 3 Kinematics
 The motion of the third trailer is driven by the velocity of **Hitch 3** ($H_3$), located at the rear of Trailer 2.
 
 **Hitch 3 Velocity**:
 
-$$ v_{h3,\perp} = v_4 \sin(\theta_4 - \theta_5) - d_{h3} \dot{\theta}_4 \cos(\theta_4 - \theta_5) \tag{18} $$
+$$ v_{h3,\perp} = v_4 \sin(\theta_4 - \theta_5) - d_{h3} \dot{\theta}_4 \cos(\theta_4 - \theta_5) $$
 
 where $v_4 = v_3 \cos(\theta_3 - \theta_4)$ is the velocity of Trailer 2's axle.
 
 **Drawbar 3 Rotation ($\dot{\theta}_5$)**:
 
-$$ \dot{\theta}_5 = \frac{1}{L_5} \left( v_4 \sin(\theta_4 - \theta_5) - d_{h3} \dot{\theta}_4 \cos(\theta_4 - \theta_5) \right) \tag{19} $$
+$$ \dot{\theta}_5 = \frac{1}{L_5} \left( v_4 \sin(\theta_4 - \theta_5) - d_{h3} \dot{\theta}_4 \cos(\theta_4 - \theta_5) \right) $$
 
 **Trailer 3 Rotation ($\dot{\theta}_6$)**:
 Driven by the velocity of the Dolly 3 axle ($v_5$):
 
-$$ v_5 = v_4 \cos(\theta_4 - \theta_5) + d_{h3} \dot{\theta}_4 \sin(\theta_4 - \theta_5) \tag{20} $$
+$$ v_5 = v_4 \cos(\theta_4 - \theta_5) + d_{h3} \dot{\theta}_4 \sin(\theta_4 - \theta_5) $$
 
-$$ \dot{\theta}_6 = \frac{v_5}{L_6} \sin(\theta_5 - \theta_6) \tag{21} $$
+$$ \dot{\theta}_6 = \frac{v_5}{L_6} \sin(\theta_5 - \theta_6) $$
 
 **Linear Velocities**:
 *   **Dolly 3 Velocity ($v_5$)**:
 
-$$ v_5 = v_4 \cos(\theta_4 - \theta_5) + d_{h3} \dot{\theta}_4 \sin(\theta_4 - \theta_5) \tag{22} $$
+$$ v_5 = v_4 \cos(\theta_4 - \theta_5) + d_{h3} \dot{\theta}_4 \sin(\theta_4 - \theta_5) $$
 
 *   **Trailer 3 Axle Velocity ($v_6$)**:
 
-$$ v_6 = v_5 \cos(\theta_5 - \theta_6) \tag{23} $$
+$$ v_6 = v_5 \cos(\theta_5 - \theta_6) $$
 
 ### 4.5 Trailer 4 Kinematics
 The motion of the fourth trailer is driven by the velocity of **Hitch 4** ($H_4$), located at the rear of Trailer 3.
 
 **Hitch 4 Velocity**:
 
-$$ v_{h4,\perp} = v_6 \sin(\theta_6 - \theta_7) - d_{h4} \dot{\theta}_6 \cos(\theta_6 - \theta_7) \tag{24} $$
+$$ v_{h4,\perp} = v_6 \sin(\theta_6 - \theta_7) - d_{h4} \dot{\theta}_6 \cos(\theta_6 - \theta_7) $$
 
 where $v_6 = v_5 \cos(\theta_5 - \theta_6)$ is the velocity of Trailer 3's axle.
 
 **Drawbar 4 Rotation ($\dot{\theta}_7$)**:
 
-$$ \dot{\theta}_7 = \frac{1}{L_7} \left( v_6 \sin(\theta_6 - \theta_7) - d_{h4} \dot{\theta}_6 \cos(\theta_6 - \theta_7) \right) \tag{25} $$
+$$ \dot{\theta}_7 = \frac{1}{L_7} \left( v_6 \sin(\theta_6 - \theta_7) - d_{h4} \dot{\theta}_6 \cos(\theta_6 - \theta_7) \right) $$
 
 **Trailer 4 Rotation ($\dot{\theta}_8$)**:
 Driven by the velocity of the Dolly 4 axle ($v_7$):
 
-$$ v_7 = v_6 \cos(\theta_6 - \theta_7) + d_{h4} \dot{\theta}_6 \sin(\theta_6 - \theta_7) \tag{26} $$
+$$ v_7 = v_6 \cos(\theta_6 - \theta_7) + d_{h4} \dot{\theta}_6 \sin(\theta_6 - \theta_7) $$
 
-$$ \dot{\theta}_8 = \frac{v_7}{L_8} \sin(\theta_7 - \theta_8) \tag{27} $$
+$$ \dot{\theta}_8 = \frac{v_7}{L_8} \sin(\theta_7 - \theta_8) $$
 
 **Linear Velocities**:
 *   **Dolly 4 Velocity ($v_7$)**:
 
-$$ v_7 = v_6 \cos(\theta_6 - \theta_7) + d_{h4} \dot{\theta}_6 \sin(\theta_6 - \theta_7) \tag{28} $$
+$$ v_7 = v_6 \cos(\theta_6 - \theta_7) + d_{h4} \dot{\theta}_6 \sin(\theta_6 - \theta_7) $$
 
 *   **Trailer 4 Axle Velocity ($v_8$)**:
 
-$$ v_8 = v_7 \cos(\theta_7 - \theta_8) \tag{29} $$
+$$ v_8 = v_7 \cos(\theta_7 - \theta_8) $$
 
 ---
 
@@ -197,15 +197,15 @@ The relationship between consecutive units is given by linear transformations:
 ### 1. Tractor Input
 The tractor's velocity vector $\mathbf{v}_0$ is determined by the inputs $v_0$ and $\delta$:
 
-$$ \mathbf{v}_0 = \begin{bmatrix} v_0 \\ \dot{\theta}_0 \end{bmatrix} = \begin{bmatrix} 1 \\ \frac{1}{L_0}\tan\delta \end{bmatrix} v_0 \tag{30} $$
+$$ \mathbf{v}_0 = \begin{bmatrix} v_0 \\ \dot{\theta}_0 \end{bmatrix} = \begin{bmatrix} 1 \\ \frac{1}{L_0}\tan\delta \end{bmatrix} v_0 $$
 
 ### 2. Transformation A: Tractor/Trailer $\to$ Drawbar
 Calculates the velocity of a Drawbar ($i=2k-1$) from the preceding Tractor or Trailer ($i-1$).
 Let $\Delta\theta = \theta_{i-1} - \theta_i$.
 
-$$ \mathbf{v}_i = M_{A}(\Delta\theta) \mathbf{v}_{i-1} \tag{31} $$
+$$ \mathbf{v}_i = M_{A}(\Delta\theta) \mathbf{v}_{i-1} $$
 
-$$ \begin{bmatrix} v_i \\ \dot{\theta}_i \end{bmatrix} = \begin{bmatrix} \cos\Delta\theta & d_h \sin\Delta\theta \\ \frac{1}{L_{bar}}\sin\Delta\theta & -\frac{d_h}{L_{bar}}\cos\Delta\theta \end{bmatrix} \begin{bmatrix} v_{i-1} \\ \dot{\theta}_{i-1} \end{bmatrix} \tag{32} $$
+$$ \begin{bmatrix} v_i \\ \dot{\theta}_i \end{bmatrix} = \begin{bmatrix} \cos\Delta\theta & d_h \sin\Delta\theta \\ \frac{1}{L_{bar}}\sin\Delta\theta & -\frac{d_h}{L_{bar}}\cos\Delta\theta \end{bmatrix} \begin{bmatrix} v_{i-1} \\ \dot{\theta}_{i-1} \end{bmatrix} $$
 *   $L_{bar}$: Length of the drawbar ($L_1, L_3, \dots$)
 *   $d_h$: Hitch offset of the preceding unit ($d_h, d_{h2}, \dots$)
 
@@ -213,15 +213,15 @@ $$ \begin{bmatrix} v_i \\ \dot{\theta}_i \end{bmatrix} = \begin{bmatrix} \cos\De
 Calculates the velocity of a Trailer ($i=2k$) from the preceding Drawbar ($i-1$).
 Let $\Delta\theta = \theta_{i-1} - \theta_i$.
 
-$$ \mathbf{v}_i = M_{B}(\Delta\theta) \mathbf{v}_{i-1} \tag{33} $$
+$$ \mathbf{v}_i = M_{B}(\Delta\theta) \mathbf{v}_{i-1} $$
 
-$$ \begin{bmatrix} v_i \\ \dot{\theta}_i \end{bmatrix} = \begin{bmatrix} \cos\Delta\theta & 0 \\ \frac{1}{L_{trl}}\sin\Delta\theta & 0 \end{bmatrix} \begin{bmatrix} v_{i-1} \\ \dot{\theta}_{i-1} \end{bmatrix} \tag{34} $$
+$$ \begin{bmatrix} v_i \\ \dot{\theta}_i \end{bmatrix} = \begin{bmatrix} \cos\Delta\theta & 0 \\ \frac{1}{L_{trl}}\sin\Delta\theta & 0 \end{bmatrix} \begin{bmatrix} v_{i-1} \\ \dot{\theta}_{i-1} \end{bmatrix} $$
 *   $L_{trl}$: Length of the trailer ($L_2, L_4, \dots$)
 
 ### System Kinematics Vector
 The full system kinematics vector $\mathbf{q}_{kin}$ is constructed by stacking these sub-vectors:
 
-$$ \mathbf{q}_{kin} = [\dot{x}_0, \dot{y}_0, \mathbf{v}_0^T, \mathbf{v}_1^T, \mathbf{v}_2^T, \mathbf{v}_3^T, \mathbf{v}_4^T]^T \tag{35} $$
+$$ \mathbf{q}_{kin} = [\dot{x}_0, \dot{y}_0, \mathbf{v}_0^T, \mathbf{v}_1^T, \mathbf{v}_2^T, \mathbf{v}_3^T, \mathbf{v}_4^T]^T $$
 
 where $\dot{x}_0 = v_0 \cos\theta_0$ and $\dot{y}_0 = v_0 \sin\theta_0$.
 
@@ -234,61 +234,61 @@ The global coordinates $(x, y)$ of key points are calculated recursively from th
 ### Base Case: Tractor
 1.  **Tractor Front Axle ($P_{0,f}$)**:
 
-$$ P_{0,f} = P_0 + L_0 \begin{bmatrix} \cos\theta_0 \\ \sin\theta_0 \end{bmatrix} \tag{36} $$
+$$ P_{0,f} = P_0 + L_0 \begin{bmatrix} \cos\theta_0 \\ \sin\theta_0 \end{bmatrix} $$
 
 2.  **Hitch 1 ($H_1$)**:
 
-$$ H_1 = P_0 - d_h \begin{bmatrix} \cos\theta_0 \\ \sin\theta_0 \end{bmatrix} \tag{37} $$
+$$ H_1 = P_0 - d_h \begin{bmatrix} \cos\theta_0 \\ \sin\theta_0 \end{bmatrix} $$
 
 ### Specific Examples
 
 #### Trailer 1
 1.  **Dolly 1 ($P_1$)**:
 
-$$ P_1 = H_1 - L_1 \begin{bmatrix} \cos\theta_1 \\ \sin\theta_1 \end{bmatrix} \tag{38} $$
+$$ P_1 = H_1 - L_1 \begin{bmatrix} \cos\theta_1 \\ \sin\theta_1 \end{bmatrix} $$
 
 2.  **Axle 1 ($P_2$)**:
 
-$$ P_2 = P_1 - L_2 \begin{bmatrix} \cos\theta_2 \\ \sin\theta_2 \end{bmatrix} \tag{39} $$
+$$ P_2 = P_1 - L_2 \begin{bmatrix} \cos\theta_2 \\ \sin\theta_2 \end{bmatrix} $$
 
 #### Hitch 2 ($H_2$)
 
-$$ H_2 = P_2 - d_{h2} \begin{bmatrix} \cos\theta_2 \\ \sin\theta_2 \end{bmatrix} \tag{40} $$
+$$ H_2 = P_2 - d_{h2} \begin{bmatrix} \cos\theta_2 \\ \sin\theta_2 \end{bmatrix} $$
 
 #### Trailer 2
 1.  **Dolly 2 ($P_3$)**:
 
-$$ P_3 = H_2 - L_3 \begin{bmatrix} \cos\theta_3 \\ \sin\theta_3 \end{bmatrix} \tag{41} $$
+$$ P_3 = H_2 - L_3 \begin{bmatrix} \cos\theta_3 \\ \sin\theta_3 \end{bmatrix} $$
 
 2.  **Axle 2 ($P_4$)**:
 
-$$ P_4 = P_3 - L_4 \begin{bmatrix} \cos\theta_4 \\ \sin\theta_4 \end{bmatrix} \tag{42} $$
+$$ P_4 = P_3 - L_4 \begin{bmatrix} \cos\theta_4 \\ \sin\theta_4 \end{bmatrix} $$
 
 #### Hitch 3 ($H_3$)
 
-$$ H_3 = P_4 - d_{h3} \begin{bmatrix} \cos\theta_4 \\ \sin\theta_4 \end{bmatrix} \tag{43} $$
+$$ H_3 = P_4 - d_{h3} \begin{bmatrix} \cos\theta_4 \\ \sin\theta_4 \end{bmatrix} $$
 
 #### Trailer 3
 1.  **Dolly 3 ($P_5$)**:
 
-$$ P_5 = H_3 - L_5 \begin{bmatrix} \cos\theta_5 \\ \sin\theta_5 \end{bmatrix} \tag{44} $$
+$$ P_5 = H_3 - L_5 \begin{bmatrix} \cos\theta_5 \\ \sin\theta_5 \end{bmatrix} $$
 
 2.  **Axle 3 ($P_6$)**:
 
-$$ P_6 = P_5 - L_6 \begin{bmatrix} \cos\theta_6 \\ \sin\theta_6 \end{bmatrix} \tag{45} $$
+$$ P_6 = P_5 - L_6 \begin{bmatrix} \cos\theta_6 \\ \sin\theta_6 \end{bmatrix} $$
 
 #### Hitch 4 ($H_4$)
 
-$$ H_4 = P_6 - d_{h4} \begin{bmatrix} \cos\theta_6 \\ \sin\theta_6 \end{bmatrix} \tag{46} $$
+$$ H_4 = P_6 - d_{h4} \begin{bmatrix} \cos\theta_6 \\ \sin\theta_6 \end{bmatrix} $$
 
 #### Trailer 4
 1.  **Dolly 4 ($P_7$)**:
 
-$$ P_7 = H_4 - L_7 \begin{bmatrix} \cos\theta_7 \\ \sin\theta_7 \end{bmatrix} \tag{47} $$
+$$ P_7 = H_4 - L_7 \begin{bmatrix} \cos\theta_7 \\ \sin\theta_7 \end{bmatrix} $$
 
 2.  **Axle 4 ($P_8$)**:
 
-$$ P_8 = P_7 - L_8 \begin{bmatrix} \cos\theta_8 \\ \sin\theta_8 \end{bmatrix} \tag{48} $$
+$$ P_8 = P_7 - L_8 \begin{bmatrix} \cos\theta_8 \\ \sin\theta_8 \end{bmatrix} $$
 
 ### Generalized Recursive Step: $k$-th Trailer Unit
 For any trailer unit $k$ (where $k=1, 2, \dots, N$), consisting of Drawbar $k$ and Trailer $k$:
@@ -296,17 +296,17 @@ For any trailer unit $k$ (where $k=1, 2, \dots, N$), consisting of Drawbar $k$ a
 1.  **Dolly $k$ ($P_{2k-1}$)**:
     Calculated from the preceding hitch $H_k$.
 
-$$ P_{2k-1} = H_k - L_{bar,k} \begin{bmatrix} \cos\theta_{2k-1} \\ \sin\theta_{2k-1} \end{bmatrix} \tag{49} $$
+$$ P_{2k-1} = H_k - L_{bar,k} \begin{bmatrix} \cos\theta_{2k-1} \\ \sin\theta_{2k-1} \end{bmatrix} $$
 
 2.  **Axle $k$ ($P_{2k}$)**:
     Calculated from Dolly $k$.
 
-$$ P_{2k} = P_{2k-1} - L_{trl,k} \begin{bmatrix} \cos\theta_{2k} \\ \sin\theta_{2k} \end{bmatrix} \tag{50} $$
+$$ P_{2k} = P_{2k-1} - L_{trl,k} \begin{bmatrix} \cos\theta_{2k} \\ \sin\theta_{2k} \end{bmatrix} $$
 
 3.  **Next Hitch ($H_{k+1}$)**:
     Calculated from Axle $k$ (if another trailer follows).
 
-$$ H_{k+1} = P_{2k} - d_{h,k} \begin{bmatrix} \cos\theta_{2k} \\ \sin\theta_{2k} \end{bmatrix} \tag{51} $$
+$$ H_{k+1} = P_{2k} - d_{h,k} \begin{bmatrix} \cos\theta_{2k} \\ \sin\theta_{2k} \end{bmatrix} $$
 
 *   $L_{bar,k}$: Length of Drawbar $k$ ($L_1, L_3, \dots$)
 *   $L_{trl,k}$: Length of Trailer $k$ ($L_2, L_4, \dots$)
