@@ -270,55 +270,55 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, L5=1.0, L6=1.2, L7=1.
     draw_dashed_ref(ax, (x7, y7), length=1.5, angle=theta7, color='green')
     
     # Points
-    ax.text(x0+0.05, y0+0.05, '$(x_0, y_0)$', color='blue')
-    ax.text(x1+0.05, y1+0.05, '$(x_1, y_1)$', color='blue')
-    ax.text(x2+0.05, y2+0.05, '$(x_2, y_2)$', color='red')
-    ax.text(x3+0.05, y3+0.05, '$(x_3, y_3)$', color='blue')
+    ax.text(x0-0.5, y0-0.05, '$(x_0, y_0)$', color='blue')
+    ax.text(x1+0.05, y1-0.1, '$(x_1, y_1)$', color='blue')
+    ax.text(x2-0.5, y2+0.05, '$(x_2, y_2)$', color='red')
+    ax.text(x3-0.5, y3-0.15, '$(x_3, y_3)$', color='blue')
     ax.text(x4+0.05, y4+0.05, '$(x_4, y_4)$', color='red')
-    ax.text(x5+0.05, y5+0.05, '$(x_5, y_5)$', color='blue')
+    ax.text(x5+0.1, y5-0.05, '$(x_5, y_5)$', color='blue')
     ax.text(x6+0.05, y6+0.05, '$(x_6, y_6)$', color='red')
-    ax.text(x7+0.05, y7+0.05, '$(x_7, y_7)$', color='blue')
-    ax.text(x8+0.05, y8+0.05, '$(x_8, y_8)$', color='red')
+    ax.text(x7-0.5, y7+0.05, '$(x_7, y_7)$', color='blue')
+    ax.text(x8-0.52, y8+0.05, '$(x_8, y_8)$', color='red')
 
     # Dimensions
-    ax.annotate(f'$L_0={L0}$', xy=((x0+x0_f)/2, (y0+y0_f)/2), xytext=(-10, 10), textcoords='offset points')
-    ax.annotate(f'$L_1={L1}$', xy=((xh1+x1)/2, (yh1+y1)/2), xytext=(-10, 10), textcoords='offset points')
-    ax.annotate(f'$L_2={L2}$', xy=((x1+x2)/2, (y1+y2)/2), xytext=(-10, 10), textcoords='offset points')
-    ax.annotate(f'$L_3={L3}$', xy=((xh2+x3)/2, (yh2+y3)/2), xytext=(-10, 10), textcoords='offset points')
-    ax.annotate(f'$L_4={L4}$', xy=((x3+x4)/2, (y3+y4)/2), xytext=(-10, 10), textcoords='offset points')
-    ax.annotate(f'$L_5={L5}$', xy=((xh3+x5)/2, (yh3+y5)/2), xytext=(-10, 10), textcoords='offset points')
-    ax.annotate(f'$L_6={L6}$', xy=((x5+x6)/2, (y5+y6)/2), xytext=(-10, 10), textcoords='offset points')
-    ax.annotate(f'$L_7={L7}$', xy=((xh4+x7)/2, (yh4+y7)/2), xytext=(-10, 10), textcoords='offset points')
-    ax.annotate(f'$L_8={L8}$', xy=((x7+x8)/2, (y7+y8)/2), xytext=(-10, 10), textcoords='offset points')
+    ax.annotate(r'$L_0$', xy=((x0+x0_f)/2, (y0+y0_f)/2), xytext=(-10, 10), textcoords='offset points')
+    ax.annotate(r'$L_1$', xy=((xh1+x1)/2, (yh1+y1)/2), xytext=(-10, 10), textcoords='offset points')
+    ax.annotate(r'$L_2$', xy=((x1+x2)/2, (y1+y2)/2), xytext=(-10, 10), textcoords='offset points')
+    ax.annotate(r'$L_3$', xy=((xh2+x3)/2, (yh2+y3)/2), xytext=(-10, 10), textcoords='offset points')
+    ax.annotate(r'$L_4$', xy=((x3+x4)/2, (y3+y4-0.5)/2), xytext=(-10, 10), textcoords='offset points')
+    ax.annotate(r'$L_5$', xy=((xh3+x5+0.05)/2, (yh3+y5-0.5)/2), xytext=(-10, 10), textcoords='offset points')
+    ax.annotate(r'$L_6$', xy=((x5+x6)/2, (y5+y6-0.5)/2), xytext=(-10, 10), textcoords='offset points')
+    ax.annotate(r'$L_7$', xy=((xh4+x7)/2, (yh4+y7-0.5)/2), xytext=(-10, 10), textcoords='offset points')
+    ax.annotate(r'$L_8$', xy=((x7+x8)/2, (y7+y8)/2), xytext=(-10, 10), textcoords='offset points')
     
     # Angles
     # Theta0
     patches.Arc((x0, y0), 3, 3, angle=0, theta1=0, theta2=np.degrees(theta0), color='blue')
-    ax.text(x0+0.5, y0+0.1, r'$\theta_0$', color='blue')
+    ax.text(x0+0.3, y0+0.1, r'$\theta_0$', color='blue')
     
     # Theta1
     patches.Arc((x1, y1), 3, 3, angle=0, theta1=np.degrees(theta2), theta2=np.degrees(theta1), color='green')
-    ax.text(x1+0.5, y1, r'$\theta_1$', color='green')
+    ax.text(x1+0.5, y1+0.11, r'$\theta_1$', color='green')
     
     # Theta2
     patches.Arc((x2, y2), 3, 3, angle=0, theta1=0, theta2=np.degrees(theta2), color='red')
-    ax.text(x2+0.5, y2+0.1, r'$\theta_2$', color='red')
+    ax.text(x2+0.8, y2+0.01, r'$\theta_2$', color='red')
     
     # Theta3
     patches.Arc((x3, y3), 3, 3, angle=0, theta1=np.degrees(theta4), theta2=np.degrees(theta3), color='green')
-    ax.text(x3+0.5, y3, r'$\theta_3$', color='green')
+    ax.text(x3+0.7, y3-0.3, r'$\theta_3$', color='green')
     
     # Theta4
     patches.Arc((x4, y4), 3, 3, angle=0, theta1=0, theta2=np.degrees(theta4), color='red')
-    ax.text(x4+0.5, y4+0.1, r'$\theta_4$', color='red')
+    ax.text(x4+0.5, y4-0.2, r'$\theta_4$', color='red')
     
     # Theta5
     patches.Arc((x5, y5), 3, 3, angle=0, theta1=np.degrees(theta6), theta2=np.degrees(theta5), color='green')
-    ax.text(x5+0.5, y5, r'$\theta_5$', color='green')
+    ax.text(x5+0.5, y5-0.45, r'$\theta_5$', color='green')
     
     # Theta6
     patches.Arc((x6, y6), 3, 3, angle=0, theta1=0, theta2=np.degrees(theta6), color='red')
-    ax.text(x6+0.5, y6+0.1, r'$\theta_6$', color='red')
+    ax.text(x6+0.5, y6-0.2, r'$\theta_6$', color='red')
     
     # Theta7
     patches.Arc((x7, y7), 3, 3, angle=0, theta1=np.degrees(theta8), theta2=np.degrees(theta7), color='green')
@@ -330,7 +330,7 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, L5=1.0, L6=1.2, L7=1.
     
     # Delta
     patches.Arc((x0_f, y0_f), 3, 3, angle=0, theta1=np.degrees(theta0), theta2=np.degrees(theta0+delta), color='orange')
-    ax.text(x0_f+0.5, y0_f+0.5, r'$\delta$', color='orange')
+    ax.text(x0_f+0.3, y0_f+0.5, r'$\delta$', color='orange')
     
     
     # plt.title("Kinematic Diagram: Tractor + 2 Drawbar Trailers")
