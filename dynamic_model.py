@@ -98,7 +98,7 @@ class TractorTrailerDynamicModel:
         Fxt = 0.0
         
         # Set up linear system A * X = b
-        # X = [dvx, dvy, dr, dvxd, dvyd, drd, dvxt, dvyt, drt, Fhx1, Fhy1, Fhx2, Fhy2] (13 unknowns)
+        # X = [dvx, dvy, dr, dvxd, dvyd, drd, dvxt, dvyt, drt, lambda1_x, lambda1_y, lambda2_x, lambda2_y]
         A = np.zeros((13, 13))
         b = np.zeros(13)
         
@@ -107,88 +107,48 @@ class TractorTrailerDynamicModel:
         c2 = np.cos(delta_theta2)
         s2 = np.sin(delta_theta2)
         
-        # 1. Tractor Longitudinal
+        # --- Mass Matrix (M) ---
         A[0, 0] = self.m
-        A[0, 9] = 1.0
-        b[0] = Fxr + Fxf * np.cos(delta) - Fyf * np.sin(delta) + self.m * vy * r
-        
-        # 2. Tractor Lateral
         A[1, 1] = self.m
-        A[1, 10] = 1.0
-        b[1] = Fyr + Fxf * np.sin(delta) + Fyf * np.cos(delta) - self.m * vx * r
-        
-        # 3. Tractor Yaw
         A[2, 2] = self.I_z
-        A[2, 10] = self.d_h
-        b[2] = self.l_f * (Fyf * np.cos(delta) + Fxf * np.sin(delta)) - self.l_r * Fyr
-        
-        # 4. Dolly Longitudinal
         A[3, 3] = self.m_d
-        A[3, 9] = -c1
-        A[3, 10] = -s1
-        A[3, 11] = c2
-        A[3, 12] = s2
-        b[3] = Fxd + self.m_d * vyd * rd
-        
-        # 5. Dolly Lateral
         A[4, 4] = self.m_d
-        A[4, 9] = s1
-        A[4, 10] = -c1
-        A[4, 11] = -s2
-        A[4, 12] = c2
-        b[4] = Fyd - self.m_d * vxd * rd
-        
-        # 6. Dolly Yaw
         A[5, 5] = self.I_zd
-        A[5, 9] = self.l_fd * s1
-        A[5, 10] = -self.l_fd * c1
-        A[5, 11] = self.l_rd * s2
-        A[5, 12] = -self.l_rd * c2
-        b[5] = -self.l_rd * Fyd
-        
-        # 7. Trailer Body Longitudinal
         A[6, 6] = self.m_t
-        A[6, 11] = -1.0
-        b[6] = Fxt + self.m_t * vyt * rt
-        
-        # 8. Trailer Body Lateral
         A[7, 7] = self.m_t
-        A[7, 12] = -1.0
-        b[7] = Fyt - self.m_t * vxt * rt
-        
-        # 9. Trailer Body Yaw
         A[8, 8] = self.I_zt
-        A[8, 12] = self.l_ft
+        
+        # --- External and Coriolis Forces (Q) ---
+        b[0] = Fxr + Fxf * np.cos(delta) - Fyf * np.sin(delta) + self.m * vy * r
+        b[1] = Fyr + Fxf * np.sin(delta) + Fyf * np.cos(delta) - self.m * vx * r
+        b[2] = self.l_f * (Fyf * np.cos(delta) + Fxf * np.sin(delta)) - self.l_r * Fyr
+        b[3] = Fxd + self.m_d * vyd * rd
+        b[4] = Fyd - self.m_d * vxd * rd
+        b[5] = -self.l_rd * Fyd
+        b[6] = Fxt + self.m_t * vyt * rt
+        b[7] = Fyt - self.m_t * vxt * rt
         b[8] = -self.l_rt * Fyt
         
+        # --- Jacobian Matrix (J) ---
         # 10. Constraint H1 X
-        A[9, 0] = -c1
-        A[9, 1] = -s1
-        A[9, 2] = self.d_h * s1
-        A[9, 3] = 1.0
-        b[9] = (r - rd) * (-vx * s1 + (vy - self.d_h * r) * c1)
+        A[9, 0] = -c1; A[9, 1] = -s1; A[9, 2] = self.d_h * s1; A[9, 3] = 1.0
         
         # 11. Constraint H1 Y
-        A[10, 0] = s1
-        A[10, 1] = -c1
-        A[10, 2] = self.d_h * c1
-        A[10, 4] = 1.0
-        A[10, 5] = self.l_fd
-        b[10] = (r - rd) * (-vx * c1 - (vy - self.d_h * r) * s1)
+        A[10, 0] = s1; A[10, 1] = -c1; A[10, 2] = self.d_h * c1; A[10, 4] = 1.0; A[10, 5] = self.l_fd
         
         # 12. Constraint H2 X
-        A[11, 3] = -c2
-        A[11, 4] = -s2
-        A[11, 5] = self.l_rd * s2
-        A[11, 6] = 1.0
-        b[11] = (rd - rt) * (-vxd * s2 + (vyd - self.l_rd * rd) * c2)
+        A[11, 3] = -c2; A[11, 4] = -s2; A[11, 5] = self.l_rd * s2; A[11, 6] = 1.0
         
         # 13. Constraint H2 Y
-        A[12, 3] = s2
-        A[12, 4] = -c2
-        A[12, 5] = self.l_rd * c2
-        A[12, 7] = 1.0
-        A[12, 8] = self.l_ft
+        A[12, 3] = s2; A[12, 4] = -c2; A[12, 5] = self.l_rd * c2; A[12, 7] = 1.0; A[12, 8] = self.l_ft
+        
+        # --- Lagrange Multipliers Forces (-J^T) ---
+        A[0:9, 9:13] = -A[9:13, 0:9].T
+        
+        # Constraints accelerations (rhs of J * q_ddot)
+        b[9] = (r - rd) * (-vx * s1 + (vy - self.d_h * r) * c1)
+        b[10] = (r - rd) * (-vx * c1 - (vy - self.d_h * r) * s1)
+        b[11] = (rd - rt) * (-vxd * s2 + (vyd - self.l_rd * rd) * c2)
         b[12] = (rd - rt) * (-vxd * c2 - (vyd - self.l_rd * rd) * s2)
         
         # Solve the system
