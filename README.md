@@ -297,10 +297,10 @@ F_{ytr} + F_{hy2} \\
 l_{ft} F_{hy2} - l_{rt} F_{ytr}
 \end{bmatrix}
 $$
-
 #### 5. Full Expanded Equation
 
-$\begin{bmatrix}
+$$
+\begin{bmatrix}
 m & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 0 & m & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 0 & 0 & I_z & 0 & 0 & 0 & 0 & 0 & 0 \\
@@ -313,9 +313,9 @@ m & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 \end{bmatrix}
 \begin{bmatrix}
 \dot{v}_x \\ \dot{v}_y \\ \dot{r} \\ \dot{v}_{xd} \\ \dot{v}_{yd} \\ \dot{r}_d \\ \dot{v}_{xt} \\ \dot{v}_{yt} \\ \dot{r}_t
-\end{bmatrix}$
+\end{bmatrix}
 +
-$\begin{bmatrix}
+\begin{bmatrix}
 0 & -m r & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 m r & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
@@ -328,8 +328,9 @@ m r & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 \end{bmatrix}
 \begin{bmatrix}
 v_x \\ v_y \\ r \\ v_{xd} \\ v_{yd} \\ r_d \\ v_{xt} \\ v_{yt} \\ r_t
-\end{bmatrix}$ =
-$\begin{bmatrix}
+\end{bmatrix}
+=
+\begin{bmatrix}
 F_{xr} + F_{xf}\cos\delta - F_{yf}\sin\delta - F_{hx1} \\
 F_{yr} + F_{xf}\sin\delta + F_{yf}\cos\delta - F_{hy1} \\
 l_f (F_{yf}\cos\delta + F_{xf}\sin\delta) - l_r F_{yr} + d_h F_{hy1} \\
@@ -340,4 +341,4 @@ F_{xt} + F_{hx2} \\
 F_{ytr} + F_{hy2} \\
 l_{ft} F_{hy2} - l_{rt} F_{ytr}
 \end{bmatrix}
-$
+$$
