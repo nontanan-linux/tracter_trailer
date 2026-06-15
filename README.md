@@ -45,29 +45,43 @@ $$\frac{d}{dt}\left(\frac{\partial L}{\partial \dot{q}_j}\right) - \frac{\partia
 การคิดความเร็วของ Drawbar จะใช้แค่ระยะ $L_{bar}$ เท่านั้น เนื่องจาก Trailer มองเหมือนรถคันเดียวกันโดยจุดพ่วง $H_2$ เกาะอยู่ตรงตำแหน่งแกนเพลาของ Drawbar พอดี ($l_{rd} = 0$)
 
 **1. รถลากจูง (Tractor):**
+
 $$\dot{x}_0 = v_0 \cos\theta_0$$
+
 $$\dot{y}_0 = v_0 \sin\theta_0$$
 
 **2. ก้านลาก (Drawbar / Dolly):**
 พิกัด $(x_d, y_d)$ เชื่อมต่อกับท้ายรถลากจูงด้วยระยะ $L_{bar}$:
+
 $$x_d = x_0 - d_h \cos\theta_0 - L_{bar} \cos\theta_1$$
+
 $$y_d = y_0 - d_h \sin\theta_0 - L_{bar} \sin\theta_1$$
+
 เมื่อหาอนุพันธ์เทียบกับเวลา:
+
 $$\dot{x}_d = \dot{x}_0 + d_h \dot{\theta}_0 \sin\theta_0 + L_{bar} \dot{\theta}_1 \sin\theta_1$$
+
 $$\dot{y}_d = \dot{y}_0 - d_h \dot{\theta}_0 \cos\theta_0 - L_{bar} \dot{\theta}_1 \cos\theta_1$$
 
 **3. รถพ่วงหลัก (Trailer Body):**
 พิกัด $(x_t, y_t)$ เชื่อมต่อที่แกนเพลาของ Drawbar พอดิบพอดี:
+
 $$x_t = x_d - l_{ft} \cos\theta_2 = x_0 - d_h \cos\theta_0 - L_{bar} \cos\theta_1 - l_{ft} \cos\theta_2$$
+
 $$y_t = y_d - l_{ft} \sin\theta_2 = y_0 - d_h \sin\theta_0 - L_{bar} \sin\theta_1 - l_{ft} \sin\theta_2$$
+
 เมื่อหาอนุพันธ์เทียบกับเวลา:
+
 $$\dot{x}_t = \dot{x}_0 + d_h \dot{\theta}_0 \sin\theta_0 + L_{bar} \dot{\theta}_1 \sin\theta_1 + l_{ft} \dot{\theta}_2 \sin\theta_2$$
+
 $$\dot{y}_t = \dot{y}_0 - d_h \dot{\theta}_0 \cos\theta_0 - L_{bar} \dot{\theta}_1 \cos\theta_1 - l_{ft} \dot{\theta}_2 \cos\theta_2$$
 
 ### 1.5 Kinetic and Potential Energy (พลังงานจลน์และพลังงานศักย์)
+
 $$
 T = \left[ \frac{1}{2}m(\dot{x}_0^2 + \dot{y}_0^2) + \frac{1}{2}I_z\dot{\theta}_0^2 \right] + \left[ \frac{1}{2}m_d(\dot{x}_d^2 + \dot{y}_d^2) + \frac{1}{2}I_{zd}\dot{\theta}_1^2 \right] + \left[ \frac{1}{2}m_t(\dot{x}_t^2 + \dot{y}_t^2) + \frac{1}{2}I_{zt}\dot{\theta}_2^2 \right]
 $$
+
 $$V = 0 \implies L = T$$
 
 ---
@@ -76,23 +90,33 @@ $$V = 0 \implies L = T$$
 
 ### 2.1 การหาอนุพันธ์ของสมการลากรานจ์ $L$
 กำหนดให้เวกเตอร์พิกัดทั่วไป (Generalized Coordinates) ของระบบคือ:
+
 $$q = [x_0, y_0, \theta_0, x_d, y_d, \theta_1, x_t, y_t, \theta_2]^T$$
 
 จากสมการลากรานจ์ $L = T - V$ (โดยที่ $V=0$ ทำให้ $L=T$) เราทำการหาอนุพันธ์เทียบกับพิกัดทั่วไปและอัตราเร็วของพิกัดทั่วไปแต่ละตัวแปร เพื่อสร้างเทอมฝั่งซ้ายของสมการออยเลอร์-ลากรานจ์ $\frac{d}{dt}\left(\frac{\partial L}{\partial \dot{q}_i}\right) - \frac{\partial L}{\partial q_i}$:
 
 **1. พิกัดของรถลากจูง (Tractor): $q_1 \dots q_3$**
+
 *   $q_1 = x_0$: $\quad \frac{\partial L}{\partial \dot{x}_0} = m \dot{x}_0, \quad \frac{\partial L}{\partial x_0} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{x}_0}\right) - \frac{\partial L}{\partial x_0} = m \ddot{x}_0$
+
 *   $q_2 = y_0$: $\quad \frac{\partial L}{\partial \dot{y}_0} = m \dot{y}_0, \quad \frac{\partial L}{\partial y_0} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{y}_0}\right) - \frac{\partial L}{\partial y_0} = m \ddot{y}_0$
+
 *   $q_3 = \theta_0$: $\quad \frac{\partial L}{\partial \dot{\theta}_0} = I_z \dot{\theta}_0, \quad \frac{\partial L}{\partial \theta_0} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{\theta}_0}\right) - \frac{\partial L}{\partial \theta_0} = I_z \ddot{\theta}_0$
 
 **2. พิกัดของก้านลาก (Drawbar / Dolly): $q_4 \dots q_6$**
+
 *   $q_4 = x_d$: $\quad \frac{\partial L}{\partial \dot{x}_d} = m_d \dot{x}_d, \quad \frac{\partial L}{\partial x_d} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{x}_d}\right) - \frac{\partial L}{\partial x_d} = m_d \ddot{x}_d$
+
 *   $q_5 = y_d$: $\quad \frac{\partial L}{\partial \dot{y}_d} = m_d \dot{y}_d, \quad \frac{\partial L}{\partial y_d} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{y}_d}\right) - \frac{\partial L}{\partial y_d} = m_d \ddot{y}_d$
+
 *   $q_6 = \theta_1$: $\quad \frac{\partial L}{\partial \dot{\theta}_1} = I_{zd} \dot{\theta}_1, \quad \frac{\partial L}{\partial \theta_1} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{\theta}_1}\right) - \frac{\partial L}{\partial \theta_1} = I_{zd} \ddot{\theta}_1$
 
 **3. พิกัดของรถพ่วงหลัก (Trailer Body): $q_7 \dots q_9$**
+
 *   $q_7 = x_t$: $\quad \frac{\partial L}{\partial \dot{x}_t} = m_t \dot{x}_t, \quad \frac{\partial L}{\partial x_t} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{x}_t}\right) - \frac{\partial L}{\partial x_t} = m_t \ddot{x}_t$
+
 *   $q_8 = y_t$: $\quad \frac{\partial L}{\partial \dot{y}_t} = m_t \dot{y}_t, \quad \frac{\partial L}{\partial y_t} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{y}_t}\right) - \frac{\partial L}{\partial y_t} = m_t \ddot{y}_t$
+
 *   $q_9 = \theta_2$: $\quad \frac{\partial L}{\partial \dot{\theta}_2} = I_{zt} \dot{\theta}_2, \quad \frac{\partial L}{\partial \theta_2} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{\theta}_2}\right) - \frac{\partial L}{\partial \theta_2} = I_{zt} \ddot{\theta}_2$
 
 ### 2.2 การหาแรงทั่วไป (Generalized Forces $Q_i$)
@@ -117,60 +141,89 @@ $$q = [x_0, y_0, \theta_0, x_d, y_d, \theta_1, x_t, y_t, \theta_2]^T$$
 ประกอบสมการความเร่งโดยมีแรงปฏิกิริยาพ่วง $\lambda_1, \lambda_2$ (ที่ $H_1$) และ $\lambda_3, \lambda_4$ (ที่ $H_2$ ซึ่งอยู่ตำแหน่งเพลาหน้าของ Drawbar พอดี):
 
 1.  **Tractor ($x_0, y_0, \theta_0$):**
+
     $$m \ddot{x}_0 = Q_{x0} - \lambda_1$$
+
     $$m \ddot{y}_0 = Q_{y0} - \lambda_2$$
+
     $$I_z \ddot{\theta}_0 = Q_{\theta0} - d_h \sin\theta_0 \lambda_1 + d_h \cos\theta_0 \lambda_2$$
+
 2.  **Drawbar ($x_d, y_d, \theta_1$):**
+
     $$m_d \ddot{x}_d = Q_{xd} + \lambda_1 - \lambda_3$$
+
     $$m_d \ddot{y}_d = Q_{yd} + \lambda_2 - \lambda_4$$
+
     $$I_{zd} \ddot{\theta}_1 = Q_{\theta1} - L_{bar} \sin\theta_1 \lambda_1 + L_{bar} \cos\theta_1 \lambda_2$$
+
     *(หมายเหตุ: แรง $\lambda_3, \lambda_4$ จาก Trailer กระทำตรงที่จุด CG ของ Drawbar พอดี จึงไม่สร้างโมเมนต์รอบ $\theta_1$)*
 3.  **Trailer Body ($x_t, y_t, \theta_2$):**
+
     $$m_t \ddot{x}_t = Q_{xt} + \lambda_3$$
+
     $$m_t \ddot{y}_t = Q_{yt} + \lambda_4$$
+
     $$I_{zt} \ddot{\theta}_2 = Q_{\theta2} - l_{ft} \sin\theta_2 \lambda_3 + l_{ft} \cos\theta_2 \lambda_4$$
 
 ### 2.4 สมการการเคลื่อนที่ในพิกัดตัวรถ (Body-Fixed Equations of Motion)
 แปลงความเร่ง $\ddot{x}, \ddot{y}$ เข้าสู่พิกัดตัวรถ $(\dot{v}_x - v_y r)$ และแตกแรงหน้ายาง:
 
 #### 1. รถลากจูง (Tractor)
+
 $$\text{Longitudinal:} \quad m(\dot{v}_x - v_y r) = F_{xr} + F_{xf}\cos\delta - F_{yf}\sin\delta - F_{hx1}$$
+
 $$\text{Lateral:} \quad m(\dot{v}_y + v_x r) = F_{yr} + F_{xf}\sin\delta + F_{yf}\cos\delta - F_{hy1}$$
+
 $$\text{Yaw:} \quad I_z \dot{r} = l_f (F_{yf}\cos\delta + F_{xf}\sin\delta) - l_r F_{yr} + d_h F_{hy1}$$
 
 #### 2. ก้านลาก (Drawbar)
 กำหนดมุมสัมพัทธ์ $\Delta\theta_1 = \theta_0 - \theta_1$ และ $\Delta\theta_2 = \theta_1 - \theta_2$:
+
 $$\text{Longitudinal:} \quad m_d(\dot{v}_{xd} - v_{yd} r_d) = F_{xd} + F_{hx1}\cos\Delta\theta_1 - F_{hy1}\sin\Delta\theta_1 - F_{hx2}\cos\Delta\theta_2 - F_{hy2}\sin\Delta\theta_2$$
+
 $$\text{Lateral:} \quad m_d(\dot{v}_{yd} + v_{xd} r_d) = F_{yd} + F_{hx1}\sin\Delta\theta_1 + F_{hy1}\cos\Delta\theta_1 + F_{hx2}\sin\Delta\theta_2 - F_{hy2}\cos\Delta\theta_2$$
+
 $$\text{Yaw:} \quad I_{zd} \dot{r}_d = L_{bar} (F_{hx1}\sin\Delta\theta_1 + F_{hy1}\cos\Delta\theta_1)$$
 
 #### 3. รถพ่วงหลัก (Trailer Body)
+
 $$\text{Longitudinal:} \quad m_t(\dot{v}_{xt} - v_{yt} r_t) = F_{xt} + F_{hx2}$$
+
 $$\text{Lateral:} \quad m_t(\dot{v}_{yt} + v_{xt} r_t) = F_{ytr} + F_{hy2}$$
+
 $$\text{Yaw:} \quad I_{zt} \dot{r}_t = l_{ft} F_{hy2} - l_{rt} F_{ytr}$$
 
 ### 2.5 สมการเงื่อนไขบังคับเชิงความเร่ง (Hitch Acceleration Constraints)
 อนุพันธ์ความเร็วข้อต่อเพื่อให้ได้เงื่อนไขเชิงความเร่ง ($\ddot{g} = 0$) ที่จุด $H_1$ และ $H_2$ 4 สมการดังนี้:
 
 **เงื่อนไขจุดต่อที่ 1 ($H_1$):**
+
 $$\dot{v}_{xd} - \dot{v}_x \cos\Delta\theta_1 + \dot{v}_y \sin\Delta\theta_1 - d_h \dot{r} \sin\Delta\theta_1 = (r - r_d) \left[-v_x \sin\Delta\theta_1 - (v_y - d_h r) \cos\Delta\theta_1\right]$$
+
 $$\dot{v}_{yd} + L_{bar} \dot{r}_d - \dot{v}_x \sin\Delta\theta_1 - \dot{v}_y \cos\Delta\theta_1 + d_h \dot{r} \cos\Delta\theta_1 = (r - r_d) \left[v_x \cos\Delta\theta_1 - (v_y - d_h r) \sin\Delta\theta_1\right]$$
 
 **เงื่อนไขจุดต่อที่ 2 ($H_2$ เชื่อมที่เพลา Drawbar พอดี ทำให้ $l_{rd}=0$):**
+
 $$\dot{v}_{xt} - \dot{v}_{xd} \cos\Delta\theta_2 + \dot{v}_{yd} \sin\Delta\theta_2 = (r_d - r_t) \left[-v_{xd} \sin\Delta\theta_2 - v_{yd} \cos\Delta\theta_2\right]$$
+
 $$\dot{v}_{yt} + l_{ft} \dot{r}_t - \dot{v}_{xd} \sin\Delta\theta_2 - \dot{v}_{yd} \cos\Delta\theta_2 = (r_d - r_t) \left[v_{xd} \cos\Delta\theta_2 - v_{yd} \sin\Delta\theta_2\right]$$
 
 ### 2.6 การจัดรูประบบสมการเมทริกซ์ (Matrix Formulation)
+
 $$ M(q)\ddot{q} + C(q,\dot{q})\dot{q} = Q $$
 
 #### 1. เวกเตอร์ความเร่งและความเร็ว
+
 *   $\ddot{q} = [\dot{v}_x, \dot{v}_y, \dot{r}, \dot{v}_{xd}, \dot{v}_{yd}, \dot{r}_d, \dot{v}_{xt}, \dot{v}_{yt}, \dot{r}_t]^T$
+
 *   $\dot{q} = [v_x, v_y, r, v_{xd}, v_{yd}, r_d, v_{xt}, v_{yt}, r_t]^T$
 
 #### 2. เมทริกซ์มวลและความเฉื่อย $M(q)$
+
 $$ M(q) = \text{diag}(m, m, I_z, m_d, m_d, I_{zd}, m_t, m_t, I_{zt}) $$
 
 #### 3. เมทริกซ์คอริโอลิสและแรงหนีศูนย์กลาง $C(q, \dot{q})$
+
 $$
 C(q, \dot{q}) = \begin{bmatrix}
 0 & -m r & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
@@ -186,6 +239,7 @@ m r & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 $$
 
 #### 4. เวกเตอร์แรงทั่วไป $Q$
+
 $$
 Q = \begin{bmatrix}
 F_{xr} + F_{xf}\cos\delta - F_{yf}\sin\delta - F_{hx1} \\
@@ -201,6 +255,7 @@ l_{ft} F_{hy2} - l_{rt} F_{ytr}
 $$
 
 #### 5. สมการเต็มรูปแบบ (Full Expanded Equation)
+
 $$
 \begin{bmatrix}
 m & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
