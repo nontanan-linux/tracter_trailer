@@ -269,7 +269,7 @@ $$
 #### 3. Coriolis and Centrifugal Force Matrix $C(q, \dot{q})$
 
 $$
-C(q, \dot{q}) = \begin{bmatrix}
+C(q, \dot{q}) = \left[ \begin{matrix}
 0 & -m r & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 m r & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
@@ -279,7 +279,7 @@ m r & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 & 0 & -m_t r_t & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 & m_t r_t & 0 & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0
-\end{bmatrix}
+\end{matrix} \right]
 $$
 
 #### 4. Generalized Force Vector $Q$
