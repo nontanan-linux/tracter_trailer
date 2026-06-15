@@ -15,13 +15,15 @@ class TractorTrailerSimulator:
         self.model = TractorTrailerDynamicModel()
         
         # Dimensions for drawing
-        self.tractor_len = 2.95
+        # Tractor: front overhang 0.92, wheelbase 1.28, rear overhang 0.62
+        self.tractor_front = self.model.l_f + 0.92
+        self.tractor_rear = self.model.l_r + 0.62
         self.tractor_width = 1.3
-        self.tractor_overhang = 0.62 # Distance from rear axle to rear edge
         
-        self.trailer_body_len = 2.95
+        # Trailer: assuming symmetric around its wheelbase for drawing (length 2.95)
+        self.trailer_front = self.model.l_ft + 0.835
+        self.trailer_rear = self.model.l_rt + 0.835
         self.trailer_width = 1.3
-        self.trailer_overhang = 0.62 # Distance from rear axle to rear edge of trailer
         
         self.wheel_diam = 0.65
         self.wheel_width = 0.25
@@ -74,14 +76,9 @@ class TractorTrailerSimulator:
         for i in range(num_steps):
             t = i * self.dt
             
-            # Simple lane change / steering profile
-            if 2.0 <= t < 4.0:
-                delta = np.radians(3.0)
-            elif 4.0 <= t < 6.0:
-                delta = np.radians(-3.0)
-            else:
-                delta = 0.0
-                
+            # Sine wave steering input (e.g., 5-degree amplitude, 6-second period)
+            delta = np.radians(8.0) * np.sin(2.0 * np.pi * t / 6.0)
+            
             self.states.append({'positions': state['positions'].copy(), 'velocities': state['velocities'].copy()})
             self.inputs.append([0.0, delta]) # F_xf = 0, delta
             
@@ -168,15 +165,23 @@ class TractorTrailerSimulator:
         theta1 = pos[5]
         theta2 = pos[8]
         
-        # Draw Tractor
-        p_tractor_c = p0 + ((self.tractor_len / 2) - self.tractor_overhang) * np.array([np.cos(theta0), np.sin(theta0)])
-        patches_list.append(self.draw_box(ax, p_tractor_c, self.tractor_len, self.tractor_width, theta0, color='orangered', alpha=0.5))
+        # Dynamic Camera Tracking
+        self.ax.set_xlim(x0 - 10, x0 + 20)
+        self.ax.set_ylim(y0 - 15, y0 + 15)
+        
+        # Tractor Body (drawn from rear to front)
+        bl_x = x0 - self.tractor_rear * np.cos(theta0) + self.tractor_width/2 * np.sin(theta0)
+        bl_y = y0 - self.tractor_rear * np.sin(theta0) - self.tractor_width/2 * np.cos(theta0)
+        tractor_len = self.tractor_front + self.tractor_rear
+        rect_tractor = Rectangle((bl_x, bl_y), tractor_len, self.tractor_width, angle=np.degrees(theta0), color='orangered', alpha=0.5)
+        ax.add_patch(rect_tractor)
+        patches_list.append(rect_tractor)
         
         patches_list.extend(self.draw_wheels_at_axle(ax, p0, theta0, self.W)) 
         patches_list.extend(self.draw_wheels_at_axle(ax, p0_f, theta0, self.W, steered_angle=delta_curr)) 
         
         # Tractor rear overhang to Hitch
-        p_tr_rear_face = p0 - self.tractor_overhang * np.array([np.cos(theta0), np.sin(theta0)])
+        p_tr_rear_face = p0 - self.tractor_rear * np.array([np.cos(theta0), np.sin(theta0)])
         l_tr_tail, = ax.plot([p_tr_rear_face[0], h1[0]], [p_tr_rear_face[1], h1[1]], 'k-', lw=2)
         patches_list.append(l_tr_tail)
         
@@ -185,8 +190,12 @@ class TractorTrailerSimulator:
         patches_list.append(l_db)
         
         # Draw Trailer Body (centered between front and rear axles)
-        p_trailer_c = p_axle_r + (self.trailer_body_len / 2 - self.trailer_overhang) * np.array([np.cos(theta2), np.sin(theta2)])
-        patches_list.append(self.draw_box(ax, p_trailer_c, self.trailer_body_len, self.trailer_width, theta2, color='blue', alpha=0.5))
+        bl_xt = xt - self.trailer_rear * np.cos(theta2) + self.trailer_width/2 * np.sin(theta2)
+        bl_yt = yt - self.trailer_rear * np.sin(theta2) - self.trailer_width/2 * np.cos(theta2)
+        trailer_len = self.trailer_front + self.trailer_rear
+        rect_trailer = Rectangle((bl_xt, bl_yt), trailer_len, self.trailer_width, angle=np.degrees(theta2), color='blue', alpha=0.5)
+        ax.add_patch(rect_trailer)
+        patches_list.append(rect_trailer)
         
         # Draw Trailer Front Axle (Steers according to drawbar angle theta1)
         patches_list.extend(self.draw_wheels_at_axle(ax, p_axle_f, theta1, self.W)) 
