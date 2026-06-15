@@ -105,6 +105,12 @@ class TractorTrailerDynamicModel:
         Fxd = -0.01 * (self.m_d * g) * np.sign(vxd) + drag_d
         Fxt = -0.02 * (self.m_t * g) * np.sign(vxt) + drag_t
         
+        # Surge Brakes (Overrun Brakes): Physically essential for 3-ton tractor towing 10-ton trailer.
+        # If the trailer slides forward and pushes the tractor, it mechanically triggers trailer brakes.
+        if vxt > vx + 0.05:
+            surge_brake = -self.m_t * g * min((vxt - vx) * 0.5, 0.6) # Up to 0.6g braking
+            Fxt += surge_brake
+        
         # Set up linear system A * X = b
         # X = [dvx, dvy, dr, dvxd, dvyd, drd, dvxt, dvyt, drt, lambda1_x, lambda1_y, lambda2_x, lambda2_y]
         A = np.zeros((13, 13))
