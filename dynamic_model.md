@@ -144,7 +144,9 @@ $$\ddot{\theta}_2 = \frac{\sum M_{\text{CG,trailer}}}{I_{zt}}$$
 
 $$T = T_{\text{tractor}} + T_{\text{dolly}} + T_{\text{trailer}}$$
 
-$$T = \left[ \frac{1}{2}m(\dot{x}_0^2 + \dot{y}_0^2) + \frac{1}{2}I_z\dot{\theta}_0^2 \right] + \left[ \frac{1}{2}m_d(\dot{x}_d^2 + \dot{y}_d^2) + \frac{1}{2}I_{zd}\dot{\theta}_1^2 \right] + \left[ \frac{1}{2}m_t(\dot{x}_t^2 + \dot{y}_t^2) + \frac{1}{2}I_{zt}\dot{\theta}_2^2 \right]$
+$$
+T = \left[ \frac{1}{2}m(\dot{x}_0^2 + \dot{y}_0^2) + \frac{1}{2}I_z\dot{\theta}_0^2 \right] + \left[ \frac{1}{2}m_d(\dot{x}_d^2 + \dot{y}_d^2) + \frac{1}{2}I_{zd}\dot{\theta}_1^2 \right] + \left[ \frac{1}{2}m_t(\dot{x}_t^2 + \dot{y}_t^2) + \frac{1}{2}I_{zt}\dot{\theta}_2^2 \right]
+$$
 
 ### 1.5 สมการเงื่อนไขบังคับและการแปลง Lagrange Multipliers เป็นแรงดึงพ่วง
 ตำแหน่งของจุดศูนย์กลางมวลของดอลลี่ $(x_d, y_d)$ และตัวพ่วง $(x_t, y_t)$ ถูกจำกัดไว้ด้วยข้อต่อจุดพ่วง $H_1$ และ $H_2$ เสมือนมีสมการเงื่อนไขบังคับเชิงตำแหน่ง 4 สมการดังนี้:
@@ -175,6 +177,56 @@ $$J_c = \begin{bmatrix}
 $$\begin{bmatrix} F_{hx1} \\ F_{hy1} \end{bmatrix} = \begin{bmatrix} \cos\theta_0 & \sin\theta_0 \\ -\sin\theta_0 & \cos\theta_0 \end{bmatrix} \begin{bmatrix} -\lambda_1 \\ -\lambda_2 \end{bmatrix}$$
 
 $$\begin{bmatrix} F_{hx2} \\ F_{hy2} \end{bmatrix} = \begin{bmatrix} \cos\theta_2 & \sin\theta_2 \\ -\sin\theta_2 & \cos\theta_2 \end{bmatrix} \begin{bmatrix} \lambda_3 \\ \lambda_4 \end{bmatrix}$$
+
+### 1.5.1 ขั้นตอนการหาอนุพันธ์สมการการเคลื่อนที่ด้วยสมการลากรานจ์ (Lagrangian Derivation of Equations of Motion)
+เพื่อให้เห็นขั้นตอนการแปลงจากพลังงานจลน์ในหัวข้อ 1.4 และเงื่อนไขบังคับในหัวข้อ 1.5 ไปเป็นสมการพลศาสตร์ของระบบ เราสามารถคำนวณผ่านสมการลากรานจ์ที่มีตัวคูณลากรานจ์ (Lagrange's Equations with Multipliers) ดังนี้:
+
+#### 1. พิกัดทั่วไป (Generalized Coordinates)
+พิกัดทั่วไปของระบบที่มี 9 ระดับความอิสระ (ก่อนคิดเงื่อนไขบังคับข้อต่อ) คือ:
+$$q = [x_0, y_0, \theta_0, x_d, y_d, \theta_1, x_t, y_t, \theta_2]^T$$
+
+#### 2. สมการตั้งต้นของลากรานจ์
+$$\frac{d}{dt}\left( \frac{\partial T}{\partial \dot{q}_i} \right) - \frac{\partial T}{\partial q_i} = Q_i + \sum_{k=1}^4 \lambda_k \frac{\partial g_k}{\partial q_i}$$
+
+โดยที่ $Q_i$ คือแรงภายนอกทั่วไป (Generalized Forces) ที่เกิดจากแรงสัมผัสยางและการขับเคลื่อน
+
+#### 3. การหาอนุพันธ์ของพลังงานจลน์ $T$
+เนื่องจากพลังงานจลน์ $T$ ในหัวข้อ 1.4 เขียนอยู่ในรูปของความเร็วในพิกัดโลกโดยตรง ดังนั้นการหาอนุพันธ์ย่อยจะได้ดังนี้:
+*   สำหรับแนวพิกัดโลกเชิงเส้น ($x_j, y_j$):
+    $$\frac{\partial T}{\partial \dot{x}_j} = m_j \dot{x}_j \implies \frac{d}{dt}\left(\frac{\partial T}{\partial \dot{x}_j}\right) = m_j \ddot{x}_j, \quad \frac{\partial T}{\partial x_j} = 0$$
+*   สำหรับแนวพิกัดการหมุน ($\theta_j$):
+    $$\frac{\partial T}{\partial \dot{\theta}_j} = I_{zj} \dot{\theta}_j \implies \frac{d}{dt}\left(\frac{\partial T}{\partial \dot{\theta}_j}\right) = I_{zj} \ddot{\theta}_j, \quad \frac{\partial T}{\partial \theta_j} = 0$$
+
+#### 4. สมการการเคลื่อนที่ในพิกัดเฉื่อยโลก (Inertial Frame Equations)
+เมื่อแทนค่าอนุพันธ์และแรงเงื่อนไขบังคับจากจาโคเบียน $J_c^T \lambda$ จะได้สมการเคลื่อนที่ 9 สมการดังนี้:
+1.  **Tractor Longitudinal/Lateral ($x_0, y_0$):**
+    $$m \ddot{x}_0 = Q_{x0} - \lambda_1$$
+    $$m \ddot{y}_0 = Q_{y0} - \lambda_2$$
+2.  **Tractor Yaw ($\theta_0$):**
+    $$I_z \ddot{\theta}_0 = Q_{\theta0} - d_h \sin\theta_0 \lambda_1 + d_h \cos\theta_0 \lambda_2$$
+3.  **Dolly Longitudinal/Lateral ($x_d, y_d$):**
+    $$m_d \ddot{x}_d = Q_{xd} + \lambda_1 - \lambda_3$$
+    $$m_d \ddot{y}_d = Q_{yd} + \lambda_2 - \lambda_4$$
+4.  **Dolly Yaw ($\theta_1$):**
+    $$I_{zd} \ddot{\theta}_1 = Q_{\theta1} - l_{fd} \sin\theta_1 \lambda_1 + l_{fd} \cos\theta_1 \lambda_2 - l_{rd} \sin\theta_1 \lambda_3 + l_{rd} \cos\theta_1 \lambda_4$$
+5.  **Trailer Longitudinal/Lateral ($x_t, y_t$):**
+    $$m_t \ddot{x}_t = Q_{xt} + \lambda_3$$
+    $$m_t \ddot{y}_t = Q_{yt} + \lambda_4$$
+6.  **Trailer Yaw ($\theta_2$):**
+    $$I_{zt} \ddot{\theta}_2 = Q_{\theta2} - l_{ft} \sin\theta_2 \lambda_3 + l_{ft} \cos\theta_2 \lambda_4$$
+
+#### 5. การแปลงเข้าสู่พิกัดตัวรถ (Body-Fixed Transformation)
+เพื่อให้สอดคล้องกับพิกัดภายในของตัวรถ ($v_x, v_y, r$) ที่เราใช้วัดและควบคุม เราจะหมุนพิกัดความเร่งโลกเข้าสู่แกนตัวรถโดยใช้เมทริกซ์การหมุน $R(\theta)$:
+$$\begin{bmatrix} \dot{v}_x - v_y r \\ \dot{v}_y + v_x r \end{bmatrix} = \begin{bmatrix} \cos\theta & \sin\theta \\ -\sin\theta & \cos\theta \end{bmatrix} \begin{bmatrix} \ddot{x} \\ \ddot{y} \end{bmatrix}$$
+
+เมื่อแปลงสมการของ Tractor ในข้อ 1 ข้างต้น จะได้:
+$$m (\dot{v}_x - v_y r) = (Q_{x0}\cos\theta_0 + Q_{y0}\sin\theta_0) - (\lambda_1\cos\theta_0 + \lambda_2\sin\theta_0)$$
+$$m (\dot{v}_y + v_x r) = (-Q_{x0}\sin\theta_0 + Q_{y0}\cos\theta_0) - (-\lambda_1\sin\theta_0 + \lambda_2\cos\theta_0)$$
+
+เมื่อแทนค่าความสัมพันธ์ของแรงปฏิกิริยาพ่วงในพิกัดตัวรถ $F_{hx1}, F_{hy1}$ และแรงทั่วไป $F_{xf0}, F_{yf0}, F_{xr0}, F_{yr0}$ จะลดรูปเหลือ:
+$$m (\dot{v}_x - v_y r) = F_{xr0} + F_{xf0} - F_{hx1}$$
+$$m (\dot{v}_y + v_x r) = F_{yr0} + F_{yf0} - F_{hy1}$$
+ซึ่งตรงกับสมการพลศาสตร์ของนิวตัน-ออยเลอร์ในบทที่ 4 ทุกประการ
 
 ### 1.6 ความแตกต่างเชิงเปรียบเทียบในระบบลากจูง
 1.  **Newton-Euler**: มองวัตถุแต่ละชิ้นแยกกันอย่างเด็ดขาด แล้วใส่แรงดึงพ่วง $F_{hx}, F_{hy}$ เป็นแรงภายนอกกระทำกับปลายโครงสร้างทางเรขาคณิต มีข้อดีคือคำนวณง่ายตรงไปตรงมา และมีประสิทธิภาพสูงในเชิงคอมพิวเตอร์เมื่อรวมแรงดึงพ่วงเป็นตัวแปรในระบบสมการ
