@@ -118,25 +118,25 @@ class TractorTrailerDynamicModel:
         B[2] = self.l_f * (F_yf * np.cos(delta) + F_xf * np.sin(delta)) - self.l_r * F_yr
         
         # --- 2. Drawbar Equations of Motion ---
-        # Longitudinal: m_d(dv_xd - v_yd r_d) = F_xd + F_hx1 cos - F_hx2 cos + F_hy1 sin - F_hy2 sin
+        # Longitudinal: m_d(dv_xd - v_yd r_d) = F_xd + F_hx1 cos - F_hy1 sin - F_hx2 cos - F_hy2 sin
         A[3, 3] = self.m_d
         A[3, 9] = -np.cos(d_theta1)
-        A[3, 10] = -np.sin(d_theta1)
+        A[3, 10] = np.sin(d_theta1)
         A[3, 11] = np.cos(d_theta2)
         A[3, 12] = np.sin(d_theta2)
         B[3] = F_xd + self.m_d * v_yd * r_d
         
-        # Lateral: m_d(dv_yd + v_xd r_d) = F_yd - F_hx1 sin + F_hy1 cos + F_hx2 sin - F_hy2 cos
+        # Lateral: m_d(dv_yd + v_xd r_d) = F_yd + F_hx1 sin + F_hy1 cos + F_hx2 sin - F_hy2 cos
         A[4, 4] = self.m_d
-        A[4, 9] = np.sin(d_theta1)
+        A[4, 9] = -np.sin(d_theta1)
         A[4, 10] = -np.cos(d_theta1)
         A[4, 11] = -np.sin(d_theta2)
         A[4, 12] = np.cos(d_theta2)
         B[4] = F_yd - self.m_d * v_xd * r_d
         
-        # Yaw: I_zd dr_d = -L_bar(F_hx1 sin - F_hy1 cos)
+        # Yaw: I_zd dr_d = L_bar(F_hx1 sin + F_hy1 cos)
         A[5, 5] = self.I_zd
-        A[5, 9] = self.L_bar * np.sin(d_theta1)
+        A[5, 9] = -self.L_bar * np.sin(d_theta1)
         A[5, 10] = -self.L_bar * np.cos(d_theta1)
         B[5] = 0.0
         
@@ -157,34 +157,34 @@ class TractorTrailerDynamicModel:
         B[8] = -self.l_rt * F_ytr
         
         # --- 4. Hitch 1 Acceleration Constraints ---
-        # X: dv_xd - dv_x cos - dv_y sin + d_h dr sin = ...
+        # X: dv_xd - dv_x cos + dv_y sin - d_h dr sin = ...
         A[9, 3] = 1.0
         A[9, 0] = -np.cos(d_theta1)
-        A[9, 1] = -np.sin(d_theta1)
-        A[9, 2] = self.d_h * np.sin(d_theta1)
-        B[9] = (r - r_d) * (-v_x * np.sin(d_theta1) + (v_y - self.d_h * r) * np.cos(d_theta1))
+        A[9, 1] = np.sin(d_theta1)
+        A[9, 2] = -self.d_h * np.sin(d_theta1)
+        B[9] = (r - r_d) * (-v_x * np.sin(d_theta1) - (v_y - self.d_h * r) * np.cos(d_theta1))
         
-        # Y: dv_yd + L_bar dr_d + dv_x sin - dv_y cos + d_h dr cos = ...
+        # Y: dv_yd + L_bar dr_d - dv_x sin - dv_y cos + d_h dr cos = ...
         A[10, 4] = 1.0
         A[10, 5] = self.L_bar
-        A[10, 0] = np.sin(d_theta1)
+        A[10, 0] = -np.sin(d_theta1)
         A[10, 1] = -np.cos(d_theta1)
         A[10, 2] = self.d_h * np.cos(d_theta1)
-        B[10] = (r - r_d) * (-v_x * np.cos(d_theta1) - (v_y - self.d_h * r) * np.sin(d_theta1))
+        B[10] = (r - r_d) * (v_x * np.cos(d_theta1) - (v_y - self.d_h * r) * np.sin(d_theta1))
         
         # --- 5. Hitch 2 Acceleration Constraints ---
-        # X: dv_xt - dv_xd cos - dv_yd sin = ...
+        # X: dv_xt - dv_xd cos + dv_yd sin = ...
         A[11, 6] = 1.0
         A[11, 3] = -np.cos(d_theta2)
-        A[11, 4] = -np.sin(d_theta2)
-        B[11] = (r_d - r_t) * (-v_xd * np.sin(d_theta2) + v_yd * np.cos(d_theta2))
+        A[11, 4] = np.sin(d_theta2)
+        B[11] = (r_d - r_t) * (-v_xd * np.sin(d_theta2) - v_yd * np.cos(d_theta2))
         
-        # Y: dv_yt + l_ft dr_t + dv_xd sin - dv_yd cos = ...
+        # Y: dv_yt + l_ft dr_t - dv_xd sin - dv_yd cos = ...
         A[12, 7] = 1.0
         A[12, 8] = self.l_ft
-        A[12, 3] = np.sin(d_theta2)
+        A[12, 3] = -np.sin(d_theta2)
         A[12, 4] = -np.cos(d_theta2)
-        B[12] = (r_d - r_t) * (-v_xd * np.cos(d_theta2) - v_yd * np.sin(d_theta2))
+        B[12] = (r_d - r_t) * (v_xd * np.cos(d_theta2) - v_yd * np.sin(d_theta2))
 
         # Solve for accelerations and hitch forces
         try:
@@ -206,12 +206,12 @@ class TractorTrailerDynamicModel:
 
         # Enforce exact kinematic velocity constraints to prevent numerical drift (Baumgarte alternative)
         # Hitch 1 Velocity Constraint (in Drawbar frame):
-        v_xd_new = v_x_new * np.cos(d_theta1) + v_y_new * np.sin(d_theta1) - self.d_h * r_new * np.sin(d_theta1)
-        v_yd_new = -v_x_new * np.sin(d_theta1) + v_y_new * np.cos(d_theta1) - self.d_h * r_new * np.cos(d_theta1) - self.L_bar * r_d_new
+        v_xd_new = v_x_new * np.cos(d_theta1) - (v_y_new - self.d_h * r_new) * np.sin(d_theta1)
+        v_yd_new = v_x_new * np.sin(d_theta1) + (v_y_new - self.d_h * r_new) * np.cos(d_theta1) - self.L_bar * r_d_new
         
         # Hitch 2 Velocity Constraint (in Trailer frame):
-        v_xt_new = v_xd_new * np.cos(d_theta2) + v_yd_new * np.sin(d_theta2)
-        v_yt_new = -v_xd_new * np.sin(d_theta2) + v_yd_new * np.cos(d_theta2) - self.l_ft * r_t_new
+        v_xt_new = v_xd_new * np.cos(d_theta2) - v_yd_new * np.sin(d_theta2)
+        v_yt_new = v_xd_new * np.sin(d_theta2) + v_yd_new * np.cos(d_theta2) - self.l_ft * r_t_new
 
         # Update positions (Global frame)
         x0, y0 = state['positions'][0:2]

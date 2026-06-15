@@ -75,10 +75,10 @@ class TractorTrailerSimulator:
             t = i * self.dt
             
             # Simple lane change / steering profile
-            if 2.0 <= t < 6.0:
-                delta = np.radians(10.0)
-            elif 6.0 <= t < 10.0:
-                delta = np.radians(-10.0)
+            if 2.0 <= t < 4.0:
+                delta = np.radians(3.0)
+            elif 4.0 <= t < 6.0:
+                delta = np.radians(-3.0)
             else:
                 delta = 0.0
                 
