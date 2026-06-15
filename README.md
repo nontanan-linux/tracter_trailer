@@ -252,13 +252,19 @@ $$ M(q)\ddot{q} + C(q,\dot{q})\dot{q} = Q $$
 
 #### 1. Acceleration and Velocity Vectors
 
-*   $\ddot{q} = [\dot{v}_x, \dot{v}_y, \dot{r}, \dot{v}_{xd}, \dot{v}_{yd}, \dot{r}_d, \dot{v}_{xt}, \dot{v}_{yt}, \dot{r}_t]^T$
+$$
+\ddot{q} = [\dot{v}_x, \dot{v}_y, \dot{r}, \dot{v}_{xd}, \dot{v}_{yd}, \dot{r}_d, \dot{v}_{xt}, \dot{v}_{yt}, \dot{r}_t]^T
+$$
 
-*   $\dot{q} = [v_x, v_y, r, v_{xd}, v_{yd}, r_d, v_{xt}, v_{yt}, r_t]^T$
+$$
+\dot{q} = [v_x, v_y, r, v_{xd}, v_{yd}, r_d, v_{xt}, v_{yt}, r_t]^T
+$$
 
 #### 2. Mass and Inertia Matrix $M(q)$
 
-$$ M(q) = \text{diag}(m, m, I_z, m_d, m_d, I_{zd}, m_t, m_t, I_{zt}) $$
+$$
+M(q) = \text{diag}(m, m, I_z, m_d, m_d, I_{zd}, m_t, m_t, I_{zt})
+$$
 
 #### 3. Coriolis and Centrifugal Force Matrix $C(q, \dot{q})$
 
