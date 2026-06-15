@@ -77,17 +77,31 @@ def simulate():
         states.append(state)
         inputs.append([Fxr, delta])
         
-        # Compute Dolly & Trailer velocities for logging/display
+        # Compute velocities using world-frame derivations from Section 1.3
         theta0, theta1, theta2 = state[2], state[3], state[4]
         vy, r, rd, rt = state[6], state[7], state[8], state[9]
-        delta_theta1 = theta0 - theta1
-        delta_theta2 = theta1 - theta2
         
-        vxd = vx * np.cos(delta_theta1) + (vy - model.d_h * r) * np.sin(delta_theta1)
-        vyd = -vx * np.sin(delta_theta1) + (vy - model.d_h * r) * np.cos(delta_theta1) - model.l_fd * rd
-        vxt = vxd * np.cos(delta_theta2) + (vyd - model.l_rd * rd) * np.sin(delta_theta2)
+        dx0 = vx * np.cos(theta0) - vy * np.sin(theta0)
+        dy0 = vx * np.sin(theta0) + vy * np.cos(theta0)
         
-        velocities.append([vxt])
+        # Dolly velocity (Section 1.3)
+        dxd = dx0 + model.d_h * r * np.sin(theta0) + model.l_fd * rd * np.sin(theta1)
+        dyd = dy0 - model.d_h * r * np.cos(theta0) - model.l_fd * rd * np.cos(theta1)
+        
+        # Trailer body velocity (Section 1.3)
+        dxt = dx0 + model.d_h * r * np.sin(theta0) + (model.l_fd + model.l_rd) * rd * np.sin(theta1) + model.l_ft * rt * np.sin(theta2)
+        dyt = dy0 - model.d_h * r * np.cos(theta0) - (model.l_fd + model.l_rd) * rd * np.cos(theta1) - model.l_ft * rt * np.cos(theta2)
+        
+        # Project world velocity to trailer body longitudinal velocity
+        vxt = dxt * np.cos(theta2) + dyt * np.sin(theta2)
+        
+        # Calculate Kinetic Energy (Section 1.4)
+        T_tractor = 0.5 * model.m * (dx0**2 + dy0**2) + 0.5 * model.I_z * r**2
+        T_dolly = 0.5 * model.m_d * (dxd**2 + dyd**2) + 0.5 * model.I_zd * rd**2
+        T_trailer = 0.5 * model.m_t * (dxt**2 + dyt**2) + 0.5 * model.I_zt * rt**2
+        T_total = T_tractor + T_dolly + T_trailer
+        
+        velocities.append([vxt, T_total])
         
         # Get Coordinates for Trajectory (Tractor Rear Axle)
         coords = model.get_coordinates(state)
@@ -196,7 +210,8 @@ def simulate():
         psi = state[2] - state[3]
         psi = (psi + np.pi) % (2 * np.pi) - np.pi
         
-        status_texts[1].set_text(f'Trailer Vxt: {vels[0]:.2f} m/s\nDrawbar Ang: {np.degrees(psi):.1f} deg')
+        T_total_display = vels[1]
+        status_texts[1].set_text(f'Trailer Vxt: {vels[0]:.2f} m/s\nDrawbar Ang: {np.degrees(psi):.1f} deg\nKinetic Energy (T): {T_total_display/1000:.1f} kJ')
         
         # --- Coordinates ---
         coords = model.get_coordinates(state)
