@@ -277,32 +277,29 @@ $$X = [\dot{v}_x, \dot{v}_y, \dot{r}, \dot{v}_{xd}, \dot{v}_{yd}, \dot{r}_d, \do
 *   $B_{13} = (r_d - r_t)[-v_{xd}\cos\Delta\theta_2 - (v_{yd} - l_{rd} r_d)\sin\Delta\theta_2]$
 
 #### 3. เมทริกซ์สัมประสิทธิ์ $A$ (ขนาด $13 \times 13$)
-แทนที่จะเขียนตาราง $13 \times 13$ ที่มีแต่เลขศูนย์ เราสามารถระบุเฉพาะค่าสัมประสิทธิ์ (Non-zero elements) ในแต่ละแถว (Row) ได้ดังนี้:
+เพื่อให้การเขียนเมทริกซ์ขนาดใหญ่สามารถอ่านได้ง่ายในรูปแบบสมการเต็ม (Full Matrix Form) เราจะกำหนดตัวย่อของค่าตรีโกณมิติดังนี้:
+*   $c_1 = \cos\Delta\theta_1$, $\quad s_1 = \sin\Delta\theta_1$
+*   $c_2 = \cos\Delta\theta_2$, $\quad s_2 = \sin\Delta\theta_2$
 
-**หมวดรถลากจูง (Tractor):**
-*   **แถวที่ 1:** $A_{1,1} = m, \quad A_{1,10} = 1$
-*   **แถวที่ 2:** $A_{2,2} = m, \quad A_{2,11} = 1$
-*   **แถวที่ 3:** $A_{3,3} = I_z, \quad A_{3,11} = d_h$
+เมื่อนำสัมประสิทธิ์ของสมการทั้งหมดมาจัดเรียง จะได้เมทริกซ์ $A$ แบบเต็มรูปแบบ (Full Expanded Matrix) ดังนี้:
 
-**หมวดดอลลี่ (Dolly):**
-*   **แถวที่ 4:** $A_{4,4} = m_d, \quad A_{4,10} = -\cos\Delta\theta_1, \quad A_{4,11} = -\sin\Delta\theta_1, \quad A_{4,12} = \cos\Delta\theta_2, \quad A_{4,13} = \sin\Delta\theta_2$
-*   **แถวที่ 5:** $A_{5,5} = m_d, \quad A_{5,10} = \sin\Delta\theta_1, \quad A_{5,11} = -\cos\Delta\theta_1, \quad A_{5,12} = -\sin\Delta\theta_2, \quad A_{5,13} = \cos\Delta\theta_2$
-*   **แถวที่ 6:** $A_{6,6} = I_{zd}, \quad A_{6,10} = l_{fd}\sin\Delta\theta_1, \quad A_{6,11} = -l_{fd}\cos\Delta\theta_1, \quad A_{6,12} = -l_{rd}\sin\Delta\theta_2, \quad A_{6,13} = l_{rd}\cos\Delta\theta_2$
-
-**หมวดรถพ่วงหลัก (Trailer Body):**
-*   **แถวที่ 7:** $A_{7,7} = m_t, \quad A_{7,12} = -1$
-*   **แถวที่ 8:** $A_{8,8} = m_t, \quad A_{8,13} = -1$
-*   **แถวที่ 9:** $A_{9,9} = I_{zt}, \quad A_{9,13} = l_{ft}$
-
-**หมวดสมการเงื่อนไข (Constraints $H_1$):**
-*   **แถวที่ 10:** $A_{10,1} = -\cos\Delta\theta_1, \quad A_{10,2} = -\sin\Delta\theta_1, \quad A_{10,3} = d_h\sin\Delta\theta_1, \quad A_{10,4} = 1$
-*   **แถวที่ 11:** $A_{11,1} = \sin\Delta\theta_1, \quad A_{11,2} = -\cos\Delta\theta_1, \quad A_{11,3} = d_h\cos\Delta\theta_1, \quad A_{11,5} = 1, \quad A_{11,6} = l_{fd}$
-
-**หมวดสมการเงื่อนไข (Constraints $H_2$):**
-*   **แถวที่ 12:** $A_{12,4} = -\cos\Delta\theta_2, \quad A_{12,5} = -\sin\Delta\theta_2, \quad A_{12,6} = l_{rd}\sin\Delta\theta_2, \quad A_{12,7} = 1$
-*   **แถวที่ 13:** $A_{13,4} = \sin\Delta\theta_2, \quad A_{13,5} = -\cos\Delta\theta_2, \quad A_{13,6} = l_{rd}\cos\Delta\theta_2, \quad A_{13,8} = 1, \quad A_{13,9} = l_{ft}$
-
-*(ช่องอื่นๆ นอกเหนือจากนี้ในเมทริกซ์ $A$ มีค่าเท่ากับ 0)*
+$$
+A = \begin{bmatrix}
+m & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+0 & m & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+0 & 0 & I_z & 0 & 0 & 0 & 0 & 0 & 0 & 0 & d_h & 0 & 0 \\
+0 & 0 & 0 & m_d & 0 & 0 & 0 & 0 & 0 & -c_1 & -s_1 & c_2 & s_2 \\
+0 & 0 & 0 & 0 & m_d & 0 & 0 & 0 & 0 & s_1 & -c_1 & -s_2 & c_2 \\
+0 & 0 & 0 & 0 & 0 & I_{zd} & 0 & 0 & 0 & l_{fd}s_1 & -l_{fd}c_1 & -l_{rd}s_2 & l_{rd}c_2 \\
+0 & 0 & 0 & 0 & 0 & 0 & m_t & 0 & 0 & 0 & 0 & -1 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & m_t & 0 & 0 & 0 & 0 & -1 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & I_{zt} & 0 & 0 & 0 & l_{ft} \\
+-c_1 & -s_1 & d_h s_1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+s_1 & -c_1 & d_h c_1 & 0 & 1 & l_{fd} & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & -c_2 & -s_2 & l_{rd} s_2 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & s_2 & -c_2 & l_{rd} c_2 & 0 & 1 & l_{ft} & 0 & 0 & 0 & 0
+\end{bmatrix}
+$$
 
 เมื่อประกอบระบบสมการ $A \cdot X = B$ เรียบร้อยแล้ว โปรแกรมคอมพิวเตอร์สามารถใช้วิธีหาอินเวอร์สเมทริกซ์ $X = A^{-1} B$ เพื่อคำนวณหาความเร่งและแรงพ่วง ณ จุดเวลานั้นๆ ออกมาได้ทันที
 
