@@ -20,9 +20,9 @@ class TractorTrailerSimulator:
         self.tractor_rear = self.model.l_r + 0.62
         self.tractor_width = 1.3
         
-        # Trailer: assuming symmetric around its wheelbase for drawing (length 2.95)
-        self.trailer_front = self.model.l_ft + 0.835
-        self.trailer_rear = self.model.l_rt + 0.835
+        # Trailer: front and rear overhang = 0.2m
+        self.trailer_front = self.model.l_ft + 0.2
+        self.trailer_rear = self.model.l_rt + 0.2
         self.trailer_width = 1.3
         
         self.wheel_diam = 0.65
