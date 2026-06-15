@@ -9,6 +9,8 @@ from dynamic_model import TractorTrailerDynamicModel
 def simulate():
     # --- Parameters ---
     SAVE_ANIMATION = False
+    PLOT_DRAWBAR_TRAJECTORY = True
+    
     # Overall visual dimensions for the plots
     tractor_len = 2.95
     tractor_width = 1.30
