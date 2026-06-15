@@ -83,7 +83,7 @@ class TractorTrailerDynamicModel:
         # Tire slip angles
         alpha_f = np.arctan2(vy + self.l_f * r, vx_reg) - delta
         alpha_r = np.arctan2(vy - self.l_r * r, vx_reg)
-        alpha_d = np.arctan2(vyd, vxd_reg)
+        alpha_d = np.arctan2(vyd - self.l_rd * rd, vxd_reg)
         alpha_t = np.arctan2(vyt - self.l_rt * rt, vxt_reg)
         
         # Tire forces
@@ -142,9 +142,9 @@ class TractorTrailerDynamicModel:
         A[5, 5] = self.I_zd
         A[5, 9] = self.l_fd * s1
         A[5, 10] = -self.l_fd * c1
-        A[5, 11] = -self.l_rd * s2
-        A[5, 12] = self.l_rd * c2
-        b[5] = 0.0
+        A[5, 11] = self.l_rd * s2
+        A[5, 12] = -self.l_rd * c2
+        b[5] = -self.l_rd * Fyd
         
         # 7. Trailer Body Longitudinal
         A[6, 6] = self.m_t
