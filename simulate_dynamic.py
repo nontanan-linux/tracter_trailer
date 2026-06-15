@@ -1,113 +1,96 @@
-import os
-import sys
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 import matplotlib.animation as animation
 from matplotlib.patches import Rectangle
 from dynamic_model import TractorTrailerDynamicModel
+import sys
+import os
 
 class TractorTrailerSimulator:
-    def __init__(self, T=20.0, dt=0.05, v_target=2.0):
-        self.T = T
-        self.dt = dt
-        self.v_target = v_target
+    def __init__(self):
+        self.dt = 0.05
+        self.t_end = 20.0
         
-        # --- Parameters ---
-        self.SAVE_ANIMATION = False
-        self.PLOT_DRAWBAR_TRAJECTORY = True
+        self.model = TractorTrailerDynamicModel()
         
-        # Overall visual dimensions for the plots
-        self.tractor_len = 2.95
-        self.tractor_width = 1.30
-        self.tractor_overhang = 0.62
-        self.L0 = 1.28
+        # Dimensions for drawing
+        self.tractor_len = 4.0
+        self.tractor_width = 2.0
+        self.tractor_overhang = 1.0 # Distance from rear axle to rear edge
         
-        # Trailer body dimensions
-        self.trailer_body_len = 2.95
-        self.trailer_width = 1.30
-        self.W = 1.09        # Track Width
+        self.trailer_body_len = 6.0
+        self.trailer_width = 2.2
+        self.trailer_overhang = 1.0 # Distance from rear axle to rear edge of trailer
         
-        self.wheel_width = 0.2
         self.wheel_diam = 0.8
-        self.trailer_overhang = 0.5
+        self.wheel_width = 0.3
+        self.W = 1.8 # Track width
         
-        self.model = TractorTrailerDynamicModel(
-            m=5000.0, I_z=10000.0, l_f=2.0, l_r=1.5, d_h=1.5,
-            m_t=1000.0, I_zt=2000.0, l_tf=1.5, l_tr=1.5,
-            L_bar=2.0
-        )
+        self.SAVE_ANIMATION = True
         
         self.states = []
         self.inputs = []
-        self.velocities = []
+        self.hitch_forces = []
+        
         self.trajectory = []
         self.drawbar_trajectories = []
+
+    def get_coordinates(self, state):
+        pos = state['positions']
         
+        x0, y0, theta0 = pos[0], pos[1], pos[2]
+        xd, yd, theta1 = pos[3], pos[4], pos[5]
+        xt, yt, theta2 = pos[6], pos[7], pos[8]
+        
+        p0 = np.array([x0, y0])
+        p0_f = p0 + self.model.l_f * np.array([np.cos(theta0), np.sin(theta0)])
+        
+        h1 = p0 - self.model.d_h * np.array([np.cos(theta0), np.sin(theta0)])
+        p_axle_f = np.array([xd, yd])  # Drawbar axle = Trailer Front Axle
+        p_axle_r = p_axle_f - self.model.l_ft * np.array([np.cos(theta2), np.sin(theta2)]) - self.model.l_rt * np.array([np.cos(theta2), np.sin(theta2)])
+        
+        # Actually, Trailer CG is at (xt, yt), so rear axle is at (xt - l_rt*cos(theta2), yt - l_rt*sin(theta2))
+        p_axle_r = np.array([xt - self.model.l_rt * np.cos(theta2), yt - self.model.l_rt * np.sin(theta2)])
+        
+        return [p0, p0_f, h1, p_axle_f, p_axle_r]
+
     def run_simulation(self):
-        print("Running dynamic simulation...")
+        # Initial State [x0, y0, theta0, xd, yd, theta1, xt, yt, theta2]
+        initial_pos = np.array([0.0, 0.0, 0.0, 
+                                -self.model.d_h - self.model.L_bar, 0.0, 0.0,
+                                -self.model.d_h - self.model.L_bar - self.model.l_ft, 0.0, 0.0])
+                                
+        # Initial Velocities [v_x, v_y, r, v_xd, v_yd, r_d, v_xt, v_yt, r_t]
+        v0 = 5.0
+        initial_vel = np.array([v0, 0.0, 0.0, v0, 0.0, 0.0, v0, 0.0, 0.0])
         
-        # Initial State: 
-        # [0] x0, [1] y0, [2] theta0
-        # [3] vx, [4] vy, [5] r
-        # [6] xt, [7] yt, [8] thetat
-        # [9] vxt, [10] vyt, [11] rt
-        # [12] thetad
-        state = np.zeros(13)
-        state[3] = 2.0  # Initial forward velocity vx
-        state[9] = 2.0  # Initial trailer forward velocity vxt
+        state = {'positions': initial_pos, 'velocities': initial_vel}
         
-        # Set initial positions
-        state[0] = 0.0
-        state[1] = 0.0
-        state[2] = 0.0
+        num_steps = int(self.t_end / self.dt)
+        print(f"Running simulation for {num_steps} steps ({self.t_end}s)...")
         
-        # Trailer starts directly behind the tractor
-        state[12] = 0.0 # thetad = 0
-        state[8]  = 0.0 # thetat = 0
-        
-        # Hitch is at -d_h. Front axle is at -d_h - L_bar. Trailer CG is at -d_h - L_bar - l_tf
-        state[6] = -self.model.d_h - self.model.L_bar - self.model.l_tf
-        state[7] = 0.0
-        
-        # PI Controller for speed
-        Kp = 1000.0
-        Ki = 100.0
-        v_error_integral = 0.0
-        
-        steps = int(self.T / self.dt)
-        
-        for i in range(steps):
+        for i in range(num_steps):
             t = i * self.dt
             
-            # Speed Control
-            vx = state[3]
-            v_error = self.v_target - vx
-            v_error_integral += v_error * self.dt
-            Fxr = Kp * v_error + Ki * v_error_integral
-            Fxr = np.clip(Fxr, -10000.0, 10000.0)
+            # Simple lane change / steering profile
+            if 2.0 <= t < 6.0:
+                delta = np.radians(10.0)
+            elif 6.0 <= t < 10.0:
+                delta = np.radians(-10.0)
+            else:
+                delta = 0.0
+                
+            self.states.append({'positions': state['positions'].copy(), 'velocities': state['velocities'].copy()})
+            self.inputs.append([0.0, delta]) # F_xf = 0, delta
             
-            # Steering input
-            delta = np.radians(8) * (1 - np.exp(-t))
-            
-            self.states.append(state.copy())
-            self.inputs.append([Fxr, delta])
-            
-            vxt = state[9]
-            vyt = state[10]
-            T_total = 0.5 * self.model.m_t * (vxt**2 + vyt**2)
-            self.velocities.append([vxt, T_total])
-            
-            coords = self.model.get_coordinates(state)
+            coords = self.get_coordinates(state)
             self.trajectory.append(coords[0])
-            self.drawbar_trajectories.append([coords[3]]) # Tracking front axle position
+            self.drawbar_trajectories.append(coords[3])
             
-            state = self.model.update(state, Fxr, delta, dt=self.dt)
+            res = self.model.step(state, delta, dt=self.dt)
+            state = {'positions': res['positions'], 'velocities': res['velocities']}
+            self.hitch_forces.append(res['hitch_forces'])
             
-        self.states = np.array(self.states)
-        self.inputs = np.array(self.inputs)
-        self.trajectory = np.array(self.trajectory)
-        self.drawbar_trajectories = np.array(self.drawbar_trajectories)
         print("Simulation complete. Preparing animation...")
 
     @staticmethod
@@ -134,50 +117,49 @@ class TractorTrailerSimulator:
         l, = ax.plot([wl_pos[0], wr_pos[0]], [wl_pos[1], wr_pos[1]], 'k-', lw=2)
         return w_objs + [l]
 
-    def update_plot(self, i, ax, trace, status_texts, drawbar_traces, patches_list):
+    def update_plot(self, i, ax, trace, d_trace, status_texts, patches_list):
         for p in patches_list:
             p.remove()
         patches_list.clear()
         
-        trace.set_data(self.trajectory[:i, 0], self.trajectory[:i, 1])
+        tr_x = [p[0] for p in self.trajectory[:i]]
+        tr_y = [p[1] for p in self.trajectory[:i]]
+        trace.set_data(tr_x, tr_y)
         
-        if self.PLOT_DRAWBAR_TRAJECTORY:
-            drawbar_traces[0].set_data(self.drawbar_trajectories[:i, 0, 0], self.drawbar_trajectories[:i, 0, 1])
+        db_x = [p[0] for p in self.drawbar_trajectories[:i]]
+        db_y = [p[1] for p in self.drawbar_trajectories[:i]]
+        d_trace.set_data(db_x, db_y)
             
         state = self.states[i]
-        Fxr_curr = self.inputs[i, 0]
-        delta_curr = self.inputs[i, 1]
-        vels = self.velocities[i]
+        delta_curr = self.inputs[i][1]
         
-        vx_curr = state[3]
+        pos = state['positions']
+        vels = state['velocities']
+        
+        vx_curr = vels[0]
+        vxt_curr = vels[6]
         
         if i % 10 == 0:
-            x0_pos, y0_pos = self.trajectory[i][0], self.trajectory[i][1]
-            if self.PLOT_DRAWBAR_TRAJECTORY:
-                xt_pos, yt_pos = self.drawbar_trajectories[i][0][0], self.drawbar_trajectories[i][0][1]
-            else:
-                xt_pos, yt_pos = 0.0, 0.0
-            print(f"t={i*self.dt:05.2f}s | Tractor: x={x0_pos:06.2f}, y={y0_pos:06.2f}, v={vx_curr:05.2f} m/s | Trailer: x={xt_pos:06.2f}, y={yt_pos:06.2f}, v={vels[0]:05.2f} m/s")
+            print(f"t={i*self.dt:05.2f}s | Tractor: v={vx_curr:05.2f} m/s | Trailer: v={vxt_curr:05.2f} m/s")
             sys.stdout.flush()
             
-        status_texts[0].set_text(f'Tractor Vx: {vx_curr:.2f} m/s\nForce Fxr: {Fxr_curr:.1f} N\nSteer: {np.degrees(delta_curr):.1f} deg')
+        status_texts[0].set_text(f'Tractor Vx: {vx_curr:.2f} m/s\nSteer: {np.degrees(delta_curr):.1f} deg')
         
-        psi = state[2] - state[12] # theta0 - thetad
+        psi = pos[2] - pos[5] # theta0 - theta1 (Drawbar relative to Tractor)
         psi = (psi + np.pi) % (2 * np.pi) - np.pi
         
-        T_total_display = vels[1]
-        status_texts[1].set_text(f'Trailer Vxt: {vels[0]:.2f} m/s\nDrawbar Ang: {np.degrees(psi):.1f} deg\nKinetic Energy (T): {T_total_display/1000:.1f} kJ')
+        status_texts[1].set_text(f'Trailer Vxt: {vxt_curr:.2f} m/s\nDrawbar Ang: {np.degrees(psi):.1f} deg')
         
-        coords = self.model.get_coordinates(state)
+        coords = self.get_coordinates(state)
         p0 = coords[0]
         p0_f = coords[1]
         h1 = coords[2]
-        p_axle_f = coords[3] # Front steerable axle of trailer
+        p_axle_f = coords[3] # Front steerable axle of trailer (Drawbar Axle)
         p_axle_r = coords[4] # Rear fixed axle of trailer
         
-        theta0 = state[2]
-        thetat = state[8]
-        thetad = state[12]
+        theta0 = pos[2]
+        theta1 = pos[5]
+        theta2 = pos[8]
         
         # Draw Tractor
         p_tractor_c = p0 + ((self.tractor_len / 2) - self.tractor_overhang) * np.array([np.cos(theta0), np.sin(theta0)])
@@ -196,29 +178,29 @@ class TractorTrailerSimulator:
         patches_list.append(l_db)
         
         # Draw Trailer Body (centered between front and rear axles)
-        p_trailer_c = p_axle_r + (self.trailer_body_len / 2 - self.trailer_overhang) * np.array([np.cos(thetat), np.sin(thetat)])
-        patches_list.append(self.draw_box(ax, p_trailer_c, self.trailer_body_len, self.trailer_width, thetat, color='blue', alpha=0.5))
+        p_trailer_c = p_axle_r + (self.trailer_body_len / 2 - self.trailer_overhang) * np.array([np.cos(theta2), np.sin(theta2)])
+        patches_list.append(self.draw_box(ax, p_trailer_c, self.trailer_body_len, self.trailer_width, theta2, color='blue', alpha=0.5))
         
-        # Draw Trailer Front Axle (Steers according to drawbar angle thetad)
-        patches_list.extend(self.draw_wheels_at_axle(ax, p_axle_f, thetad, self.W)) 
+        # Draw Trailer Front Axle (Steers according to drawbar angle theta1)
+        patches_list.extend(self.draw_wheels_at_axle(ax, p_axle_f, theta1, self.W)) 
         
-        # Draw Trailer Rear Axle (Fixed to trailer body angle thetat)
-        patches_list.extend(self.draw_wheels_at_axle(ax, p_axle_r, thetat, self.W))  
+        # Draw Trailer Rear Axle (Fixed to trailer body angle theta2)
+        patches_list.extend(self.draw_wheels_at_axle(ax, p_axle_r, theta2, self.W))  
         
         # Draw Hitch
         pt_h, = ax.plot(h1[0], h1[1], 'ko', ms=5)
         patches_list.append(pt_h)
         
-        return patches_list + [trace] + status_texts + drawbar_traces
+        return patches_list + [trace, d_trace] + status_texts
 
     def animate(self):
         fig, ax = plt.subplots(figsize=(12, 12))
         ax.set_aspect('equal')
-        ax.set_xlim(-10, 30)
-        ax.set_ylim(-10, 40)
+        ax.set_xlim(-10, 40)
+        ax.set_ylim(-10, 50)
         ax.grid(True)
         
-        ax.set_title(f"Tractor-Trailer Dynamic Simulation (2-Body Newton-Euler)")
+        ax.set_title(f"Tractor-Trailer Dynamic Simulation (9-DOF Lagrangian Matrix)")
         ax.set_xlabel("X [m]")
         ax.set_ylabel("Y [m]")
         
@@ -232,16 +214,12 @@ class TractorTrailerSimulator:
         status_texts.append(tr_text)
         
         trace, = ax.plot([], [], 'b--', alpha=0.5, label='Tractor Path')
-        
-        drawbar_traces = []
-        if self.PLOT_DRAWBAR_TRAJECTORY:
-            d_trace, = ax.plot([], [], '--', color='orange', alpha=0.4, linewidth=1)
-            drawbar_traces.append(d_trace)
+        d_trace, = ax.plot([], [], '--', color='orange', alpha=0.4, linewidth=1)
             
         patches_list = []
         
         ani = animation.FuncAnimation(fig, self.update_plot, frames=len(self.states), 
-                                      fargs=(ax, trace, status_texts, drawbar_traces, patches_list),
+                                      fargs=(ax, trace, d_trace, status_texts, patches_list),
                                       interval=self.dt*1000, blit=True, repeat=False)
         
         if os.environ.get('DISPLAY'):
@@ -255,8 +233,6 @@ class TractorTrailerSimulator:
             writer = animation.PillowWriter(fps=20)
             ani.save('simulation_dynamic.gif', writer=writer)
             print("Simulation saved to simulation_dynamic.gif")
-        else:
-            print("Animation save skipped.")
 
 if __name__ == "__main__":
     sim = TractorTrailerSimulator()
