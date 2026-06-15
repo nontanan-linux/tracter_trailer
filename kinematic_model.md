@@ -1,4 +1,10 @@
 # แบบจำลองพลศาสตร์ 2-Body (Tractor + Full Trailer)
+
+## 0. Schematic and Coordinate Systems
+
+### 0.1 Tracter with Drawbar Trailler Diagram
+![Kinematic Diagram 1 Trailer](./kinematic_diagram_1trailer.png)
+
 ### 1.3 แบบจำลองคณิตศาสตร์ 2 วัตถุ (2-Body Mathematical Model)
 เพื่อให้สอดคล้องกับพฤติกรรมทางกายภาพของรถพ่วงแบบก้านลาก (Drawbar Trailer หรือ Full Trailer) เราสามารถมองรถพ่วงเป็น **"รถ 1 คันที่มีล้อหน้าหมุนเลี้ยวได้"** โดยที่:
 - **Drawbar (ก้านลาก)** ทำหน้าที่เป็นเพียงแขนคาน (Arm) หรือโครงสร้างที่ยึดติดกับเพลาล้อหน้า ไม่มีมวลในตัวมันเอง
