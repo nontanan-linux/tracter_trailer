@@ -47,15 +47,15 @@ class TractorTrailerSimulator:
         
         p0 = np.array([x0, y0])
         p0_f = p0 + self.model.l_f * np.array([np.cos(theta0), np.sin(theta0)])
+        p0_r = p0 - self.model.l_r * np.array([np.cos(theta0), np.sin(theta0)])
         
         h1 = p0 - self.model.d_h * np.array([np.cos(theta0), np.sin(theta0)])
         p_axle_f = np.array([xd, yd])  # Drawbar axle = Trailer Front Axle
-        p_axle_r = p_axle_f - self.model.l_ft * np.array([np.cos(theta2), np.sin(theta2)]) - self.model.l_rt * np.array([np.cos(theta2), np.sin(theta2)])
         
         # Actually, Trailer CG is at (xt, yt), so rear axle is at (xt - l_rt*cos(theta2), yt - l_rt*sin(theta2))
         p_axle_r = np.array([xt - self.model.l_rt * np.cos(theta2), yt - self.model.l_rt * np.sin(theta2)])
         
-        return [p0, p0_f, h1, p_axle_f, p_axle_r]
+        return [p0, p0_f, p0_r, h1, p_axle_f, p_axle_r]
 
     def run_simulation(self):
         # Initial State [x0, y0, theta0, xd, yd, theta1, xt, yt, theta2]
@@ -157,9 +157,10 @@ class TractorTrailerSimulator:
         coords = self.get_coordinates(state)
         p0 = coords[0]
         p0_f = coords[1]
-        h1 = coords[2]
-        p_axle_f = coords[3] # Front steerable axle of trailer (Drawbar Axle)
-        p_axle_r = coords[4] # Rear fixed axle of trailer
+        p0_r = coords[2]
+        h1 = coords[3]
+        p_axle_f = coords[4] # Front steerable axle of trailer (Drawbar Axle)
+        p_axle_r = coords[5] # Rear fixed axle of trailer
         
         x0, y0, theta0 = pos[0:3]
         xd, yd, theta1 = pos[3:6]
@@ -177,7 +178,7 @@ class TractorTrailerSimulator:
         ax.add_patch(rect_tractor)
         patches_list.append(rect_tractor)
         
-        patches_list.extend(self.draw_wheels_at_axle(ax, p0, theta0, self.W)) 
+        patches_list.extend(self.draw_wheels_at_axle(ax, p0_r, theta0, self.W)) 
         patches_list.extend(self.draw_wheels_at_axle(ax, p0_f, theta0, self.W, steered_angle=delta_curr)) 
         
         # Tractor rear overhang to Hitch
@@ -221,16 +222,16 @@ class TractorTrailerSimulator:
         ax.set_ylabel("Y [m]")
         
         status_texts = []
-        t_text = ax.text(0.05, 0.95, '', transform=ax.transAxes, fontsize=10, color='blue',
+        t_text = ax.text(0.05, 0.95, '', transform=ax.transAxes, fontsize=10, color='orangered',
                          verticalalignment='top', fontweight='bold', bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.6, edgecolor='none'))
         status_texts.append(t_text)
         
-        tr_text = ax.text(0.05, 0.82, '', transform=ax.transAxes, fontsize=10, color='orange',
+        tr_text = ax.text(0.05, 0.82, '', transform=ax.transAxes, fontsize=10, color='blue',
                           verticalalignment='top', fontweight='bold', bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.6, edgecolor='none'))
         status_texts.append(tr_text)
         
-        trace, = ax.plot([], [], 'b--', alpha=0.5, label='Tractor Path')
-        d_trace, = ax.plot([], [], '--', color='orange', alpha=0.4, linewidth=1)
+        trace, = ax.plot([], [], '--', color='orangered', alpha=0.5, label='Tractor Path')
+        d_trace, = ax.plot([], [], 'b--', alpha=0.4, linewidth=1)
             
         patches_list = []
         
