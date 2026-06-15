@@ -131,25 +131,25 @@ class TractorTrailerDynamicModel:
         
         # --- Jacobian Matrix (J) ---
         # 10. Constraint H1 X
-        A[9, 0] = -c1; A[9, 1] = -s1; A[9, 2] = self.d_h * s1; A[9, 3] = 1.0
+        A[9, 0] = -c1; A[9, 1] = s1; A[9, 2] = -self.d_h * s1; A[9, 3] = 1.0
         
         # 11. Constraint H1 Y
-        A[10, 0] = s1; A[10, 1] = -c1; A[10, 2] = self.d_h * c1; A[10, 4] = 1.0; A[10, 5] = self.l_fd
+        A[10, 0] = -s1; A[10, 1] = -c1; A[10, 2] = self.d_h * c1; A[10, 4] = 1.0; A[10, 5] = self.l_fd
         
         # 12. Constraint H2 X
-        A[11, 3] = -c2; A[11, 4] = -s2; A[11, 5] = self.l_rd * s2; A[11, 6] = 1.0
+        A[11, 3] = -c2; A[11, 4] = s2; A[11, 5] = -self.l_rd * s2; A[11, 6] = 1.0
         
         # 13. Constraint H2 Y
-        A[12, 3] = s2; A[12, 4] = -c2; A[12, 5] = self.l_rd * c2; A[12, 7] = 1.0; A[12, 8] = self.l_ft
+        A[12, 3] = -s2; A[12, 4] = -c2; A[12, 5] = self.l_rd * c2; A[12, 7] = 1.0; A[12, 8] = self.l_ft
         
         # --- Lagrange Multipliers Forces (-J^T) ---
         A[0:9, 9:13] = -A[9:13, 0:9].T
         
         # Constraints accelerations (rhs of J * q_ddot)
-        b[9] = (r - rd) * (-vx * s1 + (vy - self.d_h * r) * c1)
-        b[10] = (r - rd) * (-vx * c1 - (vy - self.d_h * r) * s1)
-        b[11] = (rd - rt) * (-vxd * s2 + (vyd - self.l_rd * rd) * c2)
-        b[12] = (rd - rt) * (-vxd * c2 - (vyd - self.l_rd * rd) * s2)
+        b[9] = -(r - rd) * (vx * s1 + (vy - self.d_h * r) * c1)
+        b[10] = (r - rd) * (vx * c1 - (vy - self.d_h * r) * s1)
+        b[11] = -(rd - rt) * (vxd * s2 + (vyd - self.l_rd * rd) * c2)
+        b[12] = (rd - rt) * (vxd * c2 - (vyd - self.l_rd * rd) * s2)
         
         # Solve the system
         try:
