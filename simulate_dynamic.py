@@ -23,13 +23,13 @@ class TractorTrailerSimulator:
         self.tractor_overhang = 0.62
         self.L0 = 1.28
         
-        self.trailer_body_len = 4.0
+        self.trailer_body_len = 2.95
         self.trailer_width = 1.30
         self.W = 1.09        # Track Width
         
-        # Trailer Configuration
+        # Trailer Configuration (same size as Tractor!)
         self.trailers = [
-            {'L_bar': 1.5, 'L_trl': 3.5, 'dh_prev': 0.62},
+            {'L_bar': 1.0, 'L_trl': 1.28, 'dh_prev': 0.62},
         ]
         self.num_trailers = len(self.trailers)
         self.wheel_width = 0.2
@@ -197,7 +197,7 @@ class TractorTrailerSimulator:
         l_db, = ax.plot([h_curr[0], p_dolly[0]], [h_curr[1], p_dolly[1]], 'k-', lw=3)
         patches_list.append(l_db)
         
-        p_trailer_c = p_dolly - 2.0 * np.array([np.cos(theta_trailer), np.sin(theta_trailer)])
+        p_trailer_c = p_dolly - 0.64 * np.array([np.cos(theta_trailer), np.sin(theta_trailer)])
         patches_list.append(self.draw_box(ax, p_trailer_c, self.trailer_body_len, self.trailer_width, theta_trailer, color='blue', alpha=0.5))
         
         patches_list.extend(self.draw_wheels_at_axle(ax, p_dolly, theta_drawbar, self.W)) 
