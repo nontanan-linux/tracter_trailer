@@ -160,37 +160,87 @@ $$\dot{v}_{yd} + L_{bar} \dot{r}_d - \dot{v}_x \sin\Delta\theta_1 - \dot{v}_y \c
 $$\dot{v}_{xt} - \dot{v}_{xd} \cos\Delta\theta_2 + \dot{v}_{yd} \sin\Delta\theta_2 = (r_d - r_t) \left[-v_{xd} \sin\Delta\theta_2 - v_{yd} \cos\Delta\theta_2\right]$$
 $$\dot{v}_{yt} + l_{ft} \dot{r}_t - \dot{v}_{xd} \sin\Delta\theta_2 - \dot{v}_{yd} \cos\Delta\theta_2 = (r_d - r_t) \left[v_{xd} \cos\Delta\theta_2 - v_{yd} \sin\Delta\theta_2\right]$$
 
-### 2.6 การจัดรูประบบสมการเมทริกซ์ 13x13 (Coupled $A X = B$)
-ในการแก้สมการทางคณิตศาสตร์ เราไม่สามารถแก้หา $\ddot{q}$ แยกจากแรงพ่วง $F_{h}$ ได้ จึงต้องจัดรูปสมการเชิงอนุพันธ์ทั้งหมด 9 สมการ และเงื่อนไขข้อต่อความเร่งอีก 4 สมการ รวมเป็นระบบสมการขนาด 13x13:
+### 2.6 การจัดรูประบบสมการเมทริกซ์ (Matrix Formulation)
+$$ M(q)\ddot{q} + C(q,\dot{q})\dot{q} = Q $$
 
-$$ A \cdot X = B $$
+#### 1. เวกเตอร์ความเร่งและความเร็ว
+*   $\ddot{q} = [\dot{v}_x, \dot{v}_y, \dot{r}, \dot{v}_{xd}, \dot{v}_{yd}, \dot{r}_d, \dot{v}_{xt}, \dot{v}_{yt}, \dot{r}_t]^T$
+*   $\dot{q} = [v_x, v_y, r, v_{xd}, v_{yd}, r_d, v_{xt}, v_{yt}, r_t]^T$
 
-โดยที่ $X$ คือเวกเตอร์ตัวแปรที่ต้องการแก้ (13 ตัวแปร):
-$$ X = \left[ \dot{v}_x, \dot{v}_y, \dot{r}, \dot{v}_{xd}, \dot{v}_{yd}, \dot{r}_d, \dot{v}_{xt}, \dot{v}_{yt}, \dot{r}_t, F_{hx1}, F_{hy1}, F_{hx2}, F_{hy2} \right]^T $$
+#### 2. เมทริกซ์มวลและความเฉื่อย $M(q)$
+$$ M(q) = \text{diag}(m, m, I_z, m_d, m_d, I_{zd}, m_t, m_t, I_{zt}) $$
 
-เมทริกซ์ $A$ ประกอบด้วยมวล, ความเฉื่อย, รัศมีวงเลี้ยว, และสมการเงื่อนไข:
-* แถวที่ 1-3: สมการความเร่ง Tractor
-* แถวที่ 4-6: สมการความเร่ง Drawbar
-* แถวที่ 7-9: สมการความเร่ง Trailer
-* แถวที่ 10-11: เงื่อนไขข้อต่อ H1 (แกน X, Y)
-* แถวที่ 12-13: เงื่อนไขข้อต่อ H2 (แกน X, Y)
-
-เวกเตอร์ฝั่งขวา $B$ (Right-Hand Side) คือผลรวมของแรงภายนอก (แรงยาง, ขับเคลื่อน) และเทอมหนีศูนย์กลาง (Centrifugal force terms):
+#### 3. เมทริกซ์คอริโอลิสและแรงหนีศูนย์กลาง $C(q, \dot{q})$
 $$
-B = \begin{bmatrix}
-F_{xr} + F_{xf}\cos\delta - F_{yf}\sin\delta + m v_y r \\
-F_{yr} + F_{xf}\sin\delta + F_{yf}\cos\delta - m v_x r \\
-l_f (F_{yf}\cos\delta + F_{xf}\sin\delta) - l_r F_{yr} \\
-F_{xd} + m_d v_{yd} r_d \\
-F_{yd} - m_d v_{xd} r_d \\
-0 \\
-F_{xt} + m_t v_{yt} r_t \\
-F_{ytr} - m_t v_{xt} r_t \\
--l_{rt} F_{ytr} \\
-(r - r_d) \left[-v_x \sin\Delta\theta_1 - (v_y - d_h r) \cos\Delta\theta_1\right] \\
-(r - r_d) \left[v_x \cos\Delta\theta_1 - (v_y - d_h r) \sin\Delta\theta_1\right] \\
-(r_d - r_t) \left[-v_{xd} \sin\Delta\theta_2 - v_{yd} \cos\Delta\theta_2\right] \\
-(r_d - r_t) \left[v_{xd} \cos\Delta\theta_2 - v_{yd} \sin\Delta\theta_2\right]
+C(q, \dot{q}) = \begin{bmatrix}
+0 & -m r & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+m r & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & -m_d r_d & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & m_d r_d & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & -m_t r_t & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & m_t r_t & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0
 \end{bmatrix}
 $$
-ซึ่งเมื่อแก้สมการเมทริกซ์อินเวอร์ส $X = A^{-1}B$ แล้ว จะได้ค่าความเร่งทั้ง 9 ตัวแปรไปทำการอินทิเกรตเพื่อหาความเร็วและตำแหน่งต่อไป
+
+#### 4. เวกเตอร์แรงทั่วไป $Q$
+$$
+Q = \begin{bmatrix}
+F_{xr} + F_{xf}\cos\delta - F_{yf}\sin\delta - F_{hx1} \\
+F_{yr} + F_{xf}\sin\delta + F_{yf}\cos\delta - F_{hy1} \\
+l_f (F_{yf}\cos\delta + F_{xf}\sin\delta) - l_r F_{yr} + d_h F_{hy1} \\
+F_{xd} + F_{hx1}\cos\Delta\theta_1 - F_{hy1}\sin\Delta\theta_1 - F_{hx2}\cos\Delta\theta_2 - F_{hy2}\sin\Delta\theta_2 \\
+F_{yd} + F_{hx1}\sin\Delta\theta_1 + F_{hy1}\cos\Delta\theta_1 + F_{hx2}\sin\Delta\theta_2 - F_{hy2}\cos\Delta\theta_2 \\
+L_{bar} (F_{hx1}\sin\Delta\theta_1 + F_{hy1}\cos\Delta\theta_1) \\
+F_{xt} + F_{hx2} \\
+F_{ytr} + F_{hy2} \\
+l_{ft} F_{hy2} - l_{rt} F_{ytr}
+\end{bmatrix}
+$$
+
+#### 5. สมการเต็มรูปแบบ (Full Expanded Equation)
+$$
+\begin{bmatrix}
+m & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & m & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & I_z & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & m_d & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & m_d & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & I_{zd} & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & m_t & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & m_t & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & I_{zt}
+\end{bmatrix}
+\begin{bmatrix}
+\dot{v}_x \\ \dot{v}_y \\ \dot{r} \\ \dot{v}_{xd} \\ \dot{v}_{yd} \\ \dot{r}_d \\ \dot{v}_{xt} \\ \dot{v}_{yt} \\ \dot{r}_t
+\end{bmatrix}
++
+\begin{bmatrix}
+0 & -m r & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+m r & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & -m_d r_d & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & m_d r_d & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & -m_t r_t & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & m_t r_t & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0
+\end{bmatrix}
+\begin{bmatrix}
+v_x \\ v_y \\ r \\ v_{xd} \\ v_{yd} \\ r_d \\ v_{xt} \\ v_{yt} \\ r_t
+\end{bmatrix}
+=
+\begin{bmatrix}
+F_{xr} + F_{xf}\cos\delta - F_{yf}\sin\delta - F_{hx1} \\
+F_{yr} + F_{xf}\sin\delta + F_{yf}\cos\delta - F_{hy1} \\
+l_f (F_{yf}\cos\delta + F_{xf}\sin\delta) - l_r F_{yr} + d_h F_{hy1} \\
+F_{xd} + F_{hx1}\cos\Delta\theta_1 - F_{hy1}\sin\Delta\theta_1 - F_{hx2}\cos\Delta\theta_2 - F_{hy2}\sin\Delta\theta_2 \\
+F_{yd} + F_{hx1}\sin\Delta\theta_1 + F_{hy1}\cos\Delta\theta_1 + F_{hx2}\sin\Delta\theta_2 - F_{hy2}\cos\Delta\theta_2 \\
+L_{bar} (F_{hx1}\sin\Delta\theta_1 + F_{hy1}\cos\Delta\theta_1) \\
+F_{xt} + F_{hx2} \\
+F_{ytr} + F_{hy2} \\
+l_{ft} F_{hy2} - l_{rt} F_{ytr}
+\end{bmatrix}
+$$
