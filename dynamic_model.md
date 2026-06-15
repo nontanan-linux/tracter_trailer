@@ -253,54 +253,54 @@ $$\dot{v}_{yd} + l_{fd} \dot{r}_d + \dot{v}_x \sin\Delta\theta_1 - \dot{v}_y \co
 $$\dot{v}_{xt} - \dot{v}_{xd} \cos\Delta\theta_2 - \dot{v}_{yd} \sin\Delta\theta_2 + l_{rd} \dot{r}_d \sin\Delta\theta_2 = (r_d - r_t) \left[-v_{xd} \sin\Delta\theta_2 + (v_{yd} - l_{rd} r_d) \cos\Delta\theta_2\right]$$
 $$\dot{v}_{yt} + l_{ft} \dot{r}_t + \dot{v}_{xd} \sin\Delta\theta_2 - \dot{v}_{yd} \cos\Delta\theta_2 + l_{rd} \dot{r}_d \cos\Delta\theta_2 = (r_d - r_t) \left[-v_{xd} \cos\Delta\theta_2 - (v_{yd} - l_{rd} r_d) \sin\Delta\theta_2\right]$$
 
-### 2.6 การจัดรูประบบสมการเมทริกซ์ (System Matrix Formulation)
-เพื่อทำการแก้สมการหาค่าความเร่งของวัตถุและแรงที่จุดพ่วงไปพร้อมๆ กัน เราจะนำสมการจากหัวข้อ 2.4 และ 2.5 มาจัดเรียงในรูปเมทริกซ์เชิงเส้น $A \cdot X = B$ โดยมีขนาด $13 \times 13$ ดังนี้:
+### 2.6 การจัดรูประบบสมการเมทริกซ์ (Matrix Formulation)
+จากสมการการเคลื่อนที่ในพิกัดตัวรถ (หัวข้อ 2.4) เราสามารถจัดรูปรวมสมการทั้ง 9 ให้เป็นสมการเชิงอนุพันธ์เมทริกซ์บรรทัดเดียว (Single-line Matrix Equation) ตามรูปแบบมาตรฐานของพลศาสตร์หุ่นยนต์และยานพาหนะ (Standard Multibody Dynamics Form) ได้ดังนี้:
 
-#### 1. เวกเตอร์ตัวแปรอิสระ $X$ (ขนาด $13 \times 1$)
-คือตัวแปรความเร่งและแรงพ่วงที่เราต้องการหาค่า:
-$$X = [\dot{v}_x, \dot{v}_y, \dot{r}, \dot{v}_{xd}, \dot{v}_{yd}, \dot{r}_d, \dot{v}_{xt}, \dot{v}_{yt}, \dot{r}_t, F_{hx1}, F_{hy1}, F_{hx2}, F_{hy2}]^T$$
+$$ M(q)\ddot{q} + C(q,\dot{q})\dot{q} = Q $$
 
-#### 2. เวกเตอร์ฝั่งขวา $B$ (ขนาด $13 \times 1$)
-ประกอบไปด้วยแรงภายนอก (แรงขับ, แรงต้านยาง), แรงหนีศูนย์กลาง, และเทอมความเร็วจากเงื่อนไขความเร่ง:
-*   $B_{1} = F_{xr} + F_{xf}\cos\delta - F_{yf}\sin\delta + m v_y r$
-*   $B_{2} = F_{yr} + F_{xf}\sin\delta + F_{yf}\cos\delta - m v_x r$
-*   $B_{3} = l_f (F_{yf}\cos\delta + F_{xf}\sin\delta) - l_r F_{yr}$
-*   $B_{4} = F_{xd} + m_d v_{yd} r_d$
-*   $B_{5} = F_{yd} - m_d v_{xd} r_d$
-*   $B_{6} = 0$
-*   $B_{7} = F_{xt} + m_t v_{yt} r_t$
-*   $B_{8} = F_{yt} - m_t v_{xt} r_t$
-*   $B_{9} = -l_{rt} F_{yt}$
-*   $B_{10} = (r - r_d)[-v_x \sin\Delta\theta_1 + (v_y - d_h r)\cos\Delta\theta_1]$
-*   $B_{11} = (r - r_d)[-v_x \cos\Delta\theta_1 - (v_y - d_h r)\sin\Delta\theta_1]$
-*   $B_{12} = (r_d - r_t)[-v_{xd}\sin\Delta\theta_2 + (v_{yd} - l_{rd} r_d)\cos\Delta\theta_2]$
-*   $B_{13} = (r_d - r_t)[-v_{xd}\cos\Delta\theta_2 - (v_{yd} - l_{rd} r_d)\sin\Delta\theta_2]$
+โดยมีรายละเอียดของแต่ละเทอมดังต่อไปนี้:
 
-#### 3. เมทริกซ์สัมประสิทธิ์ $A$ (ขนาด $13 \times 13$)
-เพื่อให้การเขียนเมทริกซ์ขนาดใหญ่สามารถอ่านได้ง่ายในรูปแบบสมการเต็ม (Full Matrix Form) เราจะกำหนดตัวย่อของค่าตรีโกณมิติดังนี้:
-*   $c_1 = \cos\Delta\theta_1$, $\quad s_1 = \sin\Delta\theta_1$
-*   $c_2 = \cos\Delta\theta_2$, $\quad s_2 = \sin\Delta\theta_2$
+#### 1. เวกเตอร์ความเร่งและความเร็ว ($\ddot{q}$ และ $\dot{q}$)
+เวกเตอร์ตัวแปรสถานะขนาด $9 \times 1$:
+*   $\ddot{q} = [\dot{v}_x, \dot{v}_y, \dot{r}, \dot{v}_{xd}, \dot{v}_{yd}, \dot{r}_d, \dot{v}_{xt}, \dot{v}_{yt}, \dot{r}_t]^T$
+*   $\dot{q} = [v_x, v_y, r, v_{xd}, v_{yd}, r_d, v_{xt}, v_{yt}, r_t]^T$
 
-เมื่อนำสัมประสิทธิ์ของสมการทั้งหมดมาจัดเรียง จะได้เมทริกซ์ $A$ แบบเต็มรูปแบบ (Full Expanded Matrix) ดังนี้:
+#### 2. เมทริกซ์มวลและความเฉื่อย $M(q)$
+เมทริกซ์ทแยงมุม (Diagonal Matrix) ขนาด $9 \times 9$ ซึ่งเป็นค่าคงที่ของมวลและโมเมนต์ความเฉื่อย:
+$$ M(q) = \text{diag}(m, m, I_z, m_d, m_d, I_{zd}, m_t, m_t, I_{zt}) $$
 
+#### 3. เมทริกซ์คอริโอลิสและแรงหนีศูนย์กลาง $C(q, \dot{q})$
+เมทริกซ์ขนาด $9 \times 9$ ที่บรรจุเทอมความเร็วที่เกิดจากการหมุนของกรอบอ้างอิงพิกัดตัวรถ (Coriolis and Centripetal Matrix) ซึ่งเมื่อคูณกับ $\dot{q}$ จะได้ค่าแรงหนีศูนย์กลาง (เช่น $m v_y r$):
 $$
-A = \begin{bmatrix}
-m & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
-0 & m & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
-0 & 0 & I_z & 0 & 0 & 0 & 0 & 0 & 0 & 0 & d_h & 0 & 0 \\
-0 & 0 & 0 & m_d & 0 & 0 & 0 & 0 & 0 & -c_1 & -s_1 & c_2 & s_2 \\
-0 & 0 & 0 & 0 & m_d & 0 & 0 & 0 & 0 & s_1 & -c_1 & -s_2 & c_2 \\
-0 & 0 & 0 & 0 & 0 & I_{zd} & 0 & 0 & 0 & l_{fd}s_1 & -l_{fd}c_1 & -l_{rd}s_2 & l_{rd}c_2 \\
-0 & 0 & 0 & 0 & 0 & 0 & m_t & 0 & 0 & 0 & 0 & -1 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & m_t & 0 & 0 & 0 & 0 & -1 \\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & I_{zt} & 0 & 0 & 0 & l_{ft} \\
--c_1 & -s_1 & d_h s_1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-s_1 & -c_1 & d_h c_1 & 0 & 1 & l_{fd} & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & -c_2 & -s_2 & l_{rd} s_2 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & s_2 & -c_2 & l_{rd} c_2 & 0 & 1 & l_{ft} & 0 & 0 & 0 & 0
+C(q, \dot{q}) = \begin{bmatrix}
+0 & -m r & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+m r & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & -m_d r_d & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & m_d r_d & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & -m_t r_t & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & m_t r_t & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0
 \end{bmatrix}
 $$
 
-เมื่อประกอบระบบสมการ $A \cdot X = B$ เรียบร้อยแล้ว โปรแกรมคอมพิวเตอร์สามารถใช้วิธีหาอินเวอร์สเมทริกซ์ $X = A^{-1} B$ เพื่อคำนวณหาความเร่งและแรงพ่วง ณ จุดเวลานั้นๆ ออกมาได้ทันที
+#### 4. เวกเตอร์แรงทั่วไป $Q$
+เวกเตอร์ขนาด $9 \times 1$ ซึ่งรวมเอาแรงภายนอกที่กระทำต่อระบบไว้ด้วยกันทั้งหมด ประกอบด้วยแรงสัมผัสหน้ายาง ($F_{tire}$), แรงขับเคลื่อน ($F_{traction}$), และแรงปฏิกิริยาที่ส่งผ่านจุดพ่วงต่างๆ ($F_{h,i}$):
+$$
+Q = \begin{bmatrix}
+F_{xr} + F_{xf}\cos\delta - F_{yf}\sin\delta - F_{hx1} \\
+F_{yr} + F_{xf}\sin\delta + F_{yf}\cos\delta - F_{hy1} \\
+l_f (F_{yf}\cos\delta + F_{xf}\sin\delta) - l_r F_{yr} - d_h F_{hy1} \\
+F_{xd} + F_{hx1}\cos\Delta\theta_1 + F_{hy1}\sin\Delta\theta_1 - F_{hx2}\cos\Delta\theta_2 - F_{hy2}\sin\Delta\theta_2 \\
+F_{yd} - F_{hx1}\sin\Delta\theta_1 + F_{hy1}\cos\Delta\theta_1 + F_{hx2}\sin\Delta\theta_2 - F_{hy2}\cos\Delta\theta_2 \\
+-l_{fd} (F_{hx1}\sin\Delta\theta_1 - F_{hy1}\cos\Delta\theta_1) + l_{rd} (F_{hx2}\sin\Delta\theta_2 - F_{hy2}\cos\Delta\theta_2) \\
+F_{xt} + F_{hx2} \\
+F_{yt} + F_{hy2} \\
+-l_{ft} F_{hy2} - l_{rt} F_{yt}
+\end{bmatrix}
+$$
+
+การนำเสนอในรูปสมการ $M(q)\ddot{q} + C(q,\dot{q})\dot{q} = Q$ นี้ เป็นรากฐานสำคัญสำหรับการนำแบบจำลองไปใช้ออกแบบระบบควบคุมเชิงพลศาสตร์ (Dynamical Controller) เช่น LQR หรือ MPC ต่อไป
 
 
