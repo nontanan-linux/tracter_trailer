@@ -129,6 +129,19 @@ class TractorTrailerDynamicModel:
         b[7] = Fyt - self.m_t * vxt * rt
         b[8] = -self.l_rt * Fyt
         
+        # --- Drawbar Bump Stops (Prevent unrealistic overlap) ---
+        k_bump = 2000000.0  # Very stiff physical bumper limit
+        c_bump = 100000.0   # Damping
+        M_bump = 0.0
+        if delta_theta1 > self.max_drawbar_angle:
+            M_bump = -k_bump * (delta_theta1 - self.max_drawbar_angle) - c_bump * (r - rd)
+        elif delta_theta1 < -self.max_drawbar_angle:
+            M_bump = -k_bump * (delta_theta1 + self.max_drawbar_angle) - c_bump * (r - rd)
+        
+        # Apply bump moment to Tractor and Dolly yaw
+        b[2] += M_bump
+        b[5] -= M_bump
+        
         # --- Jacobian Matrix (J) ---
         # 10. Constraint H1 X
         A[9, 0] = -c1; A[9, 1] = s1; A[9, 2] = -self.d_h * s1; A[9, 3] = 1.0
