@@ -299,7 +299,7 @@ l_{ft} F_{hy2} - l_{rt} F_{ytr}
 $$
 #### 5. Full Expanded Equation
 
-$$
+```math
 \begin{bmatrix}
 m & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 0 & m & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
@@ -341,4 +341,4 @@ F_{xt} + F_{hx2} \\
 F_{ytr} + F_{hy2} \\
 l_{ft} F_{hy2} - l_{rt} F_{ytr}
 \end{bmatrix}
-$$
+```
