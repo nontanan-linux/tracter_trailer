@@ -162,29 +162,29 @@ Formulating the acceleration equations incorporating the hitch reaction forces $
 1.  **Tractor ($x_0, y_0, \theta_0$):**
 
     $$
-    m\ddot{x}_0 = Q_{x0} - \lambda_1
+    m\ddot{x_0} = Q_{x0} - \lambda_1
     $$
 
     $$
-    m\ddot{y}_0 = Q_{y0} - \lambda_2
+    m\ddot{y_0} = Q_{y0} - \lambda_2
     $$
 
     $$
-    I_z\ddot{\theta}_0 = Q_{\theta0} - d_h \sin\theta_0 \lambda_1 + d_h \cos\theta_0 \lambda_2
+    I_z\ddot{\theta_0} = Q_{\theta0} - d_h \sin\theta_0 \lambda_1 + d_h \cos\theta_0 \lambda_2
     $$
 
 2.  **Drawbar ($x_d, y_d, \theta_1$):**
 
-    $$m_d \ddot{x}_d = Q_{xd} + \lambda_1 - \lambda_3$$
+    $$m_d \ddot{x_d} = Q_{xd} + \lambda_1 - \lambda_3$$
 
-    $$m_d \ddot{y}_d = Q_{yd} + \lambda_2 - \lambda_4$$
+    $$m_d \ddot{y_d} = Q_{yd} + \lambda_2 - \lambda_4$$
 
-    $$I_{zd} \ddot{\theta}_1 = Q_{\theta1} - L_{bar} \sin\theta_1 \lambda_1 + L_{bar} \cos\theta_1 \lambda_2$$
+    $$I_{zd} \ddot{\theta_1} = Q_{\theta1} - L_{bar} \sin\theta_1 \lambda_1 + L_{bar} \cos\theta_1 \lambda_2$$
 
     *(Note: Forces $\lambda_3, \lambda_4$ from the Trailer act exactly at the Drawbar CG, thus creating no moment around $\theta_1$)*
 3.  **Trailer Body ($x_t, y_t, \theta_2$):**
 
-    $$m_t \ddot{x}_t = Q_{xt} + \lambda_3$$
+    $$m_t \ddot{x_t} = Q_{xt} + \lambda_3$$
 
     $$m_t \ddot{y}_t = Q_{yt} + \lambda_4$$
 
