@@ -92,6 +92,7 @@ def simulate():
         
         # Project world velocity to trailer body longitudinal velocity
         vxt = dxt * np.cos(theta2) + dyt * np.sin(theta2)
+        vyt = -dxt * np.sin(theta2) + dyt * np.cos(theta2)
         
         # Calculate Kinetic Energy (Section 1.4)
         T_tractor = 0.5 * model.m * (dx0**2 + dy0**2) + 0.5 * model.I_z * r**2
@@ -104,6 +105,14 @@ def simulate():
         # Get Coordinates for Trajectory (Tractor Rear Axle)
         coords = model.get_coordinates(state)
         trajectory.append(coords[0]) # p0
+        
+        # Print state every 10 steps (0.5 seconds)
+        if i % 10 == 0:
+            x0_pos, y0_pos = coords[0][0], coords[0][1]
+            xt_pos, yt_pos = coords[4][0], coords[4][1]
+            v0_mag = np.sqrt(vx**2 + vy**2)
+            vt_mag = np.sqrt(vxt**2 + vyt**2)
+            print(f"t={t:05.2f}s | Tractor: x={x0_pos:06.2f}, y={y0_pos:06.2f}, v={v0_mag:05.2f} m/s | Trailer: x={xt_pos:06.2f}, y={yt_pos:06.2f}, v={vt_mag:05.2f} m/s")
         
         # Collect Drawbar Coordinates (Dolly Positions)
         current_drawbars = []
