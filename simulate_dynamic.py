@@ -9,16 +9,21 @@ from dynamic_model import TractorTrailerDynamicModel
 def simulate():
     # --- Parameters ---
     SAVE_ANIMATION = False
-    PLOT_DRAWBAR_TRAJECTORY = True
+    # Overall visual dimensions for the plots
+    tractor_len = 2.95
+    tractor_width = 1.30
+    tractor_overhang = 0.62
+    L0 = 1.28
     
-    # Dimensions (meters)
-    L0 = 1.28       # Tractor Wheelbase
+    trailer_body_len = 4.0
+    trailer_width = 1.30
+    
     W = 1.09        # Track Width
     
-    # Trailer Configuration (1 Drawbar Trailer consisting of Dolly and Trailer Body)
-    # Trailer drawing parameters must match physical model! L_bar = l_fd + l_rd = 1.0, L_trl = l_ft + l_rt = 2.5
+    # Trailer Configuration (Drawbar length = 1.5, Trailer Axle distance from Turntable = 3.5)
+    # Physical math: l_fd=1.5, l_rd=0.0 -> L_bar=1.5. l_ft=2.0, l_rt=1.5 -> L_trl=3.5
     trailers = [
-        {'L_bar': 1.0, 'L_trl': 2.5, 'dh_prev': 0.62}, # Trailer 1 (dh_prev = d_h of tractor)
+        {'L_bar': 1.5, 'L_trl': 3.5, 'dh_prev': 0.62},
     ]
     
     num_trailers = len(trailers)
@@ -248,7 +253,8 @@ def simulate():
         theta0 = state[2]
         
         # --- Tractor Body ---
-        p_tractor_c = (p0 + p0_f) / 2
+        # Tractor center is shifted forward from rear axle by (len/2) - overhang
+        p_tractor_c = p0 + ((tractor_len / 2) - tractor_overhang) * np.array([np.cos(theta0), np.sin(theta0)])
         patches_list.append(draw_box(ax, p_tractor_c, tractor_len, tractor_width, theta0, color='orangered', alpha=0.5))
         
         # Tractor Wheels
@@ -269,17 +275,19 @@ def simulate():
         theta_drawbar = state[3]
         theta_trailer = state[4]
         
-        # Drawbar
+        # Drawbar (Hitch 1 to Dolly Axle)
         l_db, = ax.plot([h_curr[0], p_dolly[0]], [h_curr[1], p_dolly[1]], 'k-', lw=3)
         patches_list.append(l_db)
         
         # Trailer Body
-        p_trailer_c = (p_dolly + p_axle) / 2
+        # Dolly axle is at front of trailer (l_ft=2.0 from CG). Rear axle is l_rt=1.5 from CG.
+        # So CG is 2.0 meters BEHIND Dolly axle. Center of 4.0m body is exactly at CG.
+        p_trailer_c = p_dolly - 2.0 * np.array([np.cos(theta_trailer), np.sin(theta_trailer)])
         patches_list.append(draw_box(ax, p_trailer_c, trailer_body_len, trailer_width, theta_trailer, color='blue', alpha=0.5))
         
         # Wheels
-        patches_list.extend(draw_wheels_at_axle(ax, p_dolly, theta_drawbar, W, color='black')) # Dolly
-        patches_list.extend(draw_wheels_at_axle(ax, p_axle, theta_trailer, W, color='black')) # Rear
+        patches_list.extend(draw_wheels_at_axle(ax, p_dolly, theta_drawbar, W)) # Dolly Front Axle
+        patches_list.extend(draw_wheels_at_axle(ax, p_axle, theta_trailer, W))  # Trailer Rear Axle
         
         # Hitch Point
         pt_h, = ax.plot(h_curr[0], h_curr[1], 'ko', ms=5)

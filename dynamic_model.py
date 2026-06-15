@@ -5,12 +5,12 @@ class TractorTrailerDynamicModel:
                  max_steering_angle=np.radians(24.5), 
                  max_drawbar_angle=np.radians(60),
                  # Tractor physical parameters
-                 m=15000.0, I_z=20000.0, d_h=0.62,
+                 m=3000.0, I_z=4000.0, d_h=0.62,
                  l_f=0.64, l_r=0.64,
                  C_f=500000.0, C_r=500000.0,
-                 # Trailer physical parameters
-                 m_d=500.0, I_zd=50.0, l_fd=0.8, l_rd=0.2, C_d=700000.0,
-                 m_t=11500.0, I_zt=6000.0, l_ft=1.0, l_rt=1.5, C_t=1000000.0):
+                 # Trailer physical parameters (Drawbar Trailer: Dolly + Body)
+                 m_d=500.0, I_zd=500.0, l_fd=1.5, l_rd=0.0, C_d=700000.0,
+                 m_t=10500.0, I_zt=15000.0, l_ft=2.0, l_rt=1.5, C_t=1000000.0):
         """
         Initialize the dynamic model parameters for Tractor + 1 Drawbar Trailer (Dolly + Trailer Body).
         """
