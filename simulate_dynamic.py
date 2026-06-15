@@ -24,7 +24,7 @@ def simulate():
     
     # Vehicle Box Dimensions
     tractor_width = 1.3
-    tractor_len = 2.95
+    tractor_len = 2.950
     tractor_overhang = 0.62 
     
     trailer_width = 1.5
@@ -192,6 +192,25 @@ def simulate():
     patches_list = []
 
     def update_plot(i):
+        # Print status during animation (every 10 frames)
+        if i % 10 == 0:
+            vx, vy = states[i, 5], states[i, 6]
+            v0_mag = np.sqrt(vx**2 + vy**2)
+            
+            theta0, theta1, theta2 = states[i, 2], states[i, 3], states[i, 4]
+            r, rd, rt = states[i, 7], states[i, 8], states[i, 9]
+            dx0 = vx * np.cos(theta0) - vy * np.sin(theta0)
+            dy0 = vx * np.sin(theta0) + vy * np.cos(theta0)
+            dxt = dx0 + model.d_h * r * np.sin(theta0) + (model.l_fd + model.l_rd) * rd * np.sin(theta1) + model.l_ft * rt * np.sin(theta2)
+            dyt = dy0 - model.d_h * r * np.cos(theta0) - (model.l_fd + model.l_rd) * rd * np.cos(theta1) - model.l_ft * rt * np.cos(theta2)
+            vt_mag = np.sqrt(dxt**2 + dyt**2)
+            
+            coords_frame = model.get_coordinates(states[i])
+            x0_pos, y0_pos = coords_frame[0][0], coords_frame[0][1]
+            xt_pos, yt_pos = coords_frame[4][0], coords_frame[4][1]
+            t_current = i * dt
+            print(f"[Animation] t={t_current:05.2f}s | Tractor: x={x0_pos:06.2f}, y={y0_pos:06.2f}, v={v0_mag:05.2f} m/s | Trailer: x={xt_pos:06.2f}, y={yt_pos:06.2f}, v={vt_mag:05.2f} m/s")
+
         for p in patches_list:
             p.remove()
         patches_list.clear()
