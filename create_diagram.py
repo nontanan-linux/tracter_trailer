@@ -10,7 +10,8 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, L5=1.0, L6=1.2, L7=1.
                    theta0_deg=45.0, theta1_deg=25.0, theta2_deg=10.0, 
                    theta3_deg=-10.0, theta4_deg=-25.0, theta5_deg=-45.0, 
                    theta6_deg=-25.0, theta7_deg=-10.0, theta8_deg=25.0,
-                   save_path='kinematic_diagram_full.png'):
+                   save_path='kinematic_diagram_full.png',
+                   num_trailers=4):
     fig, ax = plt.subplots(figsize=(16, 10))
     ax.set_aspect('equal')
     ax.axis('off')
@@ -178,118 +179,130 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, L5=1.0, L6=1.2, L7=1.
     # 3. Trailer 1
     p_tl1_rear_face = np.array([x2, y2]) - trailer_overhang * np.array([np.cos(theta2), np.sin(theta2)])
     p_tl1_front_face = np.array([x1, y1]) + trailer_overhang * np.array([np.cos(theta2), np.sin(theta2)]) # Approx
-    # Better center calculation:
     p_tl1_c = (np.array([x1, y1]) + np.array([x2, y2])) / 2
     draw_chassis(ax, p_tl1_c, trailer_len, trailer_width, theta2, color='blue', label='Trailer 1')
     
     draw_wheel_pair(ax, (x1, y1), theta1, W, color='black')
     draw_wheel_pair(ax, (x2, y2), theta2, W, color='black')
     
-    ax.plot([p_tl1_rear_face[0], xh2], [p_tl1_rear_face[1], yh2], 'k-', lw=2)
-    
-    # 4. Drawbar 2
-    ax.plot([xh2, x3], [yh2, y3], 'k-', lw=4)
-    
-    # 5. Trailer 2
-    p_tl2_c = (np.array([x3, y3]) + np.array([x4, y4])) / 2
-    draw_chassis(ax, p_tl2_c, trailer2_len, trailer2_width, theta4, color='blue', label='Trailer 2')
-    
-    draw_wheel_pair(ax, (x3, y3), theta3, W, color='black')
-    draw_wheel_pair(ax, (x4, y4), theta4, W, color='black')
-    
-    ax.plot([x4, xh3], [y4, yh3], 'k-', lw=2)
-    
-    # 6. Drawbar 3
-    ax.plot([xh3, x5], [yh3, y5], 'k-', lw=4)
-    
-    # 7. Trailer 3
-    p_tl3_c = (np.array([x5, y5]) + np.array([x6, y6])) / 2
-    draw_chassis(ax, p_tl3_c, trailer3_len, trailer3_width, theta6, color='blue', label='Trailer 3')
-    
-    draw_wheel_pair(ax, (x5, y5), theta5, W, color='black')
-    draw_wheel_pair(ax, (x6, y6), theta6, W, color='black')
-    
-    ax.plot([x6, xh4], [y6, yh4], 'k-', lw=2)
-    
-    # 8. Drawbar 4
-    ax.plot([xh4, x7], [yh4, y7], 'k-', lw=4)
-    
-    # 9. Trailer 4
-    p_tl4_c = (np.array([x7, y7]) + np.array([x8, y8])) / 2
-    draw_chassis(ax, p_tl4_c, trailer4_len, trailer4_width, theta8, color='blue', label='Trailer 4')
-    
-    draw_wheel_pair(ax, (x7, y7), theta7, W, color='black')
-    draw_wheel_pair(ax, (x8, y8), theta8, W, color='black')
-    
-    ax.plot([x8, x_tail4], [y8, y_tail4], 'k-', lw=2)
+    if num_trailers >= 2:
+        ax.plot([p_tl1_rear_face[0], xh2], [p_tl1_rear_face[1], yh2], 'k-', lw=2)
+        
+        # 4. Drawbar 2
+        ax.plot([xh2, x3], [yh2, y3], 'k-', lw=4)
+        
+        # 5. Trailer 2
+        p_tl2_c = (np.array([x3, y3]) + np.array([x4, y4])) / 2
+        draw_chassis(ax, p_tl2_c, trailer2_len, trailer2_width, theta4, color='blue', label='Trailer 2')
+        draw_wheel_pair(ax, (x3, y3), theta3, W, color='black')
+        draw_wheel_pair(ax, (x4, y4), theta4, W, color='black')
+        
+        if num_trailers >= 3:
+            ax.plot([x4, xh3], [y4, yh3], 'k-', lw=2)
+            
+            # 6. Drawbar 3
+            ax.plot([xh3, x5], [yh3, y5], 'k-', lw=4)
+            
+            # 7. Trailer 3
+            p_tl3_c = (np.array([x5, y5]) + np.array([x6, y6])) / 2
+            draw_chassis(ax, p_tl3_c, trailer3_len, trailer3_width, theta6, color='blue', label='Trailer 3')
+            draw_wheel_pair(ax, (x5, y5), theta5, W, color='black')
+            draw_wheel_pair(ax, (x6, y6), theta6, W, color='black')
+            
+            if num_trailers >= 4:
+                ax.plot([x6, xh4], [y6, yh4], 'k-', lw=2)
+                
+                # 8. Drawbar 4
+                ax.plot([xh4, x7], [yh4, y7], 'k-', lw=4)
+                
+                # 9. Trailer 4
+                p_tl4_c = (np.array([x7, y7]) + np.array([x8, y8])) / 2
+                draw_chassis(ax, p_tl4_c, trailer4_len, trailer4_width, theta8, color='blue', label='Trailer 4')
+                draw_wheel_pair(ax, (x7, y7), theta7, W, color='black')
+                draw_wheel_pair(ax, (x8, y8), theta8, W, color='black')
+                ax.plot([x8, x_tail4], [y8, y_tail4], 'k-', lw=2)
 
     # Hitch Points
     ax.plot(xh1, yh1, 'ko', ms=6)
-    ax.plot(xh2, yh2, 'ko', ms=6)
-    ax.plot(xh3, yh3, 'ko', ms=6)
-    ax.plot(xh4, yh4, 'ko', ms=6)
+    if num_trailers >= 2:
+        ax.plot(xh2, yh2, 'ko', ms=6)
+    if num_trailers >= 3:
+        ax.plot(xh3, yh3, 'ko', ms=6)
+    if num_trailers >= 4:
+        ax.plot(xh4, yh4, 'ko', ms=6)
 
     # --- Annotations & Reference Lines ---
     
     # Centerlines
     ax.plot([x0, x0_f], [y0, y0_f], color='black', lw=4, alpha=0.4)
     ax.plot([x1, x2], [y1, y2], color='black', lw=4, alpha=0.4)
-    ax.plot([x3, x4], [y3, y4], color='black', lw=4, alpha=0.4)
-    ax.plot([x5, x6], [y5, y6], color='black', lw=4, alpha=0.4)
-    ax.plot([x7, x8], [y7, y8], color='black', lw=4, alpha=0.4)
+    if num_trailers >= 2:
+        ax.plot([x3, x4], [y3, y4], color='black', lw=4, alpha=0.4)
+    if num_trailers >= 3:
+        ax.plot([x5, x6], [y5, y6], color='black', lw=4, alpha=0.4)
+    if num_trailers >= 4:
+        ax.plot([x7, x8], [y7, y8], color='black', lw=4, alpha=0.4)
 
     # Reference Lines (Global Zero)
     draw_dashed_ref(ax, (x0, y0)) 
     draw_dashed_ref(ax, (x2, y2)) 
-    draw_dashed_ref(ax, (x4, y4))
-    draw_dashed_ref(ax, (x6, y6))
-    draw_dashed_ref(ax, (x8, y8))
+    if num_trailers >= 2:
+        draw_dashed_ref(ax, (x4, y4))
+    if num_trailers >= 3:
+        draw_dashed_ref(ax, (x6, y6))
+    if num_trailers >= 4:
+        draw_dashed_ref(ax, (x8, y8))
 
     # Steering Angle Reference Lines
     draw_dashed_ref(ax, (x0_f, y0_f), length=1.5, angle=theta0, color='orange')
     draw_dashed_ref(ax, (x0_f, y0_f), length=1.5, angle=theta0+delta, color='orange')
 
     # Drawbar 1 Reference Lines (at Dolly 1)
-    # Relative angle between Trailer 1 (theta2) and Drawbar 1 (theta1)
     draw_dashed_ref(ax, (x1, y1), length=1.5, angle=theta2, color='green')
     draw_dashed_ref(ax, (x1, y1), length=1.5, angle=theta1, color='green')
 
     # Drawbar 2 Reference Lines (at Dolly 2)
-    # Relative angle between Trailer 2 (theta4) and Drawbar 2 (theta3)
-    draw_dashed_ref(ax, (x3, y3), length=1.5, angle=theta4, color='green')
-    draw_dashed_ref(ax, (x3, y3), length=1.5, angle=theta3, color='green')
+    if num_trailers >= 2:
+        draw_dashed_ref(ax, (x3, y3), length=1.5, angle=theta4, color='green')
+        draw_dashed_ref(ax, (x3, y3), length=1.5, angle=theta3, color='green')
 
     # Drawbar 3 Reference Lines (at Dolly 3)
-    # Relative angle between Trailer 3 (theta6) and Drawbar 3 (theta5)
-    draw_dashed_ref(ax, (x5, y5), length=1.5, angle=theta6, color='green')
-    draw_dashed_ref(ax, (x5, y5), length=1.5, angle=theta5, color='green')
+    if num_trailers >= 3:
+        draw_dashed_ref(ax, (x5, y5), length=1.5, angle=theta6, color='green')
+        draw_dashed_ref(ax, (x5, y5), length=1.5, angle=theta5, color='green')
 
     # Drawbar 4 Reference Lines (at Dolly 4)
-    # Relative angle between Trailer 4 (theta8) and Drawbar 4 (theta7)
-    draw_dashed_ref(ax, (x7, y7), length=1.5, angle=theta8, color='green')
-    draw_dashed_ref(ax, (x7, y7), length=1.5, angle=theta7, color='green')
+    if num_trailers >= 4:
+        draw_dashed_ref(ax, (x7, y7), length=1.5, angle=theta8, color='green')
+        draw_dashed_ref(ax, (x7, y7), length=1.5, angle=theta7, color='green')
     
     # Points
     ax.text(x0-0.5, y0-0.05, '$(x_0, y_0)$', color='blue')
     ax.text(x1+0.05, y1-0.1, '$(x_1, y_1)$', color='blue')
     ax.text(x2-0.5, y2+0.05, '$(x_2, y_2)$', color='red')
-    ax.text(x3-0.5, y3-0.15, '$(x_3, y_3)$', color='blue')
-    ax.text(x4+0.05, y4+0.05, '$(x_4, y_4)$', color='red')
-    ax.text(x5+0.1, y5-0.05, '$(x_5, y_5)$', color='blue')
-    ax.text(x6+0.05, y6+0.05, '$(x_6, y_6)$', color='red')
-    ax.text(x7-0.5, y7+0.05, '$(x_7, y_7)$', color='blue')
-    ax.text(x8-0.52, y8+0.05, '$(x_8, y_8)$', color='red')
+    if num_trailers >= 2:
+        ax.text(x3-0.5, y3-0.15, '$(x_3, y_3)$', color='blue')
+        ax.text(x4+0.05, y4+0.05, '$(x_4, y_4)$', color='red')
+    if num_trailers >= 3:
+        ax.text(x5+0.1, y5-0.05, '$(x_5, y_5)$', color='blue')
+        ax.text(x6+0.05, y6+0.05, '$(x_6, y_6)$', color='red')
+    if num_trailers >= 4:
+        ax.text(x7-0.5, y7+0.05, '$(x_7, y_7)$', color='blue')
+        ax.text(x8-0.52, y8+0.05, '$(x_8, y_8)$', color='red')
 
     # Dimensions
     ax.annotate(r'$L_0$', xy=((x0+x0_f)/2, (y0+y0_f)/2), xytext=(-10, 10), textcoords='offset points')
     ax.annotate(r'$L_1$', xy=((xh1+x1)/2, (yh1+y1)/2), xytext=(-10, 10), textcoords='offset points')
     ax.annotate(r'$L_2$', xy=((x1+x2)/2, (y1+y2)/2), xytext=(-10, 10), textcoords='offset points')
-    ax.annotate(r'$L_3$', xy=((xh2+x3)/2, (yh2+y3)/2), xytext=(-10, 10), textcoords='offset points')
-    ax.annotate(r'$L_4$', xy=((x3+x4)/2, (y3+y4-0.5)/2), xytext=(-10, 10), textcoords='offset points')
-    ax.annotate(r'$L_5$', xy=((xh3+x5+0.05)/2, (yh3+y5-0.5)/2), xytext=(-10, 10), textcoords='offset points')
-    ax.annotate(r'$L_6$', xy=((x5+x6)/2, (y5+y6-0.5)/2), xytext=(-10, 10), textcoords='offset points')
-    ax.annotate(r'$L_7$', xy=((xh4+x7)/2, (yh4+y7-0.5)/2), xytext=(-10, 10), textcoords='offset points')
-    ax.annotate(r'$L_8$', xy=((x7+x8)/2, (y7+y8)/2), xytext=(-10, 10), textcoords='offset points')
+    if num_trailers >= 2:
+        ax.annotate(r'$L_3$', xy=((xh2+x3)/2, (yh2+y3)/2), xytext=(-10, 10), textcoords='offset points')
+        ax.annotate(r'$L_4$', xy=((x3+x4)/2, (y3+y4-0.5)/2), xytext=(-10, 10), textcoords='offset points')
+    if num_trailers >= 3:
+        ax.annotate(r'$L_5$', xy=((xh3+x5+0.05)/2, (yh3+y5-0.5)/2), xytext=(-10, 10), textcoords='offset points')
+        ax.annotate(r'$L_6$', xy=((x5+x6)/2, (y5+y6-0.5)/2), xytext=(-10, 10), textcoords='offset points')
+    if num_trailers >= 4:
+        ax.annotate(r'$L_7$', xy=((xh4+x7)/2, (yh4+y7-0.5)/2), xytext=(-10, 10), textcoords='offset points')
+        ax.annotate(r'$L_8$', xy=((x7+x8)/2, (y7+y8)/2), xytext=(-10, 10), textcoords='offset points')
     
     # Angles
     # Theta0
@@ -304,36 +317,31 @@ def create_diagram(L0=2.0, L1=1.0, L2=1.2, L3=1.0, L4=1.2, L5=1.0, L6=1.2, L7=1.
     patches.Arc((x2, y2), 3, 3, angle=0, theta1=0, theta2=np.degrees(theta2), color='red')
     ax.text(x2+0.8, y2+0.01, r'$\theta_2$', color='red')
     
-    # Theta3
-    patches.Arc((x3, y3), 3, 3, angle=0, theta1=np.degrees(theta4), theta2=np.degrees(theta3), color='green')
-    ax.text(x3+0.7, y3-0.3, r'$\theta_3$', color='green')
+    # Theta3 & Theta4
+    if num_trailers >= 2:
+        patches.Arc((x3, y3), 3, 3, angle=0, theta1=np.degrees(theta4), theta2=np.degrees(theta3), color='green')
+        ax.text(x3+0.7, y3-0.3, r'$\theta_3$', color='green')
+        patches.Arc((x4, y4), 3, 3, angle=0, theta1=0, theta2=np.degrees(theta4), color='red')
+        ax.text(x4+0.5, y4-0.2, r'$\theta_4$', color='red')
     
-    # Theta4
-    patches.Arc((x4, y4), 3, 3, angle=0, theta1=0, theta2=np.degrees(theta4), color='red')
-    ax.text(x4+0.5, y4-0.2, r'$\theta_4$', color='red')
+    # Theta5 & Theta6
+    if num_trailers >= 3:
+        patches.Arc((x5, y5), 3, 3, angle=0, theta1=np.degrees(theta6), theta2=np.degrees(theta5), color='green')
+        ax.text(x5+0.5, y5-0.45, r'$\theta_5$', color='green')
+        patches.Arc((x6, y6), 3, 3, angle=0, theta1=0, theta2=np.degrees(theta6), color='red')
+        ax.text(x6+0.5, y6-0.2, r'$\theta_6$', color='red')
     
-    # Theta5
-    patches.Arc((x5, y5), 3, 3, angle=0, theta1=np.degrees(theta6), theta2=np.degrees(theta5), color='green')
-    ax.text(x5+0.5, y5-0.45, r'$\theta_5$', color='green')
-    
-    # Theta6
-    patches.Arc((x6, y6), 3, 3, angle=0, theta1=0, theta2=np.degrees(theta6), color='red')
-    ax.text(x6+0.5, y6-0.2, r'$\theta_6$', color='red')
-    
-    # Theta7
-    patches.Arc((x7, y7), 3, 3, angle=0, theta1=np.degrees(theta8), theta2=np.degrees(theta7), color='green')
-    ax.text(x7+0.5, y7, r'$\theta_7$', color='green')
-    
-    # Theta8
-    patches.Arc((x8, y8), 3, 3, angle=0, theta1=0, theta2=np.degrees(theta8), color='red')
-    ax.text(x8+0.5, y8+0.1, r'$\theta_8$', color='red')
+    # Theta7 & Theta8
+    if num_trailers >= 4:
+        patches.Arc((x7, y7), 3, 3, angle=0, theta1=np.degrees(theta8), theta2=np.degrees(theta7), color='green')
+        ax.text(x7+0.5, y7, r'$\theta_7$', color='green')
+        patches.Arc((x8, y8), 3, 3, angle=0, theta1=0, theta2=np.degrees(theta8), color='red')
+        ax.text(x8+0.5, y8+0.1, r'$\theta_8$', color='red')
     
     # Delta
     patches.Arc((x0_f, y0_f), 3, 3, angle=0, theta1=np.degrees(theta0), theta2=np.degrees(theta0+delta), color='orange')
     ax.text(x0_f+0.3, y0_f+0.5, r'$\delta$', color='orange')
     
-    
-    # plt.title("Kinematic Diagram: Tractor + 2 Drawbar Trailers")
     fig.suptitle("Kinematic Diagram: Tractor with Drawbar Trailers", fontsize=24, y=0.95)
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     plt.savefig(save_path)
@@ -368,6 +376,7 @@ if __name__ == "__main__":
     parser.add_argument('--theta7', type=float, default=-10.0, help='Drawbar 4 Yaw (deg)')
     parser.add_argument('--theta8', type=float, default=25.0, help='Trailer 4 Yaw (deg)')
     
+    parser.add_argument('--num_trailers', type=int, default=4, help='Number of trailers to draw (1 to 4)')
     parser.add_argument('--save_path', type=str, default='kinematic_diagram_full.png', help='Path to save the diagram')
 
     args = parser.parse_args()
@@ -380,4 +389,4 @@ if __name__ == "__main__":
                    theta0_deg=args.theta0, theta1_deg=args.theta1, theta2_deg=args.theta2,
                    theta3_deg=args.theta3, theta4_deg=args.theta4, theta5_deg=args.theta5,
                    theta6_deg=args.theta6, theta7_deg=args.theta7, theta8_deg=args.theta8,
-                   save_path=args.save_path)
+                   save_path=args.save_path, num_trailers=args.num_trailers)
