@@ -112,9 +112,9 @@ class TractorTrailerDynamicModel:
         A[1, 10] = 1.0
         B[1] = F_yr + F_xf * np.sin(delta) + F_yf * np.cos(delta) - self.m * v_x * r
         
-        # Yaw: I_z dr = l_f(F_yf cos(delta) + F_xf sin(delta)) - l_r F_yr - d_h F_hy1
+        # Yaw: I_z dr = l_f(F_yf cos(delta) + F_xf sin(delta)) - l_r F_yr + d_h F_hy1
         A[2, 2] = self.I_z
-        A[2, 10] = self.d_h
+        A[2, 10] = -self.d_h
         B[2] = self.l_f * (F_yf * np.cos(delta) + F_xf * np.sin(delta)) - self.l_r * F_yr
         
         # --- 2. Drawbar Equations of Motion ---
@@ -151,9 +151,9 @@ class TractorTrailerDynamicModel:
         A[7, 12] = -1.0
         B[7] = F_ytr - self.m_t * v_xt * r_t
         
-        # Yaw: I_zt dr_t = -l_ft F_hy2 - l_rt F_yt
+        # Yaw: I_zt dr_t = l_ft F_hy2 - l_rt F_yt
         A[8, 8] = self.I_zt
-        A[8, 12] = self.l_ft
+        A[8, 12] = -self.l_ft
         B[8] = -self.l_rt * F_ytr
         
         # --- 4. Hitch 1 Acceleration Constraints ---
