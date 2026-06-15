@@ -159,19 +159,19 @@ The generalized force $Q_i$ is the sum of non-conservative external forces (excl
 ### 2.3 Inertial Equations of Motion
 Formulating the acceleration equations incorporating the hitch reaction forces $\lambda_1, \lambda_2$ (at $H_1$) and $\lambda_3, \lambda_4$ (at $H_2$, located exactly at the Drawbar front axle):
 
-1.  **Tractor ($x_0, y_0, \theta_0$):**
+1. **Tractor ($x_0, y_0, \theta_0$):**
 
-    $$
-    m\ddot{x_0} = Q_{x0} - \lambda_1
-    $$
+$$
+m\ddot{x}_0 = Q_{x0} - \lambda_1
+$$
 
-    $$
-    m\ddot{y_0} = Q_{y0} - \lambda_2
-    $$
+$$
+m\ddot{y}_0 = Q_{y0} - \lambda_2
+$$
 
-    $$
-    I_z\ddot{\theta_0} = Q_{\theta0} - d_h \sin\theta_0 \lambda_1 + d_h \cos\theta_0 \lambda_2
-    $$
+$$
+I_z\ddot{\theta}_0 = Q_{\theta0} - d_h \sin\theta_0 \lambda_1 + d_h \cos\theta_0 \lambda_2
+$$
 
 2.  **Drawbar ($x_d, y_d, \theta_1$):**
 
