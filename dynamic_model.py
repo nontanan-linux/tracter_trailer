@@ -86,17 +86,24 @@ class TractorTrailerDynamicModel:
         alpha_d = np.arctan2(vyd - self.l_rd * rd, vxd_reg)
         alpha_t = np.arctan2(vyt - self.l_rt * rt, vxt_reg)
         
-        # Tire forces
+        # Tire forces (Linear slip angles)
         Fyf = -self.C_f * alpha_f
         Fyr = -self.C_r * alpha_r
         Fyd = -self.C_d * alpha_d
         Fyt = -self.C_t * alpha_t
         
-        # Rolling Resistance (Ensures drawbar tension to prevent jackknifing)
+        # Induced Cornering Drag (Crucial to prevent artificial acceleration in turns)
+        drag_f = Fyf * np.sin(alpha_f)
+        drag_r = Fyr * np.sin(alpha_r)
+        drag_d = Fyd * np.sin(alpha_d)
+        drag_t = Fyt * np.sin(alpha_t)
+        
+        # Rolling Resistance (Ensures drawbar tension) + Cornering Drag
         g = 9.81
-        Fxf = -0.01 * (self.m * g / 2)
-        Fxd = -0.01 * (self.m_d * g)
-        Fxt = -0.02 * (self.m_t * g)
+        Fxf = -0.01 * (self.m * g / 2) * np.sign(vx) + drag_f
+        Fxr_drag = drag_r
+        Fxd = -0.01 * (self.m_d * g) * np.sign(vxd) + drag_d
+        Fxt = -0.02 * (self.m_t * g) * np.sign(vxt) + drag_t
         
         # Set up linear system A * X = b
         # X = [dvx, dvy, dr, dvxd, dvyd, drd, dvxt, dvyt, drt, lambda1_x, lambda1_y, lambda2_x, lambda2_y]
@@ -120,7 +127,7 @@ class TractorTrailerDynamicModel:
         A[8, 8] = self.I_zt
         
         # --- External and Coriolis Forces (Q) ---
-        b[0] = Fxr + Fxf * np.cos(delta) - Fyf * np.sin(delta) + self.m * vy * r
+        b[0] = (Fxr + Fxr_drag) + Fxf * np.cos(delta) - Fyf * np.sin(delta) + self.m * vy * r
         b[1] = Fyr + Fxf * np.sin(delta) + Fyf * np.cos(delta) - self.m * vx * r
         b[2] = self.l_f * (Fyf * np.cos(delta) + Fxf * np.sin(delta)) - self.l_r * Fyr
         b[3] = Fxd + self.m_d * vyd * rd
