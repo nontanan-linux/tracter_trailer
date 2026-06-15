@@ -92,10 +92,11 @@ class TractorTrailerDynamicModel:
         Fyd = -self.C_d * alpha_d
         Fyt = -self.C_t * alpha_t
         
-        # Longitudinal forces (other than rear driving force Fxr are zero)
-        Fxf = 0.0
-        Fxd = 0.0
-        Fxt = 0.0
+        # Rolling Resistance (Ensures drawbar tension to prevent jackknifing)
+        g = 9.81
+        Fxf = -0.01 * (self.m * g / 2)
+        Fxd = -0.01 * (self.m_d * g)
+        Fxt = -0.02 * (self.m_t * g)
         
         # Set up linear system A * X = b
         # X = [dvx, dvy, dr, dvxd, dvyd, drd, dvxt, dvyt, drt, lambda1_x, lambda1_y, lambda2_x, lambda2_y]
