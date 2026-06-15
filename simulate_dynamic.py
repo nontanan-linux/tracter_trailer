@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.patches import Rectangle
@@ -9,7 +8,7 @@ from dynamic_model import TractorTrailerDynamicModel
 
 def simulate():
     # --- Parameters ---
-    SAVE_ANIMATION = True
+    SAVE_ANIMATION = False
     PLOT_DRAWBAR_TRAJECTORY = True
     
     # Dimensions (meters)

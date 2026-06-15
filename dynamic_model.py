@@ -98,93 +98,98 @@ class TractorTrailerDynamicModel:
         Fxt = 0.0
         
         # Set up linear system A * X = b
-        # X = [dvx, dvy, dr, drd, drt, Fhx1, Fhy1, Fhx2, Fhy2, dvxd, dvyd, dvxt, dvyt] (13 unknowns)
+        # X = [dvx, dvy, dr, dvxd, dvyd, drd, dvxt, dvyt, drt, Fhx1, Fhy1, Fhx2, Fhy2] (13 unknowns)
         A = np.zeros((13, 13))
         b = np.zeros(13)
         
-        # 1. Tractor Longitudinal Dynamics
+        c1 = np.cos(delta_theta1)
+        s1 = np.sin(delta_theta1)
+        c2 = np.cos(delta_theta2)
+        s2 = np.sin(delta_theta2)
+        
+        # 1. Tractor Longitudinal
         A[0, 0] = self.m
-        A[0, 5] = -1.0
-        b[0] = self.m * vy * r + Fxr + Fxf * np.cos(delta) - Fyf * np.sin(delta)
+        A[0, 9] = 1.0
+        b[0] = Fxr + Fxf * np.cos(delta) - Fyf * np.sin(delta) + self.m * vy * r
         
-        # 2. Tractor Lateral Dynamics
+        # 2. Tractor Lateral
         A[1, 1] = self.m
-        A[1, 6] = -1.0
-        b[1] = -self.m * vx * r + Fyr + Fxf * np.sin(delta) + Fyf * np.cos(delta)
+        A[1, 10] = 1.0
+        b[1] = Fyr + Fxf * np.sin(delta) + Fyf * np.cos(delta) - self.m * vx * r
         
-        # 3. Tractor Yaw Dynamics
+        # 3. Tractor Yaw
         A[2, 2] = self.I_z
-        A[2, 6] = self.d_h
+        A[2, 10] = self.d_h
         b[2] = self.l_f * (Fyf * np.cos(delta) + Fxf * np.sin(delta)) - self.l_r * Fyr
         
-        # 4. Dolly Longitudinal Dynamics
-        A[3, 9] = self.m_d
-        A[3, 5] = np.cos(delta_theta1)
-        A[3, 6] = np.sin(delta_theta1)
-        A[3, 7] = -np.cos(delta_theta2)
-        A[3, 8] = np.sin(delta_theta2)
-        b[3] = self.m_d * vyd * rd + Fxd
+        # 4. Dolly Longitudinal
+        A[3, 3] = self.m_d
+        A[3, 9] = -c1
+        A[3, 10] = -s1
+        A[3, 11] = c2
+        A[3, 12] = s2
+        b[3] = Fxd + self.m_d * vyd * rd
         
-        # 5. Dolly Lateral Dynamics
-        A[4, 10] = self.m_d
-        A[4, 5] = -np.sin(delta_theta1)
-        A[4, 6] = np.cos(delta_theta1)
-        A[4, 7] = -np.sin(delta_theta2)
-        A[4, 8] = -np.cos(delta_theta2)
-        b[4] = -self.m_d * vxd * rd + Fyd
+        # 5. Dolly Lateral
+        A[4, 4] = self.m_d
+        A[4, 9] = s1
+        A[4, 10] = -c1
+        A[4, 11] = -s2
+        A[4, 12] = c2
+        b[4] = Fyd - self.m_d * vxd * rd
         
-        # 6. Dolly Yaw Dynamics
-        A[5, 3] = self.I_zd
-        A[5, 5] = -self.l_fd * np.sin(delta_theta1)
-        A[5, 6] = self.l_fd * np.cos(delta_theta1)
-        A[5, 7] = self.l_rd * np.sin(delta_theta2)
-        A[5, 8] = self.l_rd * np.cos(delta_theta2)
+        # 6. Dolly Yaw
+        A[5, 5] = self.I_zd
+        A[5, 9] = self.l_fd * s1
+        A[5, 10] = -self.l_fd * c1
+        A[5, 11] = -self.l_rd * s2
+        A[5, 12] = self.l_rd * c2
         b[5] = 0.0
         
-        # 7. Trailer Body Longitudinal Dynamics
-        A[6, 11] = self.m_t
-        A[6, 7] = 1.0
-        b[6] = self.m_t * vyt * rt + Fxt
+        # 7. Trailer Body Longitudinal
+        A[6, 6] = self.m_t
+        A[6, 11] = -1.0
+        b[6] = Fxt + self.m_t * vyt * rt
         
-        # 8. Trailer Body Lateral Dynamics
-        A[7, 12] = self.m_t
-        A[7, 8] = 1.0
-        b[7] = -self.m_t * vxt * rt + Fyt
+        # 8. Trailer Body Lateral
+        A[7, 7] = self.m_t
+        A[7, 12] = -1.0
+        b[7] = Fyt - self.m_t * vxt * rt
         
-        # 9. Trailer Body Yaw Dynamics
-        A[8, 4] = self.I_zt
-        A[8, 8] = -self.l_ft
+        # 9. Trailer Body Yaw
+        A[8, 8] = self.I_zt
+        A[8, 12] = self.l_ft
         b[8] = -self.l_rt * Fyt
         
-        # 10. Constraint 1 (Longitudinal Hitch 1 Acceleration)
-        A[9, 0] = -np.cos(delta_theta1)
-        A[9, 1] = -np.sin(delta_theta1)
-        A[9, 2] = self.d_h * np.sin(delta_theta1)
-        A[9, 9] = 1.0
-        b[9] = (r - rd) * (-vx * np.sin(delta_theta1) + (vy - self.d_h * r) * np.cos(delta_theta1))
+        # 10. Constraint H1 X
+        A[9, 0] = -c1
+        A[9, 1] = -s1
+        A[9, 2] = self.d_h * s1
+        A[9, 3] = 1.0
+        b[9] = (r - rd) * (-vx * s1 + (vy - self.d_h * r) * c1)
         
-        # 11. Constraint 2 (Lateral Hitch 1 Acceleration)
-        A[10, 0] = np.sin(delta_theta1)
-        A[10, 1] = -np.cos(delta_theta1)
-        A[10, 2] = self.d_h * np.cos(delta_theta1)
-        A[10, 3] = self.l_fd
-        A[10, 10] = 1.0
-        b[10] = (r - rd) * (-vx * np.cos(delta_theta1) - (vy - self.d_h * r) * np.sin(delta_theta1))
+        # 11. Constraint H1 Y
+        A[10, 0] = s1
+        A[10, 1] = -c1
+        A[10, 2] = self.d_h * c1
+        A[10, 4] = 1.0
+        A[10, 5] = self.l_fd
+        b[10] = (r - rd) * (-vx * c1 - (vy - self.d_h * r) * s1)
         
-        # 12. Constraint 3 (Longitudinal Hitch 2 Acceleration)
-        A[11, 3] = self.l_rd * np.sin(delta_theta2)
-        A[11, 9] = -np.cos(delta_theta2)
-        A[11, 10] = -np.sin(delta_theta2)
-        A[11, 11] = 1.0
-        b[11] = (rd - rt) * (-vxd * np.sin(delta_theta2) + (vyd - self.l_rd * rd) * np.cos(delta_theta2))
+        # 12. Constraint H2 X
+        A[11, 3] = -c2
+        A[11, 4] = -s2
+        A[11, 5] = self.l_rd * s2
+        A[11, 6] = 1.0
+        b[11] = (rd - rt) * (-vxd * s2 + (vyd - self.l_rd * rd) * c2)
         
-        # 12. Constraint 4 (Lateral Hitch 2 Acceleration)
-        A[12, 3] = self.l_rd * np.cos(delta_theta2)
-        A[12, 4] = self.l_ft
-        A[12, 9] = np.sin(delta_theta2)
-        A[12, 10] = -np.cos(delta_theta2)
-        A[12, 12] = 1.0
-        b[12] = (rd - rt) * (-vxd * np.cos(delta_theta2) - (vyd - self.l_rd * rd) * np.sin(delta_theta2))
+        # 13. Constraint H2 Y
+        A[12, 3] = s2
+        A[12, 4] = -c2
+        A[12, 5] = self.l_rd * c2
+        A[12, 7] = 1.0
+        A[12, 8] = self.l_ft
+        b[12] = (rd - rt) * (-vxd * c2 - (vyd - self.l_rd * rd) * s2)
         
         # Solve the system
         try:
@@ -194,7 +199,8 @@ class TractorTrailerDynamicModel:
             X = np.zeros(13)
             
         # Extract derivatives
-        dvx, dvy, dr, drd, drt = X[0], X[1], X[2], X[3], X[4]
+        dvx, dvy, dr = X[0], X[1], X[2]
+        drd, drt = X[5], X[8]
         
         # State derivatives:
         # [dx0, dy0, dtheta0, dtheta1, dtheta2, dvx, dvy, dr, drd, drt]
