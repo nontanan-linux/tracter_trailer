@@ -7,6 +7,8 @@ This document is prepared to present the mathematical derivation of a planar dyn
 ## 0. Schematic and Coordinate Systems
 
 ### 0.1 Tracter with Drawbar Trailler Diagram
+![Kinematic Diagram 1 Trailer](./kinematic_diagram_1trailer.png)
+
 This model consists of 3 main rigid bodies connected by revolute joints (Hitch Joints):
 1. **Tractor**: Has mass $m$, Center of Gravity (CG) at coordinates $(x_0, y_0)$ in the global frame, and a heading (Yaw Angle) of $\theta_0$.
 2. **Drawbar / Dolly**: Has mass $m_d$, acting as the front wheels of the trailer that can steer. It is connected to the rear of the tractor at hitch $H_1$ with a drawbar length $L_{bar}$, and has a heading angle of $\theta_1$.
