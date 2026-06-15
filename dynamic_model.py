@@ -5,7 +5,7 @@ class TractorTrailerDynamicModel:
                  max_steering_angle=np.radians(24.5), 
                  max_drawbar_angle=np.radians(60),
                  # Tractor physical parameters
-                 m=3000.0, I_z=4000.0, d_h=0.62,
+                 m=15000.0, I_z=20000.0, d_h=0.62,
                  l_f=0.64, l_r=0.64,
                  C_f=500000.0, C_r=500000.0,
                  # Trailer physical parameters
@@ -93,10 +93,10 @@ class TractorTrailerDynamicModel:
         Fyt = -self.C_t * alpha_t
         
         # Induced Cornering Drag (Crucial to prevent artificial acceleration in turns)
-        drag_f = Fyf * np.sin(alpha_f)
-        drag_r = Fyr * np.sin(alpha_r)
-        drag_d = Fyd * np.sin(alpha_d)
-        drag_t = Fyt * np.sin(alpha_t)
+        drag_f = -np.abs(Fyf * np.sin(alpha_f)) * np.sign(vx)
+        drag_r = -np.abs(Fyr * np.sin(alpha_r)) * np.sign(vx)
+        drag_d = -np.abs(Fyd * np.sin(alpha_d)) * np.sign(vxd)
+        drag_t = -np.abs(Fyt * np.sin(alpha_t)) * np.sign(vxt)
         
         # Rolling Resistance (Ensures drawbar tension) + Cornering Drag
         g = 9.81

@@ -16,8 +16,9 @@ def simulate():
     W = 1.09        # Track Width
     
     # Trailer Configuration (1 Drawbar Trailer consisting of Dolly and Trailer Body)
+    # Trailer drawing parameters must match physical model! L_bar = l_fd + l_rd = 1.0, L_trl = l_ft + l_rt = 2.5
     trailers = [
-        {'L_bar': 1.0, 'L_trl': 1.2, 'dh_prev': 0.62}, # Trailer 1 (dh_prev = d_h of tractor)
+        {'L_bar': 1.0, 'L_trl': 2.5, 'dh_prev': 0.62}, # Trailer 1 (dh_prev = d_h of tractor)
     ]
     
     num_trailers = len(trailers)
