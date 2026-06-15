@@ -21,8 +21,8 @@ class TractorTrailerSimulator:
         self.tractor_width = 1.3
         
         # Trailer: front and rear overhang = 0.2m
-        self.trailer_front = self.model.l_ft + 0.2
-        self.trailer_rear = self.model.l_rt + 0.2
+        self.trailer_front = self.model.l_ft + 0.4
+        self.trailer_rear = self.model.l_rt + 0.4
         self.trailer_width = 1.3
         
         self.wheel_diam = 0.65
