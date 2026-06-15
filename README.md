@@ -300,8 +300,7 @@ $$
 
 #### 5. Full Expanded Equation
 
-$$
-\left[ \begin{matrix}
+$\begin{bmatrix}
 m & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 0 & m & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 0 & 0 & I_z & 0 & 0 & 0 & 0 & 0 & 0 \\
@@ -311,20 +310,12 @@ m & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 & m_t & 0 & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 & 0 & m_t & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & I_{zt}
-\end{matrix} \right]
-\left[ \begin{matrix}
-\dot{v}_x \\
-\dot{v}_y \\
-\dot{r} \\
-\dot{v}_{xd} \\
-\dot{v}_{yd} \\
-\dot{r}_d \\
-\dot{v}_{xt} \\
-\dot{v}_{yt} \\
-\dot{r}_t
-\end{matrix} \right]
+\end{bmatrix}
+\begin{bmatrix}
+\dot{v}_x \\ \dot{v}_y \\ \dot{r} \\ \dot{v}_{xd} \\ \dot{v}_{yd} \\ \dot{r}_d \\ \dot{v}_{xt} \\ \dot{v}_{yt} \\ \dot{r}_t
+\end{bmatrix}$
 +
-\left[ \begin{matrix}
+$\begin{bmatrix}
 0 & -m r & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 m r & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
@@ -334,20 +325,11 @@ m r & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 & 0 & -m_t r_t & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 & m_t r_t & 0 & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0
-\end{matrix} \right]
-\left[ \begin{matrix}
-v_x \\
-v_y \\
-r \\
-v_{xd} \\
-v_{yd} \\
-r_d \\
-v_{xt} \\
-v_{yt} \\
-r_t
-\end{matrix} \right]
-=
-\left[ \begin{matrix}
+\end{bmatrix}
+\begin{bmatrix}
+v_x \\ v_y \\ r \\ v_{xd} \\ v_{yd} \\ r_d \\ v_{xt} \\ v_{yt} \\ r_t
+\end{bmatrix}$ =
+$\begin{bmatrix}
 F_{xr} + F_{xf}\cos\delta - F_{yf}\sin\delta - F_{hx1} \\
 F_{yr} + F_{xf}\sin\delta + F_{yf}\cos\delta - F_{hy1} \\
 l_f (F_{yf}\cos\delta + F_{xf}\sin\delta) - l_r F_{yr} + d_h F_{hy1} \\
@@ -357,5 +339,5 @@ L_{bar} (F_{hx1}\sin\Delta\theta_1 + F_{hy1}\cos\Delta\theta_1) \\
 F_{xt} + F_{hx2} \\
 F_{ytr} + F_{hy2} \\
 l_{ft} F_{hy2} - l_{rt} F_{ytr}
-\end{matrix} \right]
-$$
+\end{bmatrix}
+$
