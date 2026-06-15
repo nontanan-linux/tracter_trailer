@@ -239,17 +239,18 @@ class TractorTrailerSimulator:
                                       fargs=(ax, trace, d_trace, status_texts, patches_list),
                                       interval=self.dt*1000, blit=True, repeat=False)
         
-        if os.environ.get('DISPLAY'):
-            print("Showing simulation... Close the window to continue.")
-            plt.show()
-        else:
-            print("Headless environment detected. Skipping plt.show().")
-            
         if self.SAVE_ANIMATION:
             print("Saving animation...")
             writer = animation.PillowWriter(fps=20)
             ani.save('simulation_dynamic.gif', writer=writer)
             print("Simulation saved to simulation_dynamic.gif")
+            return  # ปิดโปรแกรมหลังเซฟเสร็จ
+
+        if os.environ.get('DISPLAY'):
+            print("Showing simulation... Close the window to continue.")
+            plt.show()
+        else:
+            print("Headless environment detected. Skipping plt.show().")
 
 if __name__ == "__main__":
     sim = TractorTrailerSimulator()
