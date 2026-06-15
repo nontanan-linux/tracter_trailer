@@ -1,16 +1,16 @@
 import numpy as np
 
 class TractorTrailerDynamicModel:
-    def __init__(self, L0, trailers, dt=0.05, 
-                 max_steering_angle=np.radians(30), 
-                 max_drawbar_angle=np.radians(30),
+        def __init__(self, L0=1.28, trailers=None, dt=0.05, 
+                 max_steering_angle=np.radians(24.5), 
+                 max_drawbar_angle=np.radians(60),
                  # Tractor physical parameters
-                 m=1500.0, I_z=2500.0, d_h=0.8,
-                 l_f=1.2, l_r=1.6,
-                 C_f=40000.0, C_r=60000.0,
+                 m=3000.0, I_z=4000.0, d_h=0.62,
+                 l_f=0.64, l_r=0.64,
+                 C_f=30000.0, C_r=40000.0,
                  # Trailer physical parameters
                  m_d=200.0, I_zd=100.0, l_fd=0.8, l_rd=0.2, C_d=30000.0,
-                 m_t=1000.0, I_zt=1500.0, l_ft=1.0, l_rt=1.5, C_t=40000.0):
+                 m_t=12000.0, I_zt=16000.0, l_ft=1.0, l_rt=1.5, C_t=40000.0):
         """
         Initialize the dynamic model parameters for Tractor + 1 Drawbar Trailer (Dolly + Trailer Body).
         """

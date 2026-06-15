@@ -12,20 +12,20 @@ def simulate():
     PLOT_DRAWBAR_TRAJECTORY = True
     
     # Dimensions (meters)
-    L0 = 2.0        # Tractor Wheelbase
-    W = 1.0         # Track Width
+    L0 = 1.28       # Tractor Wheelbase
+    W = 1.09        # Track Width
     
     # Trailer Configuration (1 Drawbar Trailer consisting of Dolly and Trailer Body)
     trailers = [
-        {'L_bar': 1.0, 'L_trl': 1.2, 'dh_prev': 0.5}, # Trailer 1 (dh_prev = d_h of tractor)
+        {'L_bar': 1.0, 'L_trl': 1.2, 'dh_prev': 0.62}, # Trailer 1 (dh_prev = d_h of tractor)
     ]
     
     num_trailers = len(trailers)
     
     # Vehicle Box Dimensions
-    tractor_width = 1.5
-    tractor_len = 2.8
-    tractor_overhang = 0.4 
+    tractor_width = 1.3
+    tractor_len = 2.95
+    tractor_overhang = 0.62 
     
     trailer_width = 1.5
     trailer_body_len = 2.0
@@ -38,8 +38,7 @@ def simulate():
     T = 20.0
     
     # Initialize Model
-    # We pass the same geometric parameters as simulate.py
-    model = TractorTrailerDynamicModel(L0, trailers, dt=dt, d_h=0.5)
+    model = TractorTrailerDynamicModel(L0, trailers, dt=dt, d_h=0.62)
     
     # Initial state: [x0, y0, theta0, theta1, theta2, vx, vy, r, rd, rt]
     # We start with the tractor moving at 2.0 m/s
@@ -67,8 +66,8 @@ def simulate():
         v_error = v_target - vx
         v_error_integral += v_error * dt
         Fxr = Kp * v_error + Ki * v_error_integral
-        # Clamp thrust force to realistic limits [-8000 N, 8000 N]
-        Fxr = np.clip(Fxr, -8000.0, 8000.0)
+        # Clamp thrust force to realistic limits [-10000 N, 10000 N]
+        Fxr = np.clip(Fxr, -10000.0, 10000.0)
         
         # Steering input: Infinity-like pattern
         delta = np.radians(30) * np.sin(0.5 * t)
