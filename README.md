@@ -162,15 +162,15 @@ Formulating the acceleration equations incorporating the hitch reaction forces $
 1.  **Tractor ($x_0, y_0, \theta_0$):**
 
     $$
-    m \ddot{x}_0 = Q_{x0} - \lambda_1
+    m\ddot{x}_0 = Q_{x0} - \lambda_1
     $$
 
     $$
-    m \ddot{y}_0 = Q_{y0} - \lambda_2
+    m\ddot{y}_0 = Q_{y0} - \lambda_2
     $$
 
     $$
-    I_z \ddot{\theta}_0 = Q_{\theta0} - d_h \sin\theta_0 \lambda_1 + d_h \cos\theta_0 \lambda_2
+    I_z\ddot{\theta}_0 = Q_{\theta0} - d_h \sin\theta_0 \lambda_1 + d_h \cos\theta_0 \lambda_2
     $$
 
 2.  **Drawbar ($x_d, y_d, \theta_1$):**
