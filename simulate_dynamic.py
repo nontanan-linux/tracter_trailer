@@ -161,9 +161,9 @@ class TractorTrailerSimulator:
         p_axle_f = coords[3] # Front steerable axle of trailer (Drawbar Axle)
         p_axle_r = coords[4] # Rear fixed axle of trailer
         
-        theta0 = pos[2]
-        theta1 = pos[5]
-        theta2 = pos[8]
+        x0, y0, theta0 = pos[0:3]
+        xd, yd, theta1 = pos[3:6]
+        xt, yt, theta2 = pos[6:9]
         
         # Dynamic Camera Tracking
         ax.set_xlim(x0 - 10, x0 + 20)
