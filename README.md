@@ -175,20 +175,33 @@ $$
 
 2.  **Drawbar ($x_d, y_d, \theta_1$):**
 
-    $$m_d \ddot{x_d} = Q_{xd} + \lambda_1 - \lambda_3$$
+$$
+m_d \ddot{x_d} = Q_{xd} + \lambda_1 - \lambda_3
+$$
 
-    $$m_d \ddot{y_d} = Q_{yd} + \lambda_2 - \lambda_4$$
+$$
+m_d \ddot{y_d} = Q_{yd} + \lambda_2 - \lambda_4
+$$
 
-    $$I_{zd} \ddot{\theta_1} = Q_{\theta1} - L_{bar} \sin\theta_1 \lambda_1 + L_{bar} \cos\theta_1 \lambda_2$$
+$$
+I_{zd} \ddot{\theta_1} = Q_{\theta1} - L_{bar} \sin\theta_1 \lambda_1 + L_{bar} \cos\theta_1 \lambda_2
+$$
 
-    *(Note: Forces $\lambda_3, \lambda_4$ from the Trailer act exactly at the Drawbar CG, thus creating no moment around $\theta_1$)*
+*(Note: Forces $\lambda_3, \lambda_4$ from the Trailer act exactly at the Drawbar CG, thus creating no moment around $\theta_1$)*
+
 3.  **Trailer Body ($x_t, y_t, \theta_2$):**
 
-    $$m_t \ddot{x_t} = Q_{xt} + \lambda_3$$
+$$
+m_t \ddot{x_t} = Q_{xt} + \lambda_3
+$$
 
-    $$m_t \ddot{y}_t = Q_{yt} + \lambda_4$$
+$$
+m_t \ddot{y}_t = Q_{yt} + \lambda_4
+$$
 
-    $$I_{zt} \ddot{\theta}_2 = Q_{\theta2} - l_{ft} \sin\theta_2 \lambda_3 + l_{ft} \cos\theta_2 \lambda_4$$
+$$
+I_{zt} \ddot{\theta}_2 = Q_{\theta2} - l_{ft} \sin\theta_2 \lambda_3 + l_{ft} \cos\theta_2 \lambda_4
+$$
 
 ### 2.4 Body-Fixed Equations of Motion
 Transforming accelerations $\ddot{x}, \ddot{y}$ into the body-fixed frame $(\dot{v}_x - v_y r)$ and decomposing tire forces:
