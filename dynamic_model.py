@@ -1,7 +1,7 @@
 import numpy as np
 
 class TractorTrailerDynamicModel:
-        def __init__(self, L0=1.28, trailers=None, dt=0.05, 
+    def __init__(self, L0=1.28, trailers=None, dt=0.05, 
                  max_steering_angle=np.radians(24.5), 
                  max_drawbar_angle=np.radians(60),
                  # Tractor physical parameters
