@@ -9,8 +9,8 @@ class TractorTrailerDynamicModel:
                  l_f=0.64, l_r=0.64,
                  C_f=500000.0, C_r=500000.0,
                  # Trailer physical parameters (Drawbar Trailer: Dolly + Body)
-                 m_d=5500.0, I_zd=5000.0, l_fd=1.0, l_rd=0.0, C_d=700000.0,
-                 m_t=5500.0, I_zt=5000.0, l_ft=0.64, l_rt=0.64, C_t=1000000.0):
+                 m_d=500.0, I_zd=500.0, l_fd=1.0, l_rd=0.0, C_d=700000.0,
+                 m_t=500.0, I_zt=500.0, l_ft=0.64, l_rt=0.64, C_t=1000000.0):
         """
         Initialize the dynamic model parameters for Tractor + 1 Drawbar Trailer (Dolly + Trailer Body).
         """
