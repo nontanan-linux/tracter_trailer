@@ -14,6 +14,9 @@ This model consists of 3 main rigid bodies connected by revolute joints (Hitch J
 2. **Drawbar / Dolly**: Has mass $m_d$, acting as the front wheels of the trailer that can steer. It is connected to the rear of the tractor at hitch $H_1$ with a drawbar length $L_{bar}$, and has a heading angle of $\theta_1$.
 3. **Trailer Body**: Has mass $m_t$, connected exactly at the axle of the drawbar (no overhang, $l_{rd} = 0$), making the structure act like a single truck with the drawbar as its front wheels, and has a heading angle of $\theta_2$.
 
+### 0.2 ISO 8855 Coordinate System
+![ISO 8855 Coordinate System](./iso_8855_coordinate_system.png)
+
 #### Parameters Explanation
 | Symbol | Category | Description |
 | :---: | :--- | :--- |
