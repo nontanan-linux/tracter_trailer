@@ -69,8 +69,8 @@ def simulate():
         # Clamp thrust force to realistic limits [-10000 N, 10000 N]
         Fxr = np.clip(Fxr, -10000.0, 10000.0)
         
-        # Steering input: Gentle turn for heavy 12-ton load (max 10 degrees, slow sine wave)
-        delta = np.radians(10) * np.sin(0.2 * t)
+        # Steering input: Smooth steady turn to drive in a circle (safe for heavy towing)
+        delta = np.radians(8) * (1 - np.exp(-t))
         
         states.append(state)
         inputs.append([Fxr, delta])

@@ -7,7 +7,7 @@ class TractorTrailerDynamicModel:
                  # Tractor physical parameters
                  m=3000.0, I_z=4000.0, d_h=0.62,
                  l_f=0.64, l_r=0.64,
-                 C_f=150000.0, C_r=150000.0,
+                 C_f=500000.0, C_r=500000.0,
                  # Trailer physical parameters
                  m_d=500.0, I_zd=50.0, l_fd=0.8, l_rd=0.2, C_d=700000.0,
                  m_t=11500.0, I_zt=6000.0, l_ft=1.0, l_rt=1.5, C_t=1000000.0):
