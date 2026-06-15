@@ -154,28 +154,26 @@ $$\frac{d}{dt}\left( \frac{\partial T}{\partial \dot{q}_i} \right) - \frac{\part
 
 เพื่อให้ได้สมการการเคลื่อนที่อย่างสมบูรณ์ตามวิธีลากรานเจียน เราจะทำการหาอนุพันธ์ย่อย (Partial Derivative) ของพลังงานจลน์ $T$ เทียบกับพิกัดทั่วไป (Generalized Coordinates) ทีละตัวแปร
 
-### 2.1 การหาอนุพันธ์ของพลังงานจลน์ $T$
+### 2.1 การหาอนุพันธ์ของสมการลากรานจ์ $L$
 กำหนดให้เวกเตอร์พิกัดทั่วไป (Generalized Coordinates) ของระบบคือ:
 $$q = [x_0, y_0, \theta_0, x_d, y_d, \theta_1, x_t, y_t, \theta_2]^T$$
 
-จากสมการพลังงานจลน์ $T$ ในหัวข้อ 1.5 เราทำการหาอนุพันธ์เทียบกับพิกัดทั่วไปแต่ละตัวแปรเพื่อสร้างเทอมฝั่งซ้ายของสมการออยเลอร์-ลากรานจ์ $\frac{d}{dt}\left(\frac{\partial T}{\partial \dot{q}_i}\right) - \frac{\partial T}{\partial q_i}$:
+จากสมการลากรานจ์ $L = T - V$ (โดยที่ $V=0$ ทำให้ $L=T$) เราทำการหาอนุพันธ์เทียบกับพิกัดทั่วไปและอัตราเร็วของพิกัดทั่วไปแต่ละตัวแปร เพื่อสร้างเทอมฝั่งซ้ายของสมการออยเลอร์-ลากรานจ์ $\frac{d}{dt}\left(\frac{\partial L}{\partial \dot{q}_i}\right) - \frac{\partial L}{\partial q_i}$:
 
 **1. พิกัดของรถลากจูง (Tractor): $q_1 \dots q_3$**
-*   $q_1 = x_0$: $\quad \frac{\partial T}{\partial \dot{x}_0} = m \dot{x}_0 \implies \frac{d}{dt}\left(\frac{\partial T}{\partial \dot{x}_0}\right) = m \ddot{x}_0$
-*   $q_2 = y_0$: $\quad \frac{\partial T}{\partial \dot{y}_0} = m \dot{y}_0 \implies \frac{d}{dt}\left(\frac{\partial T}{\partial \dot{y}_0}\right) = m \ddot{y}_0$
-*   $q_3 = \theta_0$: $\quad \frac{\partial T}{\partial \dot{\theta}_0} = I_z \dot{\theta}_0 \implies \frac{d}{dt}\left(\frac{\partial T}{\partial \dot{\theta}_0}\right) = I_z \ddot{\theta}_0$
+*   $q_1 = x_0$: $\quad \frac{\partial L}{\partial \dot{x}_0} = m \dot{x}_0, \quad \frac{\partial L}{\partial x_0} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{x}_0}\right) - \frac{\partial L}{\partial x_0} = m \ddot{x}_0$
+*   $q_2 = y_0$: $\quad \frac{\partial L}{\partial \dot{y}_0} = m \dot{y}_0, \quad \frac{\partial L}{\partial y_0} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{y}_0}\right) - \frac{\partial L}{\partial y_0} = m \ddot{y}_0$
+*   $q_3 = \theta_0$: $\quad \frac{\partial L}{\partial \dot{\theta}_0} = I_z \dot{\theta}_0, \quad \frac{\partial L}{\partial \theta_0} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{\theta}_0}\right) - \frac{\partial L}{\partial \theta_0} = I_z \ddot{\theta}_0$
 
 **2. พิกัดของดอลลี่ (Dolly): $q_4 \dots q_6$**
-*   $q_4 = x_d$: $\quad \frac{\partial T}{\partial \dot{x}_d} = m_d \dot{x}_d \implies \frac{d}{dt}\left(\frac{\partial T}{\partial \dot{x}_d}\right) = m_d \ddot{x}_d$
-*   $q_5 = y_d$: $\quad \frac{\partial T}{\partial \dot{y}_d} = m_d \dot{y}_d \implies \frac{d}{dt}\left(\frac{\partial T}{\partial \dot{y}_d}\right) = m_d \ddot{y}_d$
-*   $q_6 = \theta_1$: $\quad \frac{\partial T}{\partial \dot{\theta}_1} = I_{zd} \dot{\theta}_1 \implies \frac{d}{dt}\left(\frac{\partial T}{\partial \dot{\theta}_1}\right) = I_{zd} \ddot{\theta}_1$
+*   $q_4 = x_d$: $\quad \frac{\partial L}{\partial \dot{x}_d} = m_d \dot{x}_d, \quad \frac{\partial L}{\partial x_d} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{x}_d}\right) - \frac{\partial L}{\partial x_d} = m_d \ddot{x}_d$
+*   $q_5 = y_d$: $\quad \frac{\partial L}{\partial \dot{y}_d} = m_d \dot{y}_d, \quad \frac{\partial L}{\partial y_d} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{y}_d}\right) - \frac{\partial L}{\partial y_d} = m_d \ddot{y}_d$
+*   $q_6 = \theta_1$: $\quad \frac{\partial L}{\partial \dot{\theta}_1} = I_{zd} \dot{\theta}_1, \quad \frac{\partial L}{\partial \theta_1} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{\theta}_1}\right) - \frac{\partial L}{\partial \theta_1} = I_{zd} \ddot{\theta}_1$
 
 **3. พิกัดของรถพ่วงหลัก (Trailer Body): $q_7 \dots q_9$**
-*   $q_7 = x_t$: $\quad \frac{\partial T}{\partial \dot{x}_t} = m_t \dot{x}_t \implies \frac{d}{dt}\left(\frac{\partial T}{\partial \dot{x}_t}\right) = m_t \ddot{x}_t$
-*   $q_8 = y_t$: $\quad \frac{\partial T}{\partial \dot{y}_t} = m_t \dot{y}_t \implies \frac{d}{dt}\left(\frac{\partial T}{\partial \dot{y}_t}\right) = m_t \ddot{y}_t$
-*   $q_9 = \theta_2$: $\quad \frac{\partial T}{\partial \dot{\theta}_2} = I_{zt} \dot{\theta}_2 \implies \frac{d}{dt}\left(\frac{\partial T}{\partial \dot{\theta}_2}\right) = I_{zt} \ddot{\theta}_2$
-
-เนื่องจากพลังงานจลน์ $T$ ไม่ขึ้นกับตำแหน่ง $q_i$ โดยตรง จึงสรุปได้ว่า $\frac{\partial T}{\partial q_i} = 0$ สำหรับทุกตัวแปร $i = 1 \dots 9$
+*   $q_7 = x_t$: $\quad \frac{\partial L}{\partial \dot{x}_t} = m_t \dot{x}_t, \quad \frac{\partial L}{\partial x_t} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{x}_t}\right) - \frac{\partial L}{\partial x_t} = m_t \ddot{x}_t$
+*   $q_8 = y_t$: $\quad \frac{\partial L}{\partial \dot{y}_t} = m_t \dot{y}_t, \quad \frac{\partial L}{\partial y_t} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{y}_t}\right) - \frac{\partial L}{\partial y_t} = m_t \ddot{y}_t$
+*   $q_9 = \theta_2$: $\quad \frac{\partial L}{\partial \dot{\theta}_2} = I_{zt} \dot{\theta}_2, \quad \frac{\partial L}{\partial \theta_2} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{\theta}_2}\right) - \frac{\partial L}{\partial \theta_2} = I_{zt} \ddot{\theta}_2$
 
 ### 2.2 สมการการเคลื่อนที่ในพิกัดโลก (Inertial Equations of Motion)
 เมื่อนำผลการหาอนุพันธ์ไปประกอบกับแรงภายนอก $Q_i$ และแรงปฏิกิริยาพ่วง $F_{h,i}$ ตามสมการออยเลอร์-ลากรานจ์ในหัวข้อ 1.6 จะได้สมการตั้งต้นครบทั้ง 9 ตัวแปรพิกัดดังนี้:
