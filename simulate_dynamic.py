@@ -102,12 +102,7 @@ class TractorTrailerSimulator:
             self.trajectory.append(coords[0])
             
             if i % 10 == 0:
-                x0_pos, y0_pos = coords[0][0], coords[0][1]
-                xt_pos, yt_pos = coords[4][0], coords[4][1]
-                v0_mag = np.sqrt(vx**2 + vy**2)
-                vt_mag = np.sqrt(vxt**2 + vyt**2)
-                print(f"t={t:05.2f}s | Tractor: x={x0_pos:06.2f}, y={y0_pos:06.2f}, v={v0_mag:05.2f} m/s | Trailer: x={xt_pos:06.2f}, y={yt_pos:06.2f}, v={vt_mag:05.2f} m/s")
-                sys.stdout.flush()
+                pass # Pre-calculation complete
                 
             current_drawbars = []
             for k in range(self.num_trailers):
@@ -163,6 +158,16 @@ class TractorTrailerSimulator:
         vels = self.velocities[i]
         
         vx_curr = state[5]
+        
+        if i % 10 == 0:
+            x0_pos, y0_pos = self.trajectory[i][0], self.trajectory[i][1]
+            if self.PLOT_DRAWBAR_TRAJECTORY:
+                xt_pos, yt_pos = self.drawbar_trajectories[i][0][0], self.drawbar_trajectories[i][0][1]
+            else:
+                xt_pos, yt_pos = 0.0, 0.0
+            print(f"t={i*self.dt:05.2f}s | Tractor: x={x0_pos:06.2f}, y={y0_pos:06.2f}, v={vx_curr:05.2f} m/s | Trailer: x={xt_pos:06.2f}, y={yt_pos:06.2f}, v={vels[0]:05.2f} m/s")
+            sys.stdout.flush()
+            
         status_texts[0].set_text(f'Tractor Vx: {vx_curr:.2f} m/s\nForce Fxr: {Fxr_curr:.1f} N\nSteer: {np.degrees(delta_curr):.1f} deg')
         
         psi = state[2] - state[3]
@@ -232,7 +237,7 @@ class TractorTrailerSimulator:
         cmap = plt.get_cmap('jet')
         trailer_colors = [cmap(float(k) / self.num_trailers) for k in range(self.num_trailers)]
         
-        tr_text = ax.text(0.05, 0.90, '', transform=ax.transAxes, fontsize=10, color=trailer_colors[0],
+        tr_text = ax.text(0.05, 0.82, '', transform=ax.transAxes, fontsize=10, color=trailer_colors[0],
                           verticalalignment='top', fontweight='bold', bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.6, edgecolor='none'))
         status_texts.append(tr_text)
         
