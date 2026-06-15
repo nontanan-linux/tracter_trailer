@@ -14,17 +14,17 @@ class TractorTrailerSimulator:
         self.model = TractorTrailerDynamicModel()
         
         # Dimensions for drawing
-        self.tractor_len = 4.0
-        self.tractor_width = 2.0
-        self.tractor_overhang = 1.0 # Distance from rear axle to rear edge
+        self.tractor_len = 2.95
+        self.tractor_width = 1.3
+        self.tractor_overhang = 0.62 # Distance from rear axle to rear edge
         
-        self.trailer_body_len = 4.0
-        self.trailer_width = 2.0
-        self.trailer_overhang = 1.0 # Distance from rear axle to rear edge of trailer
+        self.trailer_body_len = 2.95
+        self.trailer_width = 1.3
+        self.trailer_overhang = 0.62 # Distance from rear axle to rear edge of trailer
         
-        self.wheel_diam = 0.8
-        self.wheel_width = 0.3
-        self.W = 1.8 # Track width
+        self.wheel_diam = 0.65
+        self.wheel_width = 0.25
+        self.W = 1.09 # Average of Front and Rear Tread
         
         self.SAVE_ANIMATION = True
         

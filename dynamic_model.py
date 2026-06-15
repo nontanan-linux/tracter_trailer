@@ -2,9 +2,9 @@ import numpy as np
 
 class TractorTrailerDynamicModel:
     def __init__(self, 
-                 m=5000.0, I_z=10000.0, l_f=2.0, l_r=1.5, d_h=1.5,
-                 m_d=5000.0, I_zd=10000.0, L_bar=1.5,
-                 m_t=5000.0, I_zt=10000.0, l_ft=1.75, l_rt=1.75,
+                 m=3000.0, I_z=2600.0, l_f=0.64, l_r=0.64, d_h=0.62,
+                 m_d=6000.0, I_zd=1000.0, L_bar=1.5,
+                 m_t=6000.0, I_zt=5200.0, l_ft=0.64, l_rt=0.64,
                  C_f=100000.0, C_r=150000.0, 
                  C_df=150000.0, C_tr=150000.0):
         # Tractor Parameters
