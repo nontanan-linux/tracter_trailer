@@ -1,8 +1,9 @@
 import os
 import numpy as np
-import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 import matplotlib.animation as animation
+import sys
 from matplotlib.patches import Rectangle
 from dynamic_model import TractorTrailerDynamicModel
 
@@ -121,6 +122,7 @@ def simulate():
             v0_mag = np.sqrt(vx**2 + vy**2)
             vt_mag = np.sqrt(vxt**2 + vyt**2)
             print(f"t={t:05.2f}s | Tractor: x={x0_pos:06.2f}, y={y0_pos:06.2f}, v={v0_mag:05.2f} m/s | Trailer: x={xt_pos:06.2f}, y={yt_pos:06.2f}, v={vt_mag:05.2f} m/s")
+            sys.stdout.flush()
         
         # Collect Drawbar Coordinates (Dolly Positions)
         current_drawbars = []
@@ -217,7 +219,7 @@ def simulate():
             x0_pos, y0_pos = coords_frame[0][0], coords_frame[0][1]
             xt_pos, yt_pos = coords_frame[4][0], coords_frame[4][1]
             t_current = i * dt
-            print(f"[Animation] t={t_current:05.2f}s | Tractor: x={x0_pos:06.2f}, y={y0_pos:06.2f}, v={v0_mag:05.2f} m/s | Trailer: x={xt_pos:06.2f}, y={yt_pos:06.2f}, v={vt_mag:05.2f} m/s")
+            # Removed print statement here to prevent terminal freezing during GUI event loop
 
         for p in patches_list:
             p.remove()
