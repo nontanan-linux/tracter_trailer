@@ -18,8 +18,8 @@ class TractorTrailerSimulator:
         self.tractor_width = 2.0
         self.tractor_overhang = 1.0 # Distance from rear axle to rear edge
         
-        self.trailer_body_len = 6.0
-        self.trailer_width = 2.2
+        self.trailer_body_len = 4.0
+        self.trailer_width = 2.0
         self.trailer_overhang = 1.0 # Distance from rear axle to rear edge of trailer
         
         self.wheel_diam = 0.8
