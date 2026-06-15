@@ -175,7 +175,25 @@ $$q = [x_0, y_0, \theta_0, x_d, y_d, \theta_1, x_t, y_t, \theta_2]^T$$
 *   $q_8 = y_t$: $\quad \frac{\partial L}{\partial \dot{y}_t} = m_t \dot{y}_t, \quad \frac{\partial L}{\partial y_t} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{y}_t}\right) - \frac{\partial L}{\partial y_t} = m_t \ddot{y}_t$
 *   $q_9 = \theta_2$: $\quad \frac{\partial L}{\partial \dot{\theta}_2} = I_{zt} \dot{\theta}_2, \quad \frac{\partial L}{\partial \theta_2} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{\theta}_2}\right) - \frac{\partial L}{\partial \theta_2} = I_{zt} \ddot{\theta}_2$
 
-### 2.2 สมการการเคลื่อนที่ในพิกัดโลก (Inertial Equations of Motion)
+### 2.2 การหาแรงทั่วไป (Generalized Forces $Q_i$)
+แรงทั่วไป $Q_i$ คือผลรวมของแรงภายนอกที่ไม่ใช่อนุรักษ์พลังงาน (ไม่รวมแรงปฏิกิริยาพ่วง $\lambda$) ที่ส่งผลกระทบต่อพิกัดทั่วไป $q_i$ ซึ่งสำหรับยานพาหนะนี้จะประกอบไปด้วย แรงหน้าสัมผัสยางล้อ (Tire Forces) และ แรงขับเคลื่อน (Traction Forces) ที่กระทำต่อวัตถุแต่ละชิ้น โดยสามารถนิยามได้ดังนี้:
+
+**1. รถลากจูง (Tractor): $Q_1 \dots Q_3$**
+*   $Q_1 = Q_{x0} = \sum F_{X0}$ (ผลรวมแรงภายนอกในแนวแกน X โลก)
+*   $Q_2 = Q_{y0} = \sum F_{Y0}$ (ผลรวมแรงภายนอกในแนวแกน Y โลก)
+*   $Q_3 = Q_{\theta0} = \sum M_{z0}$ (ผลรวมโมเมนต์ภายนอกรอบจุดศูนย์กลางมวลรถลากจูง)
+
+**2. ดอลลี่ (Dolly): $Q_4 \dots Q_6$**
+*   $Q_4 = Q_{xd} = \sum F_{Xd}$ (ผลรวมแรงภายนอกในแนวแกน X โลก)
+*   $Q_5 = Q_{yd} = \sum F_{Yd}$ (ผลรวมแรงภายนอกในแนวแกน Y โลก)
+*   $Q_6 = Q_{\theta1} = \sum M_{zd}$ (ผลรวมโมเมนต์ภายนอกรอบจุดศูนย์กลางมวลหน้าดอลลี่)
+
+**3. รถพ่วงหลัก (Trailer Body): $Q_7 \dots Q_9$**
+*   $Q_7 = Q_{xt} = \sum F_{Xt}$ (ผลรวมแรงภายนอกในแนวแกน X โลก)
+*   $Q_8 = Q_{yt} = \sum F_{Yt}$ (ผลรวมแรงภายนอกในแนวแกน Y โลก)
+*   $Q_9 = Q_{\theta2} = \sum M_{zt}$ (ผลรวมโมเมนต์ภายนอกรอบจุดศูนย์กลางมวลรถพ่วงหลัก)
+
+### 2.3 สมการการเคลื่อนที่ในพิกัดโลก (Inertial Equations of Motion)
 เมื่อนำผลการหาอนุพันธ์ไปประกอบกับแรงภายนอก $Q_i$ และแรงปฏิกิริยาพ่วง $F_{h,i}$ ตามสมการออยเลอร์-ลากรานจ์ในหัวข้อ 1.6 จะได้สมการตั้งต้นครบทั้ง 9 ตัวแปรพิกัดดังนี้:
 
 1.  **Tractor ($x_0, y_0, \theta_0$):**
@@ -191,7 +209,7 @@ $$q = [x_0, y_0, \theta_0, x_d, y_d, \theta_1, x_t, y_t, \theta_2]^T$$
     $$m_t \ddot{y}_t = Q_{yt} + \lambda_4$$
     $$I_{zt} \ddot{\theta}_2 = Q_{\theta2} - l_{ft} \sin\theta_2 \lambda_3 + l_{ft} \cos\theta_2 \lambda_4$$
 
-### 2.3 การแปลงเข้าสู่พิกัดตัวรถ (Body-Fixed Transformation)
+### 2.4 การแปลงเข้าสู่พิกัดตัวรถ (Body-Fixed Transformation)
 เพื่อให้สามารถนำสมการไปใช้จำลองระบบได้จริง เราจำเป็นต้องแปลงสมการจากพิกัดเฉื่อยโลกให้กลับมาอยู่ในพิกัดตัวรถ (Body-Fixed Frame) ซึ่งตัวแปรสถานะที่วัดได้จะเป็นความเร็วในแกนรถ ($v_x, v_y, r$) โดยเราจะทำการแปลงความเร่ง $\ddot{x}, \ddot{y}$ เข้าสู่พิกัดบนตัวรถด้วยเมทริกซ์การหมุน $R(\theta)$:
 $$\begin{bmatrix} \dot{v}_x - v_y r \\ \dot{v}_y + v_x r \end{bmatrix} = \begin{bmatrix} \cos\theta & \sin\theta \\ -\sin\theta & \cos\theta \end{bmatrix} \begin{bmatrix} \ddot{x} \\ \ddot{y} \end{bmatrix}$$
 
@@ -201,7 +219,7 @@ $$\begin{bmatrix} \dot{v}_x - v_y r \\ \dot{v}_y + v_x r \end{bmatrix} = \begin{
 *   **สำหรับจุด $H_2$ (เข้าแกน Dolly/Trailer):** 
     $$\begin{bmatrix} F_{hx2} \\ F_{hy2} \end{bmatrix} = \begin{bmatrix} \cos\theta_2 & \sin\theta_2 \\ -\sin\theta_2 & \cos\theta_2 \end{bmatrix} \begin{bmatrix} \lambda_3 \\ \lambda_4 \end{bmatrix}$$
 
-### 2.4 แรงสัมผัสยางล้อและแรงขับ (Tire Forces and Traction)
+### 2.5 แรงสัมผัสยางล้อและแรงขับ (Tire Forces and Traction)
 เมื่อพิจารณาแรงภายนอก $Q_i$ ที่กระทำต่อรถลากจูง ล้อหน้ามีมุมเลี้ยว $\delta$ ดังนั้นแรงต้านหน้ายางล้อหน้า $F_{yf}$ และแรงขับล้อหน้า $F_{xf}$ (ถ้ามี) ต้องแตกแรงเข้าแกนรถลากจูงดังนี้:
 $$F_{xf0} = F_{xf}\cos\delta - F_{yf}\sin\delta$$
 $$F_{yf0} = F_{xf}\sin\delta + F_{yf}\cos\delta$$
@@ -209,7 +227,7 @@ $$F_{yf0} = F_{xf}\sin\delta + F_{yf}\cos\delta$$
 สำหรับล้อเพลาอื่นๆ ที่ไม่มีมุมเลี้ยว (เช่น ล้อหลัง Tractor, ล้อ Dolly, ล้อ Trailer) แรงสัมผัสจะกระทำในแนวแกนพิกัดของตัวมันเองโดยตรง เช่น $F_{xr0} = F_{xr}, F_{yr0} = F_{yr}$
 (แรงด้านข้างคำนวณจากแบบจำลองหน้าสัมผัสยาง $F_y = -C \alpha$)
 
-### 2.5 สมการการเคลื่อนที่ของแต่ละชิ้นส่วนในพิกัดตัวรถ
+### 2.6 สมการการเคลื่อนที่ของแต่ละชิ้นส่วนในพิกัดตัวรถ
 เมื่อแทนค่าการแปลงพิกัดและแตกแรงภายนอกเข้าแกนตัวรถลงในสมการจากข้อ 1.6 จะลดรูปกลายเป็นสมการการเคลื่อนที่ 9 สมการดังนี้:
 
 #### 1. รถลากจูง (Tractor)
@@ -228,7 +246,7 @@ $$\text{Longitudinal:} \quad m_t(\dot{v}_{xt} - v_{yt} r_t) = F_{xt} + F_{hx2}$$
 $$\text{Lateral:} \quad m_t(\dot{v}_{yt} + v_{xt} r_t) = F_{yt} + F_{hy2}$$
 $$\text{Yaw:} \quad I_{zt} \dot{r}_t = -l_{ft} F_{hy2} - l_{rt} F_{yt}$$
 
-### 2.6 สมการเงื่อนไขบังคับเชิงความเร่ง (Hitch Acceleration Constraints)
+### 2.7 สมการเงื่อนไขบังคับเชิงความเร่ง (Hitch Acceleration Constraints)
 เพื่อให้มีจำนวนสมการเท่ากับจำนวนตัวแปรที่จะแก้ (รวมแรงพ่วง $F_{hx}, F_{hy}$) เราต้องหาอนุพันธ์เทียบกับเวลาของสมการจลนศาสตร์ความเร็วข้อต่อ เพื่อให้ได้เงื่อนไขเชิงความเร่ง ($\ddot{g} = 0$) ที่จุด $H_1$ และ $H_2$ 4 สมการดังนี้:
 
 **เงื่อนไขจุดต่อที่ 1 ($H_1$):**
