@@ -1,117 +1,382 @@
-# แบบจำลองพลศาสตร์ของยานยนต์ลากจูง (Dynamic Model of a Towing Vehicle)
+# Kinematic Model of Tractor with Drawbar Trailers
 
-เอกสารฉบับนี้จัดทำขึ้นเพื่อแสดงการอนุพันธ์ทางคณิตศาสตร์ (Mathematical Derivation) ของแบบจำลองพลศาสตร์ระนาบ (Planar Dynamic Model) สำหรับระบบรถลากจูงและส่วนพ่วงแบบดอลลี่และตัวพ่วง (Tractor + Drawbar Dolly + Trailer Body) โดยเน้นไปที่การประยุกต์ใช้ **วิธีลากรานเจียน (Lagrangian Dynamics)** ในการจัดรูปสมการการเคลื่อนที่
+This project implements a kinematic model and simulation for a **Multi-Trailer System** consisting of a tractor and **N** drawbar trailers. The model uses standard bicycle kinematics extended to a chain of rigid bodies using a recursive formulation.
 
----
+## 1. System Description
 
-## 0. Schematic and Coordinate Systems
+The system consists of a Tractor followed by $N$ trailer units. Each trailer unit consists of a Drawbar and a Trailer Body.
+The system is fully configurable, allowing for an arbitrary number of trailers with custom dimensions.
 
-### 0.1 Tracter with Drawbar Trailler Diagram
-![แผนภาพพิกัดและขนาดของระบบรถลากจูงพร้อมระบบพ่วง 1 ตัว (Tractor + Drawbar Trailer)](kinematic_diagram_1trailer.png)
-
-แบบจำลองนี้ประกอบด้วยวัตถุเกร็ง (Rigid Bodies) 2 ชิ้นหลัก เชื่อมต่อกันด้วยจุดพ่วงแบบหมุนได้ (Revolute Joints / Hitch Joints):
-1. **รถลากจูง (Tractor)**: มีมวล $m$ มีจุดศูนย์กลางมวล (CG) อยู่ที่พิกัด $(x_0, y_0)$ ในพิกัดโลก และมีทิศทางมุมหัวรถ (Yaw Angle) เท่ากับ $\theta_0$
-2. **ดอลลี่ (Drawbar Dolly)**: มีมวล $m_d$ เชื่อมต่อกับท้ายรถลากจูงที่จุดพ่วง $H_1$ และมีมุมหัวดอลลี่เท่ากับ $\theta_1$
-3. **ส่วนพ่วงหลัก (Trailer Body)**: มีมวล $m_t$ เชื่อมต่อกับดอลลี่ที่จุดพ่วงตัวที่สอง $H_2$ (Fifth Wheel Joint) และมีมุมหัวรถพ่วงเท่ากับ $\theta_2$
-
-#### การอธิบายพารามิเตอร์จากแผนภาพ (Parameters Explanation)
-| สัญลักษณ์ (Symbol) | ประเภท (Category) | คำอธิบายภาษาไทย (Thai Description) | คำอธิบายภาษาอังกฤษ (English Description) |
-| :---: | :--- | :--- | :--- |
-| **$(x_0, y_0)$** | พิกัด / ตำแหน่ง | กึ่งกลางเพลาหลังของรถลากจูง (จุดอ้างอิงหลัก) | Tractor Rear Axle Center |
-| **$(x_1, y_1)$** | พิกัด / ตำแหน่ง | จุดศูนย์กลางเพลาของดอลลี่ | Dolly Axle Center |
-| **$(x_2, y_2)$** | พิกัด / ตำแหน่ง | กึ่งกลางเพลาหลังของรถพ่วงหลัก | Trailer Rear Axle Center |
-| **$H_1 (x_{h1}, y_{h1})$** | จุดต่อ / ข้อต่อ | จุดพ่วงแรก ระหว่างรถลากจูงและคานลากดอลลี่ | Hitch 1 (Tractor to Dolly) |
-| **$H_2 (x_{h2}, y_{h2})$** | จุดต่อ / ข้อต่อ | จุดพ่วงที่สอง ระหว่างดอลลี่และรถพ่วงหลัก | Hitch 2 (Dolly to Trailer) |
-| **$L_0$** | เรขาคณิต / ขนาด | ระยะฐานล้อของรถลากจูง | Tractor Wheelbase |
-| **$L_1$** | เรขาคณิต / ขนาด | ความยาวของคานลากจูงดอลลี่ จาก $H_1$ ถึงเพลา | Drawbar Length |
-| **$L_2$** | เรขาคณิต / ขนาด | ระยะฐานล้อของตัวพ่วงหลัก จาก $H_2$ ถึงเพลา | Trailer Wheelbase |
-| **$d_h$** | เรขาคณิต / ขนาด | ระยะยื่นจากเพลาหลังรถลากจูงถึงจุดพ่วง $H_1$ | Tractor Rear Overhang |
-| **$\theta_0$** | มุม / ทิศทาง | มุมหัวรถลากจูง เทียบกับแกนระดับโลก $X$ | Tractor Yaw Angle |
-| **$\theta_1$** | มุม / ทิศทาง | มุมคานลากจูงดอลลี่ เทียบกับแกนระดับโลก $X$ | Dolly Yaw Angle |
-| **$\theta_2$** | มุม / ทิศทาง | มุมหัวรถพ่วงหลัก เทียบกับแกนระดับโลก $X$ | Trailer Yaw Angle |
-| **$\delta$** | มุม / ทิศทาง | มุมเลี้ยวของล้อหน้าเทียบกับแกนตามยาวของรถ | Front Wheel Steer Angle |
-
-### 0.2 ระบบพิกัดตามมาตรฐาน ISO 8855-2011 (Vehicle Axis System ISO 8855-2011)
-![Vehicle Axis System ISO 8855-2011](iso_8855_coordinate_system.png)
-
-ระบบพิกัดที่ใช้อ้างอิงตามมาตรฐานสากล **ISO 8855-2011** สำหรับพลศาสตร์ยานยนต์ เป็นระบบพิกัดมือขวา (Right-Handed Coordinate System):
-*   **พิกัดโลก (Global Inertial Frame: $OXY$)**: พิกัดอ้างอิงเฉื่อยบนพื้นระนาบโลกสำหรับการคำนวณตำแหน่งสัมบูรณ์
-*   **พิกัดอ้างอิงตัวรถ (Body-Fixed Frame: $Cxyz$)**: พิกัดที่ยึดติดอยู่กับวัตถุแข็งเกร็งแต่ละชิ้น
-    *   **แกน $x$ (Longitudinal Axis)**: ชี้ไปทางด้านหน้าของตัวรถ
-    *   **แกน $y$ (Lateral Axis)**: ชี้ไปทางด้านซ้ายของตัวรถ
-    *   **แกน $z$ (Vertical Axis)**: ชี้ขึ้นด้านบนในแนวตั้งฉากกับพื้นโลก
-*   **มุมและการหมุน**:
-    *   **มุมหัวรถ (Yaw Angle: $\theta$ / $\psi$)**: หมุนรอบแกน $z$ (Yaw Rate คือ $r = \dot{\theta}$) มีทิศทางเป็นบวกเมื่อหมุนทวนเข็มนาฬิกา
+### Kinematic Diagram (Example with 4 Trailers)
+![Kinematic Diagram](kinematic_diagram_full.png)
 
 ---
 
-## 1. Origin and Principles of the Method
+## 2. System Kinematics Vector
 
-การวิเคราะห์พลศาสตร์ของระบบหลายชิ้นส่วน (Multi-Body Dynamics) ที่มีการเชื่อมต่อกันด้วยจุดพ่วง สามารถทำได้โดยใช้วิธีพลังงานเพื่อลดความซับซ้อนของการคำนวณแรงปฏิกิริยาภายใน
+The system kinematics is defined by **$3 + 4N$ variables** (where $N$ is the number of trailers):
 
-### 1.2 วิธีลากรานเจียน (Lagrangian Dynamics) สำหรับระบบหลายชิ้นส่วน (Multi-Body Systems)
+$$
+\mathbf{q}_{kin} = [\dot{x}_0, \dot{y}_0, \dot{\theta}_0, \underbrace{v_1, \dot{\theta}_1, v_2, \dot{\theta}_2}_{\text{Trailer 1}}, \dots, \underbrace{v_{2N-1}, \dot{\theta}_{2N-1}, v_{2N}, \dot{\theta}_{2N}}_{\text{Trailer N}}]^T 
+$$ 
 
-วิธีลากรานเจียนอาศัยการวิเคราะห์พลังงานรวมของระบบ ซึ่งมีความสะดวกและเป็นระบบสำหรับการวิเคราะห์โครงสร้างแบบลูกโซ่ (Kinematic Chains)
 
-#### การออกแบบพิกัดทั่วไป (Generalized Coordinates Design)
-เพื่อให้สามารถอธิบายสถานะการเคลื่อนที่ของระบบได้อย่างสมบูรณ์ในระดับพื้นฐานที่สุดก่อนพิจารณาแรงกระทำหรือข้อต่อเชื่อม เราจำเป็นต้องกำหนดพิกัดทั่วไป (Generalized Coordinates) เนื่องจากระบบประกอบด้วยวัตถุแข็งเกร็ง (Rigid Bodies) 3 ชิ้น (รถลากจูง, ดอลลี่, รถพ่วงหลัก) โดยวัตถุแต่ละชิ้นเคลื่อนที่อิสระบนระนาบ 2 มิติ (Planar Motion) จะมีระดับความอิสระ (Degrees of Freedom) 3 ระดับ ได้แก่ ตำแหน่งตามแนวแกน X, แนวแกน Y, และการหมุน (Yaw) 
+| Variable | Description | Unit |
+| :--- | :--- | :--- |
+| $\dot{x}_0, \dot{y}_0$ | Velocity of the Tractor's rear axle center (World Frame) | m/s |
+| $\dot{\theta}_0$ | Angular Velocity of the Tractor | rad/s |
+| $v_{2i-1}$ | Longitudinal Velocity of Dolly $i$ | m/s |
+| $\dot{\theta}_{2i-1}$ | Angular Velocity of Drawbar $i$ | rad/s |
+| $v_{2i}$ | Longitudinal Velocity of Trailer $i$ | m/s |
+| $\dot{\theta}_{2i}$ | Angular Velocity of Trailer $i$ | rad/s |
 
-ดังนั้น ระบบตั้งต้นนี้มีพิกัดทั่วไปทั้งหมด 9 ตัวแปร:
-$$q = [x_0, y_0, \theta_0, x_d, y_d, \theta_1, x_t, y_t, \theta_2]^T \in \mathbb{R}^9$$
+**Inputs**:
+*   $v_0$: Longitudinal velocity of the Tractor.
+*   $\delta$: Steering angle of the Tractor's front wheels.
 
-#### สมการออยเลอร์-ลากรานจ์ (Euler-Lagrange Equation)
-สมการพื้นฐานสอดคล้องกับการอนุรักษ์พลังงานในระบบที่มีเพียงพลังงานจลน์ $T$ และพลังงานศักย์ $V$:
-$$\frac{d}{dt}\left(\frac{\partial L}{\partial \dot{q}_i}\right) - \frac{\partial L}{\partial q_i} = 0$$
-โดยที่ $L = T - V$
+---
 
-สำหรับระบบของยานพาหนะที่มีแรงสัมผัสยางภายนอกที่ไม่ใช่อนุรักษ์พลังงาน (Non-conservative Forces) $Q_j$ และมีแรงปฏิกิริยาที่จุดพ่วง (Hitch Forces) กระทำอยู่ สมการจะขยายรูปแบบเพื่อรวมแรงภายนอกเหล่านี้เข้าไป:
-$$\frac{d}{dt}\left(\frac{\partial L}{\partial \dot{q}_j}\right) - \frac{\partial L}{\partial q_j} = Q_j + F_{h,j}$$
-โดยที่ $F_{h,j}$ คือแรงปฏิกิริยาพ่วงรวมที่กระทำต่อพิกัด $j$ ซึ่งเป็นตัวแทนเชิงคณิตศาสตร์ของแรงดึงพ่วง ($\lambda$) ที่ตำแหน่งข้อต่อต่างๆ
+## 3. System Parameters
 
-### 1.3 แบบจำลองคณิตศาสตร์ 2 วัตถุ (2-Body Mathematical Model)
-เพื่อให้สอดคล้องกับพฤติกรรมทางกายภาพของรถพ่วงแบบก้านลาก (Drawbar Trailer หรือ Full Trailer) เราสามารถมองรถพ่วงเป็น **"รถ 1 คันที่มีล้อหน้าหมุนเลี้ยวได้"** โดยที่:
-- **Drawbar (ก้านลาก)** ทำหน้าที่เป็นเพียงแขนคาน (Arm) หรือโครงสร้างที่ยึดติดกับเพลาล้อหน้า ไม่มีมวลในตัวมันเอง
-- การเคลื่อนที่และมุมของ Drawbar ($\theta_d$) จะเป็นตัวกำหนดมุมเลี้ยว (Steering Angle) ของล้อหน้ารถพ่วง
-- มวลทั้งหมดจะถูกรวมไว้ที่ตัวถังรถพ่วง (Trailer Body)
+The system is configured via a list of trailer parameters. For each trailer unit $i$ (where $i=1 \dots N$):
 
-#### สมการความเร็วเชิงจลนศาสตร์ (Kinematic Velocity Equations)
-ให้ $H_1$ เป็นจุดพ่วงท้ายรถลากจูง และ $P_f$ เป็นเพลาหน้ารถพ่วง ความเร็วของจุดทั้งสองต้องสอดคล้องกันผ่านก้านลากที่มีความยาว $L_{bar}$:
+| Parameter | Symbol | Description |
+| :--- | :--- | :--- |
+| **Tractor** | $L_0$ | Wheelbase |
+| | $d_h$ | Hitch offset (behind rear axle) |
+| **Trailer $i$** | $L_{bar,i}$ | Drawbar Length |
+| | $L_{trl,i}$ | Trailer Length (Dolly to Axle) |
+| | $d_{h,i}$ | Hitch offset (behind rear axle of Trailer $i$) |
+| **General** | $W$ | Track Width (for visualization) |
 
-ความเร็วของจุดพ่วง $H_1$ ในกรอบอ้างอิงของรถลากจูง:
-$v_{H1} = [v_x, v_y - d_h r]^T$
+---
 
-ความเร็วของเพลาหน้ารถพ่วง $P_f$ ในกรอบอ้างอิงรถพ่วง:
-$v_{Pf} = [v_{xt}, v_{yt} + l_{tf} r_t]^T$
+## 4. Mathematical Model
 
-สมการข้อจำกัดทางความเร็วจากก้านลาก (Velocity Constraints from Drawbar):
-$C_1: v_x \cos\Delta\theta_1 - (v_y - d_h r) \sin\Delta\theta_1 - v_{xt} \cos\Delta\theta_2 + (v_{yt} + l_{tf} r_t) \sin\Delta\theta_2 = 0$
-$C_2: v_x \sin\Delta\theta_1 + (v_y - d_h r) \cos\Delta\theta_1 - v_{xt} \sin\Delta\theta_2 - (v_{yt} + l_{tf} r_t) \cos\Delta\theta_2 - L_{bar} r_d = 0$
-เมื่อ $\Delta\theta_1 = \theta_0 - \theta_d$ และ $\Delta\theta_2 = \theta_t - \theta_d$
+The equations of motion are derived assuming **no slip** conditions (non-holonomic constraints) for all wheels.
 
-#### สมดุลแรงแบบนิวตัน-ออยเลอร์ (Newton-Euler Equations of Motion)
-ระบบประกอบด้วย 8 ตัวแปรไม่ทราบค่า: $[\dot{v}_x, \dot{v}_y, \dot{r}, \dot{v}_{xt}, \dot{v}_{yt}, \dot{r}_t, \dot{r}_d, F_d]^T$
-โดยที่ $F_d$ คือแรงดึง/อัด (Tension/Compression) ตามแนวแกนของ Drawbar
+### 4.1 Tractor Kinematics
+The tractor follows the standard kinematic bicycle model:
 
-**สมการรถลากจูง (Tractor):**
+$$ \dot{x}_0 = v_0 \cos\theta_0 $$
+
+$$ \dot{y}_0 = v_0 \sin\theta_0 $$
+
+$$ \dot{\theta}_0 = \frac{v_0}{L_0} \tan\delta $$
+
+### 4.2 Trailer 1 Kinematics
+The motion of the first trailer is driven by the velocity of **Hitch 1** ($H_1$).
+
+**Hitch 1 Velocity**:
+
+$$ v_{hx} = v_0 \cos\theta_0 + d_h \dot{\theta}_0 \sin\theta_0 $$
+
+$$ v_{hy} = v_0 \sin\theta_0 - d_h \dot{\theta}_0 \cos\theta_0 $$
+
+> **Derivation Note**:
+> The signs differ because of the derivatives of the trigonometric functions.
+> *   For $x_h = x_0 - d_h \cos\theta_0$: The derivative of $\cos\theta_0$ is $-\sin\theta_0 \cdot \dot{\theta}_0$. The two negatives cancel out $\rightarrow + d_h \dot{\theta}_0 \sin\theta_0$.
+> *   For $y_h = y_0 - d_h \sin\theta_0$: The derivative of $\sin\theta_0$ is $\cos\theta_0 \cdot \dot{\theta}_0$. The negative sign remains $\rightarrow - d_h \dot{\theta}_0 \cos\theta_0$.
+
+**Drawbar 1 Rotation ($\dot{\theta}_1$)**:
+Driven by the hitch velocity component perpendicular to the drawbar:
+
+$$ \dot{\theta}_1 = \frac{1}{L_1} \left( v_0 \sin(\theta_0 - \theta_1) - d_h \dot{\theta}_0 \cos(\theta_0 - \theta_1) \right) $$
+
+**Trailer 1 Rotation ($\dot{\theta}_2$)**:
+Driven by the velocity of the Dolly 1 axle ($v_1$) pulling the trailer:
+
+$$ v_1 = v_0 \cos(\theta_0 - \theta_1) + d_h \dot{\theta}_0 \sin(\theta_0 - \theta_1) $$
+
+$$ \dot{\theta}_2 = \frac{v_1}{L_2} \sin(\theta_1 - \theta_2) $$
+
+**Linear Velocities**:
+*   **Dolly 1 Velocity ($v_1$)**:
+
+$$ v_1 = v_0 \cos(\theta_0 - \theta_1) + d_h \dot{\theta}_0 \sin(\theta_0 - \theta_1) $$
+
+*   **Trailer 1 Axle Velocity ($v_2$)**:
+
+$$ v_2 = v_1 \cos(\theta_1 - \theta_2) $$
+
+### 4.3 Trailer 2 Kinematics
+The motion of the second trailer is driven by the velocity of **Hitch 2** ($H_2$), located at the rear of Trailer 1.
+
+**Hitch 2 Velocity**:
+
+$$ v_{h2,\perp} = v_2 \sin(\theta_2 - \theta_3) - d_{h2} \dot{\theta}_2 \cos(\theta_2 - \theta_3) $$
+
+where $v_2 = v_1 \cos(\theta_1 - \theta_2)$ is the velocity of Trailer 1's axle.
+
+**Drawbar 2 Rotation ($\dot{\theta}_3$)**:
+
+$$ \dot{\theta}_3 = \frac{1}{L_3} \left( v_2 \sin(\theta_2 - \theta_3) - d_{h2} \dot{\theta}_2 \cos(\theta_2 - \theta_3) \right) $$
+
+**Trailer 2 Rotation ($\dot{\theta}_4$)**:
+Driven by the velocity of the Dolly 2 axle ($v_3$):
+
+$$ v_3 = v_2 \cos(\theta_2 - \theta_3) + d_{h2} \dot{\theta}_2 \sin(\theta_2 - \theta_3) $$
+
+$$ \dot{\theta}_4 = \frac{v_3}{L_4} \sin(\theta_3 - \theta_4) $$
+
+**Linear Velocities**:
+*   **Dolly 2 Velocity ($v_3$)**:
+
+$$ v_3 = v_2 \cos(\theta_2 - \theta_3) + d_{h2} \dot{\theta}_2 \sin(\theta_2 - \theta_3 $$
+
+*   **Trailer 2 Axle Velocity ($v_4$)**:
+
+$$ v_4 = v_3 \cos(\theta_3 - \theta_4) $$
+
+### 4.4 Trailer 3 Kinematics
+The motion of the third trailer is driven by the velocity of **Hitch 3** ($H_3$), located at the rear of Trailer 2.
+
+**Hitch 3 Velocity**:
+
+$$ v_{h3,\perp} = v_4 \sin(\theta_4 - \theta_5) - d_{h3} \dot{\theta}_4 \cos(\theta_4 - \theta_5) $$
+
+where $v_4 = v_3 \cos(\theta_3 - \theta_4)$ is the velocity of Trailer 2's axle.
+
+**Drawbar 3 Rotation ($\dot{\theta}_5$)**:
+
+$$ \dot{\theta}_5 = \frac{1}{L_5} \left( v_4 \sin(\theta_4 - \theta_5) - d_{h3} \dot{\theta}_4 \cos(\theta_4 - \theta_5) \right) $$
+
+**Trailer 3 Rotation ($\dot{\theta}_6$)**:
+Driven by the velocity of the Dolly 3 axle ($v_5$):
+
+$$ v_5 = v_4 \cos(\theta_4 - \theta_5) + d_{h3} \dot{\theta}_4 \sin(\theta_4 - \theta_5) $$
+
+$$ \dot{\theta}_6 = \frac{v_5}{L_6} \sin(\theta_5 - \theta_6) $$
+
+**Linear Velocities**:
+*   **Dolly 3 Velocity ($v_5$)**:
+
+$$ v_5 = v_4 \cos(\theta_4 - \theta_5) + d_{h3} \dot{\theta}_4 \sin(\theta_4 - \theta_5) $$
+
+*   **Trailer 3 Axle Velocity ($v_6$)**:
+
+$$ v_6 = v_5 \cos(\theta_5 - \theta_6) $$
+
+### 4.5 Trailer 4 Kinematics
+The motion of the fourth trailer is driven by the velocity of **Hitch 4** ($H_4$), located at the rear of Trailer 3.
+
+**Hitch 4 Velocity**:
+
+$$ v_{h4,\perp} = v_6 \sin(\theta_6 - \theta_7) - d_{h4} \dot{\theta}_6 \cos(\theta_6 - \theta_7) $$
+
+where $v_6 = v_5 \cos(\theta_5 - \theta_6)$ is the velocity of Trailer 3's axle.
+
+**Drawbar 4 Rotation ($\dot{\theta}_7$)**:
+
+$$ \dot{\theta}_7 = \frac{1}{L_7} \left( v_6 \sin(\theta_6 - \theta_7) - d_{h4} \dot{\theta}_6 \cos(\theta_6 - \theta_7) \right) $$
+
+**Trailer 4 Rotation ($\dot{\theta}_8$)**:
+Driven by the velocity of the Dolly 4 axle ($v_7$):
+
+$$ v_7 = v_6 \cos(\theta_6 - \theta_7) + d_{h4} \dot{\theta}_6 \sin(\theta_6 - \theta_7) $$
+
+$$ \dot{\theta}_8 = \frac{v_7}{L_8} \sin(\theta_7 - \theta_8) $$
+
+**Linear Velocities**:
+*   **Dolly 4 Velocity ($v_7$)**:
+
+$$ v_7 = v_6 \cos(\theta_6 - \theta_7) + d_{h4} \dot{\theta}_6 \sin(\theta_6 - \theta_7) $$
+
+*   **Trailer 4 Axle Velocity ($v_8$)**:
+
+$$ v_8 = v_7 \cos(\theta_7 - \theta_8) $$
+
+---
+
+## 5. Matrix Form (Recursive Formulation)
+
+To support an arbitrary number of trailers, the system kinematics can be formulated recursively. Let $\mathbf{v}_i = [v_i, \dot{\theta}_i]^T$ be the velocity vector of the $i$-th unit (where $i=0$ is the tractor, $i=1$ is Drawbar 1, $i=2$ is Trailer 1, etc.).
+
+The relationship between consecutive units is given by linear transformations:
+
+### 1. Tractor Input
+The tractor's velocity vector $\mathbf{v}_0$ is determined by the inputs $v_0$ and $\delta$:
+
+$$ \mathbf{v}_0 = \begin{bmatrix} v_0 \\ \dot{\theta}_0 \end{bmatrix} = \begin{bmatrix} 1 \\ \frac{1}{L_0}\tan\delta \end{bmatrix} v_0 $$
+
+### 2. Transformation A: Tractor/Trailer $\to$ Drawbar
+Calculates the velocity of a Drawbar ($i=2k-1$) from the preceding Tractor or Trailer ($i-1$).
+Let $\Delta\theta = \theta_{i-1} - \theta_i$.
+
+$$ \mathbf{v}_i = M_{A}(\Delta\theta) \mathbf{v}_{i-1} $$
+
+$$ \begin{bmatrix} v_i \\ \dot{\theta}_i \end{bmatrix} = \begin{bmatrix} \cos\Delta\theta & d_h \sin\Delta\theta \\ \frac{1}{L_{bar}}\sin\Delta\theta & -\frac{d_h}{L_{bar}}\cos\Delta\theta \end{bmatrix} \begin{bmatrix} v_{i-1} \\ \dot{\theta}_{i-1} \end{bmatrix} $$
+*   $L_{bar}$: Length of the drawbar ($L_1, L_3, \dots$)
+*   $d_h$: Hitch offset of the preceding unit ($d_h, d_{h2}, \dots$)
+
+### 3. Transformation B: Drawbar $\to$ Trailer
+Calculates the velocity of a Trailer ($i=2k$) from the preceding Drawbar ($i-1$).
+Let $\Delta\theta = \theta_{i-1} - \theta_i$.
+
+$$ \mathbf{v}_i = M_{B}(\Delta\theta) \mathbf{v}_{i-1} $$
+
+$$ \begin{bmatrix} v_i \\ \dot{\theta}_i \end{bmatrix} = \begin{bmatrix} \cos\Delta\theta & 0 \\ \frac{1}{L_{trl}}\sin\Delta\theta & 0 \end{bmatrix} \begin{bmatrix} v_{i-1} \\ \dot{\theta}_{i-1} \end{bmatrix} $$
+*   $L_{trl}$: Length of the trailer ($L_2, L_4, \dots$)
+
+### System Kinematics Vector
+The full system kinematics vector $\mathbf{q}_{kin}$ is constructed by stacking these sub-vectors:
+
+$$ \mathbf{q}_{kin} = [\dot{x}_0, \dot{y}_0, \mathbf{v}_0^T, \mathbf{v}_1^T, \mathbf{v}_2^T, \mathbf{v}_3^T, \mathbf{v}_4^T]^T $$
+
+where $\dot{x}_0 = v_0 \cos\theta_0$ and $\dot{y}_0 = v_0 \sin\theta_0$.
+
+---
+
+## 6. Coordinate Calculation (Forward Kinematics)
+
+The global coordinates $(x, y)$ of key points are calculated recursively from the state vector.
+
+### Base Case: Tractor
+1.  **Tractor Front Axle ($P_{0,f}$)**:
+
+$$ P_{0,f} = P_0 + L_0 \begin{bmatrix} \cos\theta_0 \\ \sin\theta_0 \end{bmatrix} $$
+
+2.  **Hitch 1 ($H_1$)**:
+
+$$ H_1 = P_0 - d_h \begin{bmatrix} \cos\theta_0 \\ \sin\theta_0 \end{bmatrix} $$
+
+### Specific Examples
+
+#### Trailer 1
+1.  **Dolly 1 ($P_1$)**:
+
+$$ P_1 = H_1 - L_1 \begin{bmatrix} \cos\theta_1 \\ \sin\theta_1 \end{bmatrix} $$
+
+2.  **Axle 1 ($P_2$)**:
+
+$$ P_2 = P_1 - L_2 \begin{bmatrix} \cos\theta_2 \\ \sin\theta_2 \end{bmatrix} $$
+
+#### Hitch 2 ($H_2$)
+
+$$ H_2 = P_2 - d_{h2} \begin{bmatrix} \cos\theta_2 \\ \sin\theta_2 \end{bmatrix} $$
+
+#### Trailer 2
+1.  **Dolly 2 ($P_3$)**:
+
+$$ P_3 = H_2 - L_3 \begin{bmatrix} \cos\theta_3 \\ \sin\theta_3 \end{bmatrix} $$
+
+2.  **Axle 2 ($P_4$)**:
+
+$$ P_4 = P_3 - L_4 \begin{bmatrix} \cos\theta_4 \\ \sin\theta_4 \end{bmatrix} $$
+
+#### Hitch 3 ($H_3$)
+
+$$ H_3 = P_4 - d_{h3} \begin{bmatrix} \cos\theta_4 \\ \sin\theta_4 \end{bmatrix} $$
+
+#### Trailer 3
+1.  **Dolly 3 ($P_5$)**:
+
+$$ P_5 = H_3 - L_5 \begin{bmatrix} \cos\theta_5 \\ \sin\theta_5 \end{bmatrix} $$
+
+2.  **Axle 3 ($P_6$)**:
+
+$$ P_6 = P_5 - L_6 \begin{bmatrix} \cos\theta_6 \\ \sin\theta_6 \end{bmatrix} $$
+
+#### Hitch 4 ($H_4$)
+
+$$ H_4 = P_6 - d_{h4} \begin{bmatrix} \cos\theta_6 \\ \sin\theta_6 \end{bmatrix} $$
+
+#### Trailer 4
+1.  **Dolly 4 ($P_7$)**:
+
+$$ P_7 = H_4 - L_7 \begin{bmatrix} \cos\theta_7 \\ \sin\theta_7 \end{bmatrix} $$
+
+2.  **Axle 4 ($P_8$)**:
+
+$$ P_8 = P_7 - L_8 \begin{bmatrix} \cos\theta_8 \\ \sin\theta_8 \end{bmatrix} $$
+
+### Generalized Recursive Step: $k$-th Trailer Unit
+For any trailer unit $k$ (where $k=1, 2, \dots, N$), consisting of Drawbar $k$ and Trailer $k$:
+
+1.  **Dolly $k$ ($P_{2k-1}$)**:
+    Calculated from the preceding hitch $H_k$.
+
+$$ P_{2k-1} = H_k - L_{bar,k} \begin{bmatrix} \cos\theta_{2k-1} \\ \sin\theta_{2k-1} \end{bmatrix} $$
+
+2.  **Axle $k$ ($P_{2k}$)**:
+    Calculated from Dolly $k$.
+
+$$ P_{2k} = P_{2k-1} - L_{trl,k} \begin{bmatrix} \cos\theta_{2k} \\ \sin\theta_{2k} \end{bmatrix} $$
+
+3.  **Next Hitch ($H_{k+1}$)**:
+    Calculated from Axle $k$ (if another trailer follows).
+
+$$ H_{k+1} = P_{2k} - d_{h,k} \begin{bmatrix} \cos\theta_{2k} \\ \sin\theta_{2k} \end{bmatrix} $$
+
+*   $L_{bar,k}$: Length of Drawbar $k$ ($L_1, L_3, \dots$)
+*   $L_{trl,k}$: Length of Trailer $k$ ($L_2, L_4, \dots$)
+*   $d_{h,k}$: Hitch offset of Trailer $k$ ($d_{h2}, \dots$)
+
+---
+
+## 7. Constraints
+
+*   **Steering Limit**: $\delta \in [-30^\circ, 30^\circ]$
+*   **Drawbar Limits**: Relative angle between units $\in [-30^\circ, 30^\circ]$
+*   **Velocity Limit**: $v_0 \in [-5.0, 5.0]$ m/s
+
+---
+
+## 8. Usage
+
+### Run Simulation
+```bash
+python3 simulate.py
+```
+*   Displays an interactive animation window.
+*   Close the window to save the result to `simulation_full.gif`.
+*   **Configuration**: Edit `SAVE_ANIMATION` in `simulate.py` to toggle saving.
+
+### Generate Diagram
+```bash
+python3 create_diagram.py
+```
+*   Generates `kinematic_diagram_full.png` with default **S-shape** configuration.
+*   **Custom Angles**: You can specify initial angles for all units:
+    ```bash
+    python3 create_diagram.py --theta0 30 --theta1 20 ... --save_path my_diagram.png
+    ```
+*   **Visual Aids**: Includes dashed reference lines for steering and drawbar angles to visualize articulation.
+
+#### Example: Snake/S-Shape Configuration
+```bash
+python3 create_diagram.py --theta0 45 --theta1 25 --theta2 10 --theta3 -10 --theta4 -25 --theta5 -45 --theta6 -25 --theta7 -10 --theta8 25 --save_path s_shape.png
+```
+
+---
+
+## 9. Dynamic Model (Tractor + 1 Full Trailer)
+
+To accurately simulate the physical forces and prevent numerical instability (such as jackknifing due to artificial dolly mass), the dynamic model treats the Tractor and Trailer as a **2-Body System**, where the Drawbar is a massless kinematic link connecting the Tractor hitch to the Trailer's steerable front wheels.
+
+### 9.1 Newton-Euler Equations of Motion
+The system consists of 8 unknown variables: $\mathbf{x} = [\dot{v}_x, \dot{v}_y, \dot{r}, \dot{v}_{xt}, \dot{v}_{yt}, \dot{r}_t, \dot{r}_d, F_d]^T$
+where $F_d$ is the tension force along the Drawbar.
+
+**Tractor (Body 0):**
 1. $m_0 \dot{v}_x - F_d \cos(\theta_d - \theta_0) = F_{xr} + m_0 v_y r - F_{drag\_x}$
 2. $m_0 \dot{v}_y - F_d \sin(\theta_d - \theta_0) = F_{yf} + F_{yr} - m_0 v_x r$
 3. $I_0 \dot{r} + d_h F_d \sin(\theta_d - \theta_0) = l_f F_{yf} - l_r F_{yr}$
 
-**สมการรถพ่วง (Full Trailer):**
+**Full Trailer (Body 1):**
 4. $m_1 \dot{v}_{xt} + F_d \cos(\theta_d - \theta_t) = F_{yf\_front} \sin(\theta_d - \theta_t) + m_1 v_{yt} r_t - F_{drag\_t}$
 5. $m_1 \dot{v}_{yt} + F_d \sin(\theta_d - \theta_t) = -F_{yf\_front} \cos(\theta_d - \theta_t) + F_{y\_rear} - m_1 v_{xt} r_t$
 6. $I_1 \dot{r}_t + l_{tf} \sin(\theta_d - \theta_t) F_d = -l_{tf} F_{yf\_front} \cos(\theta_d - \theta_t) - l_{tr} F_{y\_rear}$
 
-ระบบสมการนี้จะถูกจัดรูปในเมทริกซ์ 8x8 $\mathbf{A} \mathbf{x} = \mathbf{b}$ ซึ่งมีความแม่นยำสูงและไม่มีการแยกคำนวณมวล Dolly ซ้ำซ้อน
+### 9.2 Kinematic Velocity Constraints
+The massless drawbar enforces two velocity constraints at the hitch $H_1$ and front axle $P_f$:
+7. $v_x \cos\Delta\theta_1 - (v_y - d_h r) \sin\Delta\theta_1 - v_{xt} \cos\Delta\theta_2 + (v_{yt} + l_{tf} r_t) \sin\Delta\theta_2 = 0$
+8. $v_x \sin\Delta\theta_1 + (v_y - d_h r) \cos\Delta\theta_1 - v_{xt} \sin\Delta\theta_2 - (v_{yt} + l_{tf} r_t) \cos\Delta\theta_2 - L_{bar} r_d = 0$
+*(where $\Delta\theta_1 = \theta_0 - \theta_d$ and $\Delta\theta_2 = \theta_t - \theta_d$)*
 
+### 9.3 8x8 Matrix Formulation
+We arrange the equations into the matrix form $\mathbf{A} \mathbf{x} = \mathbf{b}$:
 
-### 1.4 การจัดรูประบบสมการเมทริกซ์ 8x8 (8x8 Matrix Formulation)
-เพื่อแก้สมการระบบ 8 ตัวแปรพร้อมกัน เราจัดรูปให้อยู่ในรูปแบบ $\mathbf{A} \mathbf{x} = \mathbf{b}$
-
-เวกเตอร์ตัวแปรไม่ทราบค่า (Unknowns):
-$\mathbf{x} = [\dot{v}_x, \dot{v}_y, \dot{r}, \dot{v}_{xt}, \dot{v}_{yt}, \dot{r}_t, \dot{r}_d, F_d]^T$
-
-**เมทริกซ์ $\mathbf{A}$ (ขนาด 8x8):**
 $$
 \mathbf{A} = \begin{bmatrix}
 m_0 & 0 & 0 & 0 & 0 & 0 & 0 & -\cos(\theta_d - \theta_0) \\
@@ -124,9 +389,8 @@ c_1 & -s_1 & d_h s_1 & -c_2 & s_2 & l_{tf} s_2 & L_{bar} r_d & 0 \\
 s_1 & c_1 & -d_h c_1 & -s_2 & -c_2 & -l_{tf} c_2 & -L_{bar} & 0
 \end{bmatrix}
 $$
-*(โดยที่ $c_1 = \cos(\theta_0 - \theta_d), s_1 = \sin(\theta_0 - \theta_d)$ และ $c_2 = \cos(\theta_t - \theta_d), s_2 = \sin(\theta_t - \theta_d)$)*
+*(where $c_1 = \cos(\theta_0 - \theta_d), s_1 = \sin(\theta_0 - \theta_d)$ and $c_2 = \cos(\theta_t - \theta_d), s_2 = \sin(\theta_t - \theta_d)$)*
 
-**เวกเตอร์ $\mathbf{b}$ (ขนาด 8x1):**
 $$
 \mathbf{b} = \begin{bmatrix}
 F_{xr} + m_0 v_y r - F_{drag\_x} \\
@@ -140,7 +404,12 @@ v_x s_1 r + (v_y - d_h r) c_1 r - v_{xt} s_2 r_t - (v_{yt} + l_{tf} r_t) c_2 r_t
 \end{bmatrix}
 $$
 
-**ข้อดีของโมเดลใหม่เมื่อเทียบกับโมเดล 3-Body ตัวเก่า:**
-1. **เสถียรภาพทางตัวเลขสูงขึ้นมาก:** ไม่มีมวลก้านลาก (Dolly mass) เล็กๆ ที่ก่อให้เกิดแรงเหวี่ยงมหาศาลและอาการ Jackknife
-2. **ความสมจริงทางฟิสิกส์:** ก้านลาก (Drawbar) ทำหน้าที่เป็นเพียงตัวส่งผ่านแรงตึง (Tension) และกำหนดมุมเลี้ยวล้อหน้า (Kinematic Steering Constraint) ซึ่งตรงกับหลักการทำงานของ Full Trailer ในโลกความเป็นจริงอย่างสมบูรณ์
-3. **ลดความซับซ้อน:** สมการลดลงจากเมทริกซ์ 13x13 (หรือ 9x9) เหลือเพียง 8x8 ทำให้โปรแกรมคำนวณได้เร็วและมีโอกาสเกิด Error ต่ำลงมาก
+Run `simulate_dynamic.py` to view this robust Newton-Euler model in action!
+
+---
+
+## 10. Simulation Result
+
+Running `simulate.py` produces an animation of the vehicle trajectory.
+
+![Simulation](simulation_full.gif)
