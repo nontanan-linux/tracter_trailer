@@ -313,7 +313,15 @@ m & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & I_{zt}
 \end{matrix} \right]
 \left[ \begin{matrix}
-\dot{v}_x \\ \dot{v}_y \\ \dot{r} \\ \dot{v}_{xd} \\ \dot{v}_{yd} \\ \dot{r}_d \\ \dot{v}_{xt} \\ \dot{v}_{yt} \\ \dot{r}_t
+\dot{v}_x \\
+\dot{v}_y \\
+\dot{r} \\
+\dot{v}_{xd} \\
+\dot{v}_{yd} \\
+\dot{r}_d \\
+\dot{v}_{xt} \\
+\dot{v}_{yt} \\
+\dot{r}_t
 \end{matrix} \right]
 +
 \left[ \begin{matrix}
@@ -328,7 +336,15 @@ m r & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0
 \end{matrix} \right]
 \left[ \begin{matrix}
-v_x \\ v_y \\ r \\ v_{xd} \\ v_{yd} \\ r_d \\ v_{xt} \\ v_{yt} \\ r_t
+v_x \\
+v_y \\
+r \\
+v_{xd} \\
+v_{yd} \\
+r_d \\
+v_{xt} \\
+v_{yt} \\
+r_t
 \end{matrix} \right]
 =
 \left[ \begin{matrix}
