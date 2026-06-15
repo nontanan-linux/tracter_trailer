@@ -98,27 +98,45 @@ From the Lagrangian equation $L = T - V$ (where $V=0$, thus $L=T$), we different
 
 **1. Tractor Coordinates: $q_1 \dots q_3$**
 
-*   $q_1 = x_0$: $\quad \frac{\partial L}{\partial \dot{x}_0} = m \dot{x}_0, \quad \frac{\partial L}{\partial x_0} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{x}_0}\right) - \frac{\partial L}{\partial x_0} = m \ddot{x}_0$
+$$
+q_1 = x_0$: $\quad \frac{\partial L}{\partial \dot{x}_0} = m \dot{x}_0, \quad \frac{\partial L}{\partial x_0} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{x}_0}\right) - \frac{\partial L}{\partial x_0} = m \ddot{x}_0
+$$
 
-*   $q_2 = y_0$: $\quad \frac{\partial L}{\partial \dot{y}_0} = m \dot{y}_0, \quad \frac{\partial L}{\partial y_0} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{y}_0}\right) - \frac{\partial L}{\partial y_0} = m \ddot{y}_0$
+$$
+q_2 = y_0$: $\quad \frac{\partial L}{\partial \dot{y}_0} = m \dot{y}_0, \quad \frac{\partial L}{\partial y_0} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{y}_0}\right) - \frac{\partial L}{\partial y_0} = m \ddot{y}_0
+$$
 
-*   $q_3 = \theta_0$: $\quad \frac{\partial L}{\partial \dot{\theta}_0} = I_z \dot{\theta}_0, \quad \frac{\partial L}{\partial \theta_0} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{\theta}_0}\right) - \frac{\partial L}{\partial \theta_0} = I_z \ddot{\theta}_0$
+$$
+q_3 = \theta_0$: $\quad \frac{\partial L}{\partial \dot{\theta}_0} = I_z \dot{\theta}_0, \quad \frac{\partial L}{\partial \theta_0} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{\theta}_0}\right) - \frac{\partial L}{\partial \theta_0} = I_z \ddot{\theta}_0
+$$
 
 **2. Drawbar / Dolly Coordinates: $q_4 \dots q_6$**
 
-*   $q_4 = x_d$: $\quad \frac{\partial L}{\partial \dot{x}_d} = m_d \dot{x}_d, \quad \frac{\partial L}{\partial x_d} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{x}_d}\right) - \frac{\partial L}{\partial x_d} = m_d \ddot{x}_d$
+$$
+q_4 = x_d$: $\quad \frac{\partial L}{\partial \dot{x}_d} = m_d \dot{x}_d, \quad \frac{\partial L}{\partial x_d} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{x}_d}\right) - \frac{\partial L}{\partial x_d} = m_d \ddot{x}_d
+$$
 
-*   $q_5 = y_d$: $\quad \frac{\partial L}{\partial \dot{y}_d} = m_d \dot{y}_d, \quad \frac{\partial L}{\partial y_d} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{y}_d}\right) - \frac{\partial L}{\partial y_d} = m_d \ddot{y}_d$
+$$
+q_5 = y_d$: $\quad \frac{\partial L}{\partial \dot{y}_d} = m_d \dot{y}_d, \quad \frac{\partial L}{\partial y_d} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{y}_d}\right) - \frac{\partial L}{\partial y_d} = m_d \ddot{y}_d
+$$
 
-*   $q_6 = \theta_1$: $\quad \frac{\partial L}{\partial \dot{\theta}_1} = I_{zd} \dot{\theta}_1, \quad \frac{\partial L}{\partial \theta_1} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{\theta}_1}\right) - \frac{\partial L}{\partial \theta_1} = I_{zd} \ddot{\theta}_1$
+$$
+q_6 = \theta_1$: $\quad \frac{\partial L}{\partial \dot{\theta}_1} = I_{zd} \dot{\theta}_1, \quad \frac{\partial L}{\partial \theta_1} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{\theta}_1}\right) - \frac{\partial L}{\partial \theta_1} = I_{zd} \ddot{\theta}_1
+$$
 
 **3. Trailer Body Coordinates: $q_7 \dots q_9$**
 
-*   $q_7 = x_t$: $\quad \frac{\partial L}{\partial \dot{x}_t} = m_t \dot{x}_t, \quad \frac{\partial L}{\partial x_t} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{x}_t}\right) - \frac{\partial L}{\partial x_t} = m_t \ddot{x}_t$
+$$
+q_7 = x_t$: $\quad \frac{\partial L}{\partial \dot{x}_t} = m_t \dot{x}_t, \quad \frac{\partial L}{\partial x_t} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{x}_t}\right) - \frac{\partial L}{\partial x_t} = m_t \ddot{x}_t
+$$
 
-*   $q_8 = y_t$: $\quad \frac{\partial L}{\partial \dot{y}_t} = m_t \dot{y}_t, \quad \frac{\partial L}{\partial y_t} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{y}_t}\right) - \frac{\partial L}{\partial y_t} = m_t \ddot{y}_t$
+$$
+q_8 = y_t$: $\quad \frac{\partial L}{\partial \dot{y}_t} = m_t \dot{y}_t, \quad \frac{\partial L}{\partial y_t} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{y}_t}\right) - \frac{\partial L}{\partial y_t} = m_t \ddot{y}_t
+$$
 
-*   $q_9 = \theta_2$: $\quad \frac{\partial L}{\partial \dot{\theta}_2} = I_{zt} \dot{\theta}_2, \quad \frac{\partial L}{\partial \theta_2} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{\theta}_2}\right) - \frac{\partial L}{\partial \theta_2} = I_{zt} \ddot{\theta}_2$
+$$
+q_9 = \theta_2$: $\quad \frac{\partial L}{\partial \dot{\theta}_2} = I_{zt} \dot{\theta}_2, \quad \frac{\partial L}{\partial \theta_2} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{\theta}_2}\right) - \frac{\partial L}{\partial \theta_2} = I_{zt} \ddot{\theta}_2
+$$
 
 ### 2.2 Generalized Forces ($Q_i$)
 The generalized force $Q_i$ is the sum of non-conservative external forces (excluding hitch reaction forces $\lambda$) acting on the generalized coordinate $q_i$. For this vehicle, this includes Tire Forces and Traction Forces acting on each body, defined as follows:
