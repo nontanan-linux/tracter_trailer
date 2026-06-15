@@ -34,27 +34,37 @@ class TractorTrailerDynamicModel:
     def _compute_tire_forces(self, state, steer_angle):
         v_x, v_y, r, v_xd, v_yd, r_d, v_xt, v_yt, r_t = state['velocities']
         
-        # Small velocity threshold to prevent singularity in slip angle calculation
-        eps = 1e-6
-        if abs(v_x) < eps: v_x = np.sign(v_x) * eps if v_x != 0 else eps
-        if abs(v_xd) < eps: v_xd = np.sign(v_xd) * eps if v_xd != 0 else eps
-        if abs(v_xt) < eps: v_xt = np.sign(v_xt) * eps if v_xt != 0 else eps
+        # Absolute minimum velocity to prevent divide-by-zero or backward slip angle flip
+        eps = 0.1
+        vx_safe = max(v_x, eps)
+        vxd_safe = max(v_xd, eps)
+        vxt_safe = max(v_xt, eps)
 
-        # Tractor Tire Slip Angles
-        alpha_f = np.arctan2(v_y + self.l_f * r, v_x) - steer_angle
-        alpha_r = np.arctan2(v_y - self.l_r * r, v_x)
+        # Tractor Tire Slip Angles (Using small-angle approx or bounded arctan)
+        alpha_f = np.arctan2(v_y + self.l_f * r, vx_safe) - steer_angle
+        alpha_r = np.arctan2(v_y - self.l_r * r, vx_safe)
         
-        # Drawbar Tire Slip Angle (Axle is exactly at CG for drawbar)
-        alpha_d = np.arctan2(v_yd, v_xd)
+        # Drawbar Tire Slip Angle
+        alpha_d = np.arctan2(v_yd, vxd_safe)
         
         # Trailer Rear Tire Slip Angle
-        alpha_tr = np.arctan2(v_yt - self.l_rt * r_t, v_xt)
+        alpha_tr = np.arctan2(v_yt - self.l_rt * r_t, vxt_safe)
         
         # Linear Tire Model: F_y = -C * alpha
         F_yf = -self.C_f * alpha_f
         F_yr = -self.C_r * alpha_r
         F_yd = -self.C_df * alpha_d
         F_ytr = -self.C_tr * alpha_tr
+        
+        # Cap tire forces to realistic friction limits (e.g., mu=0.8)
+        # F_max = mu * m * g. Tractor: 3000kg. Drawbar: 6000kg. Trailer: 6000kg.
+        max_F_tractor = 0.8 * 3000 * 9.81
+        max_F_trailer = 0.8 * 6000 * 9.81
+        
+        F_yf = np.clip(F_yf, -max_F_tractor, max_F_tractor)
+        F_yr = np.clip(F_yr, -max_F_tractor, max_F_tractor)
+        F_yd = np.clip(F_yd, -max_F_trailer, max_F_trailer)
+        F_ytr = np.clip(F_ytr, -max_F_trailer, max_F_trailer)
         
         # Assuming no longitudinal driving/braking forces for now
         F_xf = 0.0
