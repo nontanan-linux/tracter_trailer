@@ -64,9 +64,9 @@ $$q = [x_0, y_0, \theta_0, x_d, y_d, \theta_1, x_t, y_t, \theta_2]^T \in \mathbb
 $$\frac{d}{dt}\left(\frac{\partial L}{\partial \dot{q}_i}\right) - \frac{\partial L}{\partial q_i} = 0$$
 โดยที่ $L = T - V$
 
-สำหรับระบบของยานพาหนะที่มีแรงสัมผัสยางภายนอกที่ไม่ใช่อนุรักษ์พลังงาน (Non-conservative Forces) $Q_j$ และมีสมการเงื่อนไขบังคับเชิงตำแหน่งที่จุดพ่วง (Holonomic Constraints) $g_k(q) = 0$ สมการจะขยายเป็นสมการลากรานจ์ชนิดที่หนึ่ง (Lagrange's Equations of the First Kind):
-$$\frac{d}{dt}\left(\frac{\partial L}{\partial \dot{q}_j}\right) - \frac{\partial L}{\partial q_j} = Q_j + \sum_{k=1}^4 \lambda_k \frac{\partial g_k}{\partial q_j}$$
-โดยที่ $\lambda_k$ คือตัวคูณลากรานจ์ (Lagrange Multipliers) ซึ่งเป็นตัวแทนเชิงคณิตศาสตร์ของแรงดึงที่จุดพ่วง (Hitch Forces)
+สำหรับระบบของยานพาหนะที่มีแรงสัมผัสยางภายนอกที่ไม่ใช่อนุรักษ์พลังงาน (Non-conservative Forces) $Q_j$ และมีแรงปฏิกิริยาที่จุดพ่วง (Hitch Forces) กระทำอยู่ สมการจะขยายรูปแบบเพื่อรวมแรงภายนอกเหล่านี้เข้าไป:
+$$\frac{d}{dt}\left(\frac{\partial L}{\partial \dot{q}_j}\right) - \frac{\partial L}{\partial q_j} = Q_j + F_{h,j}$$
+โดยที่ $F_{h,j}$ คือแรงปฏิกิริยาพ่วงรวมที่กระทำต่อพิกัด $j$ ซึ่งเป็นตัวแทนเชิงคณิตศาสตร์ของแรงดึงพ่วง ($\lambda$) ที่ตำแหน่งข้อต่อต่างๆ
 
 ### 1.3 ที่มาของความเร็วเชิงเส้นในพิกัดโลก (Derivation of Linear Velocities)
 เพื่อให้สามารถเขียนสมการพลังงานจลน์ได้ เราต้องหาความเร็วของจุดศูนย์กลางมวลของวัตถุแต่ละชิ้นในพิกัดโลก:
@@ -127,16 +127,14 @@ $$
 ### 1.6 ประกอบสมการ Lagrangian
 ยานพาหนะเคลื่อนที่บนพื้นราบแนวระดับ ทำให้ไม่มีพลังงานศักย์โน้มถ่วงเข้ามาเกี่ยวข้อง ($V = 0$) ส่งผลให้ $L = T - V = T$ 
 
-การสร้างสมการการเคลื่อนที่จะเริ่มจากสมการเงื่อนไขบังคับของข้อต่อจุดพ่วง $H_1$ และ $H_2$ 4 สมการดังนี้:
-$$g_1(q) = x_d - x_0 + d_h \cos\theta_0 + l_{fd} \cos\theta_1 = 0$$
-$$g_2(q) = y_d - y_0 + d_h \sin\theta_0 + l_{fd} \sin\theta_1 = 0$$
-$$g_3(q) = x_t - x_d + l_{rd} \cos\theta_1 + l_{ft} \cos\theta_2 = 0$$
-$$g_4(q) = y_t - y_d + l_{rd} \sin\theta_1 + l_{ft} \sin\theta_2 = 0$$
+การสร้างสมการการเคลื่อนที่ จะพิจารณาให้แรงที่จุดพ่วงทำหน้าที่เป็นแรงภายนอก ($F_h$) กระทำต่อระบบ โดยกำหนดให้:
+*   $\lambda_1, \lambda_2$ คือ แรงปฏิกิริยาพ่วงที่จุด $H_1$ (แนวแกน X, Y โลก)
+*   $\lambda_3, \lambda_4$ คือ แรงปฏิกิริยาพ่วงที่จุด $H_2$ (แนวแกน X, Y โลก)
 
-เมื่อนำสมการเงื่อนไขบังคับมาหาจาโคเบียน $J_c = \frac{\partial g}{\partial q}$ และกระจายลงในสมการออยเลอร์-ลากรานจ์:
-$$\frac{d}{dt}\left( \frac{\partial T}{\partial \dot{q}_i} \right) - \frac{\partial T}{\partial q_i} = Q_i + \sum_{k=1}^4 \lambda_k \frac{\partial g_k}{\partial q_i}$$
+เมื่อนำแรงพ่วงเหล่านี้มากระทำที่จุดอ้างอิงและคิดโมเมนต์รอบจุดศูนย์กลางมวล (C.G.) ประกอบลงในสมการลากรานจ์:
+$$\frac{d}{dt}\left( \frac{\partial T}{\partial \dot{q}_i} \right) - \frac{\partial T}{\partial q_i} = Q_i + F_{h,i}$$
 
-เนื่องจาก $T$ ไม่ขึ้นกับตำแหน่ง $q_i$ โดยตรง ($\frac{\partial T}{\partial q_i} = 0$) สมการจึงอยู่ในรูปมวลและความเร่งโดยตรง:
+เนื่องจาก $T$ ไม่ขึ้นกับตำแหน่ง $q_i$ โดยตรง ($\frac{\partial T}{\partial q_i} = 0$) สมการจึงกระจายออกมาในรูปมวลและความเร่งได้ดังนี้:
 1.  **Tractor ($x_0, y_0, \theta_0$):**
     $$m \ddot{x}_0 = Q_{x0} - \lambda_1$$
     $$m \ddot{y}_0 = Q_{y0} - \lambda_2$$
