@@ -146,7 +146,30 @@ $$\frac{d}{dt}\left( \frac{\partial T}{\partial \dot{q}_i} \right) - \frac{\part
 *   **$Q_i$ (Generalized External Forces):** แรงภายนอกทั่วไป (ที่ไม่ใช่อนุรักษ์พลังงาน) ที่กระทำต่อพิกัด $q_i$ ซึ่งสำหรับยานพาหนะในโมเดลนี้คือผลรวมของ **แรงขับเคลื่อน (Traction Forces)** และ **แรงต้านจากหน้าสัมผัสยางล้อ (Tire Cornering Forces)**
 *   **$F_{h,i}$ (Generalized Hitch Forces):** แรงปฏิกิริยาพ่วงรวม ที่กระทำต่อพิกัด $q_i$ ซึ่งเกิดจากการถ่ายทอดแรงดึงและแรงเฉือน ($\lambda_1, \dots, \lambda_4$) ของโครงสร้างจุดพ่วง
 
-เนื่องจาก $T$ ไม่ขึ้นกับตำแหน่ง $q_i$ โดยตรง ($\frac{\partial T}{\partial q_i} = 0$) สมการจึงกระจายออกมาในรูปมวลและความเร่งได้ดังนี้:
+เนื่องจาก $T$ ไม่ขึ้นกับตำแหน่ง $q_i$ โดยตรง ($\frac{\partial T}{\partial q_i} = 0$) การหาอนุพันธ์ฝั่งซ้ายของสมการ $\frac{d}{dt}\left( \frac{\partial T}{\partial \dot{q}_i} \right)$ สำหรับแต่ละพิกัดทั่วไป จะนำไปสู่การสร้างสมการการเคลื่อนที่อย่างเป็นระบบในหัวข้อถัดไป
+
+---
+
+## 2. การอนุพันธ์สมการการเคลื่อนที่ด้วยพิกัดทั่วไป (Derivation of Equations of Motion via Generalized Coordinates)
+
+เพื่อให้ได้สมการการเคลื่อนที่อย่างสมบูรณ์ตามวิธีลากรานเจียน เราจะทำการหาอนุพันธ์ย่อย (Partial Derivative) ของพลังงานจลน์ $T$ เทียบกับพิกัดทั่วไป (Generalized Coordinates) ทีละตัวแปร
+
+### 2.1 การหาอนุพันธ์ของพลังงานจลน์ $T$
+จากสมการพลังงานจลน์ในหัวข้อ 1.5 เราทำการหาอนุพันธ์เทียบกับพิกัดทั่วไป $q_i$ และความเร็ว $\dot{q}_i$:
+
+**1. สำหรับพิกัดตำแหน่ง (Translational Coordinates: $x, y$)**
+*   **Tractor ($x_0$):** 
+    $$\frac{\partial T}{\partial \dot{x}_0} = m \dot{x}_0 \implies \frac{d}{dt}\left(\frac{\partial T}{\partial \dot{x}_0}\right) = m \ddot{x}_0$$
+*   พิกัดตำแหน่งอื่นๆ ($y_0, x_d, y_d, x_t, y_t$) ก็จะได้ผลลัพธ์ในรูปแบบเดียวกันคือ มวลคูณด้วยความเร่ง (เช่น $m_d \ddot{x}_d$) และเนื่องจาก $T$ ไม่ขึ้นกับพิกัดตำแหน่งโดยตรง จะได้ $\frac{\partial T}{\partial x_i} = \frac{\partial T}{\partial y_i} = 0$
+
+**2. สำหรับพิกัดการหมุน (Rotational Coordinates: $\theta$)**
+*   **Tractor ($\theta_0$):**
+    $$\frac{\partial T}{\partial \dot{\theta}_0} = I_z \dot{\theta}_0 \implies \frac{d}{dt}\left(\frac{\partial T}{\partial \dot{\theta}_0}\right) = I_z \ddot{\theta}_0$$
+*   พิกัดการหมุนอื่นๆ ($\theta_1, \theta_2$) ก็จะได้ผลลัพธ์เป็นโมเมนต์ความเฉื่อยคูณกับความเร่งเชิงมุม (เช่น $I_{zd} \ddot{\theta}_1$) และ $\frac{\partial T}{\partial \theta_i} = 0$
+
+### 2.2 สมการการเคลื่อนที่ในพิกัดโลก (Inertial Equations of Motion)
+เมื่อนำผลการหาอนุพันธ์ไปประกอบกับแรงภายนอก $Q_i$ และแรงปฏิกิริยาพ่วง $F_{h,i}$ ตามสมการออยเลอร์-ลากรานจ์ในหัวข้อ 1.6 จะได้สมการตั้งต้นครบทั้ง 9 ตัวแปรพิกัดดังนี้:
+
 1.  **Tractor ($x_0, y_0, \theta_0$):**
     $$m \ddot{x}_0 = Q_{x0} - \lambda_1$$
     $$m \ddot{y}_0 = Q_{y0} - \lambda_2$$
@@ -159,16 +182,9 @@ $$\frac{d}{dt}\left( \frac{\partial T}{\partial \dot{q}_i} \right) - \frac{\part
     $$m_t \ddot{x}_t = Q_{xt} + \lambda_3$$
     $$m_t \ddot{y}_t = Q_{yt} + \lambda_4$$
     $$I_{zt} \ddot{\theta}_2 = Q_{\theta2} - l_{ft} \sin\theta_2 \lambda_3 + l_{ft} \cos\theta_2 \lambda_4$$
-โดยสามารถนำเวกเตอร์ความเร่งเหล่านี้ไปหมุนพิกัดสู่แกนตัวรถ (Body-Fixed) เพื่อหาสมการการเคลื่อนที่ขั้นสุดท้ายในหัวข้อถัดไป
 
----
-
-## 2. Derive Equation of Motion (การอนุพันธ์สมการการเคลื่อนที่)
-
-เพื่อให้สามารถนำสมการจากหัวข้อ 1.6 ไปใช้จำลองระบบ (System Simulation) ได้จริง เราจำเป็นต้องแปลงสมการที่อยู่ในพิกัดเฉื่อยโลก (Inertial Frame) ให้กลับมาอยู่ในพิกัดตัวรถ (Body-Fixed Frame) ซึ่งตัวแปรสถานะที่วัดได้จะเป็นความเร็วในแกนรถ ($v_x, v_y, r$)
-
-### 2.1 การแปลงเข้าสู่พิกัดตัวรถ (Body-Fixed Transformation)
-เราจะทำการแปลงความเร่ง $\ddot{x}, \ddot{y}$ เข้าสู่พิกัดบนตัวรถด้วยเมทริกซ์การหมุน $R(\theta)$:
+### 2.3 การแปลงเข้าสู่พิกัดตัวรถ (Body-Fixed Transformation)
+เพื่อให้สามารถนำสมการไปใช้จำลองระบบได้จริง เราจำเป็นต้องแปลงสมการจากพิกัดเฉื่อยโลกให้กลับมาอยู่ในพิกัดตัวรถ (Body-Fixed Frame) ซึ่งตัวแปรสถานะที่วัดได้จะเป็นความเร็วในแกนรถ ($v_x, v_y, r$) โดยเราจะทำการแปลงความเร่ง $\ddot{x}, \ddot{y}$ เข้าสู่พิกัดบนตัวรถด้วยเมทริกซ์การหมุน $R(\theta)$:
 $$\begin{bmatrix} \dot{v}_x - v_y r \\ \dot{v}_y + v_x r \end{bmatrix} = \begin{bmatrix} \cos\theta & \sin\theta \\ -\sin\theta & \cos\theta \end{bmatrix} \begin{bmatrix} \ddot{x} \\ \ddot{y} \end{bmatrix}$$
 
 และกำหนดให้แรงปฏิกิริยาพ่วงที่หมุนแปลงเข้าสู่พิกัดตัวรถ (Body-Fixed Hitch Forces) ให้มีทิศทางตามแกนหลักของวัตถุ:
@@ -177,7 +193,7 @@ $$\begin{bmatrix} \dot{v}_x - v_y r \\ \dot{v}_y + v_x r \end{bmatrix} = \begin{
 *   **สำหรับจุด $H_2$ (เข้าแกน Dolly/Trailer):** 
     $$\begin{bmatrix} F_{hx2} \\ F_{hy2} \end{bmatrix} = \begin{bmatrix} \cos\theta_2 & \sin\theta_2 \\ -\sin\theta_2 & \cos\theta_2 \end{bmatrix} \begin{bmatrix} \lambda_3 \\ \lambda_4 \end{bmatrix}$$
 
-### 2.2 แรงสัมผัสยางล้อและแรงขับ (Tire Forces and Traction)
+### 2.4 แรงสัมผัสยางล้อและแรงขับ (Tire Forces and Traction)
 เมื่อพิจารณาแรงภายนอก $Q_i$ ที่กระทำต่อรถลากจูง ล้อหน้ามีมุมเลี้ยว $\delta$ ดังนั้นแรงต้านหน้ายางล้อหน้า $F_{yf}$ และแรงขับล้อหน้า $F_{xf}$ (ถ้ามี) ต้องแตกแรงเข้าแกนรถลากจูงดังนี้:
 $$F_{xf0} = F_{xf}\cos\delta - F_{yf}\sin\delta$$
 $$F_{yf0} = F_{xf}\sin\delta + F_{yf}\cos\delta$$
@@ -185,7 +201,7 @@ $$F_{yf0} = F_{xf}\sin\delta + F_{yf}\cos\delta$$
 สำหรับล้อเพลาอื่นๆ ที่ไม่มีมุมเลี้ยว (เช่น ล้อหลัง Tractor, ล้อ Dolly, ล้อ Trailer) แรงสัมผัสจะกระทำในแนวแกนพิกัดของตัวมันเองโดยตรง เช่น $F_{xr0} = F_{xr}, F_{yr0} = F_{yr}$
 (แรงด้านข้างคำนวณจากแบบจำลองหน้าสัมผัสยาง $F_y = -C \alpha$)
 
-### 2.3 สมการการเคลื่อนที่ของแต่ละชิ้นส่วน
+### 2.5 สมการการเคลื่อนที่ของแต่ละชิ้นส่วนในพิกัดตัวรถ
 เมื่อแทนค่าการแปลงพิกัดและแตกแรงภายนอกเข้าแกนตัวรถลงในสมการจากข้อ 1.6 จะลดรูปกลายเป็นสมการการเคลื่อนที่ 9 สมการดังนี้:
 
 #### 1. รถลากจูง (Tractor)
@@ -204,7 +220,7 @@ $$\text{Longitudinal:} \quad m_t(\dot{v}_{xt} - v_{yt} r_t) = F_{xt} + F_{hx2}$$
 $$\text{Lateral:} \quad m_t(\dot{v}_{yt} + v_{xt} r_t) = F_{yt} + F_{hy2}$$
 $$\text{Yaw:} \quad I_{zt} \dot{r}_t = -l_{ft} F_{hy2} - l_{rt} F_{yt}$$
 
-### 2.4 สมการเงื่อนไขบังคับเชิงความเร่ง (Hitch Acceleration Constraints)
+### 2.6 สมการเงื่อนไขบังคับเชิงความเร่ง (Hitch Acceleration Constraints)
 เพื่อให้มีจำนวนสมการเท่ากับจำนวนตัวแปรที่จะแก้ (รวมแรงพ่วง $F_{hx}, F_{hy}$) เราต้องหาอนุพันธ์เทียบกับเวลาของสมการจลนศาสตร์ความเร็วข้อต่อ เพื่อให้ได้เงื่อนไขเชิงความเร่ง ($\ddot{g} = 0$) ที่จุด $H_1$ และ $H_2$ 4 สมการดังนี้:
 
 **เงื่อนไขจุดต่อที่ 1 ($H_1$):**
