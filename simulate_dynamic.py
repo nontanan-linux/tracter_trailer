@@ -8,7 +8,8 @@ import os
 
 class TractorTrailerSimulator:
     def __init__(self):
-        self.dt = 0.05
+        self.dt = 0.05 # Animation step
+        self.dt_physics = 0.001 # Stable physics integration step
         self.t_end = 20.0
         
         self.model = TractorTrailerDynamicModel()
@@ -67,6 +68,7 @@ class TractorTrailerSimulator:
         state = {'positions': initial_pos, 'velocities': initial_vel}
         
         num_steps = int(self.t_end / self.dt)
+        physics_substeps = int(self.dt / self.dt_physics)
         print(f"Running simulation for {num_steps} steps ({self.t_end}s)...")
         
         for i in range(num_steps):
@@ -87,8 +89,13 @@ class TractorTrailerSimulator:
             self.trajectory.append(coords[0])
             self.drawbar_trajectories.append(coords[3])
             
-            res = self.model.step(state, delta, dt=self.dt)
-            state = {'positions': res['positions'], 'velocities': res['velocities']}
+            # Sub-stepping the physics to maintain numerical stability
+            current_state = state
+            for _ in range(physics_substeps):
+                res = self.model.step(current_state, delta, dt=self.dt_physics)
+                current_state = {'positions': res['positions'], 'velocities': res['velocities']}
+            
+            state = current_state
             self.hitch_forces.append(res['hitch_forces'])
             
         print("Simulation complete. Preparing animation...")

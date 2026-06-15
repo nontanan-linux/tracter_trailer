@@ -186,18 +186,22 @@ class TractorTrailerDynamicModel:
         # Extract accelerations
         dv_x, dv_y, dr, dv_xd, dv_yd, dr_d, dv_xt, dv_yt, dr_t = X[0:9]
         
-        # Update velocities (Euler integration)
+        # Update independent velocities
         v_x_new = v_x + dv_x * dt
         v_y_new = v_y + dv_y * dt
         r_new = r + dr * dt
         
-        v_xd_new = v_xd + dv_xd * dt
-        v_yd_new = v_yd + dv_yd * dt
         r_d_new = r_d + dr_d * dt
-        
-        v_xt_new = v_xt + dv_xt * dt
-        v_yt_new = v_yt + dv_yt * dt
         r_t_new = r_t + dr_t * dt
+
+        # Enforce exact kinematic velocity constraints to prevent numerical drift (Baumgarte alternative)
+        # Hitch 1 Velocity Constraint (in Drawbar frame):
+        v_xd_new = v_x_new * np.cos(d_theta1) + v_y_new * np.sin(d_theta1) - self.d_h * r_new * np.sin(d_theta1)
+        v_yd_new = -v_x_new * np.sin(d_theta1) + v_y_new * np.cos(d_theta1) - self.d_h * r_new * np.cos(d_theta1) - self.L_bar * r_d_new
+        
+        # Hitch 2 Velocity Constraint (in Trailer frame):
+        v_xt_new = v_xd_new * np.cos(d_theta2) + v_yd_new * np.sin(d_theta2)
+        v_yt_new = -v_xd_new * np.sin(d_theta2) + v_yd_new * np.cos(d_theta2) - self.l_ft * r_t_new
 
         # Update positions (Global frame)
         x0, y0 = state['positions'][0:2]
