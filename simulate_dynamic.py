@@ -166,8 +166,8 @@ class TractorTrailerSimulator:
         theta2 = pos[8]
         
         # Dynamic Camera Tracking
-        self.ax.set_xlim(x0 - 10, x0 + 20)
-        self.ax.set_ylim(y0 - 15, y0 + 15)
+        ax.set_xlim(x0 - 10, x0 + 20)
+        ax.set_ylim(y0 - 15, y0 + 15)
         
         # Tractor Body (drawn from rear to front)
         bl_x = x0 - self.tractor_rear * np.cos(theta0) + self.tractor_width/2 * np.sin(theta0)
