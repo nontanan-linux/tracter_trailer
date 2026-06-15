@@ -159,5 +159,60 @@ $$\frac{d}{dt}\left( \frac{\partial T}{\partial \dot{q}_i} \right) - \frac{\part
     $$m_t \ddot{x}_t = Q_{xt} + \lambda_3$$
     $$m_t \ddot{y}_t = Q_{yt} + \lambda_4$$
     $$I_{zt} \ddot{\theta}_2 = Q_{\theta2} - l_{ft} \sin\theta_2 \lambda_3 + l_{ft} \cos\theta_2 \lambda_4$$
+โดยสามารถนำเวกเตอร์ความเร่งเหล่านี้ไปหมุนพิกัดสู่แกนตัวรถ (Body-Fixed) เพื่อหาสมการการเคลื่อนที่ขั้นสุดท้ายในหัวข้อถัดไป
 
-โดยสามารถนำเวกเตอร์ความเร่งโลกหมุนแปลงสู่พิกัดตัวรถ (Body-Fixed Transformation) ด้วยเมทริกซ์การหมุน เพื่อนำไปสร้างแบบจำลองการจำลองระบบในพิกัดความเร็วของรถ $v_x, v_y, r$ อย่างมีประสิทธิภาพ
+---
+
+## 2. Derive Equation of Motion (การอนุพันธ์สมการการเคลื่อนที่)
+
+เพื่อให้สามารถนำสมการจากหัวข้อ 1.6 ไปใช้จำลองระบบ (System Simulation) ได้จริง เราจำเป็นต้องแปลงสมการที่อยู่ในพิกัดเฉื่อยโลก (Inertial Frame) ให้กลับมาอยู่ในพิกัดตัวรถ (Body-Fixed Frame) ซึ่งตัวแปรสถานะที่วัดได้จะเป็นความเร็วในแกนรถ ($v_x, v_y, r$)
+
+### 2.1 การแปลงเข้าสู่พิกัดตัวรถ (Body-Fixed Transformation)
+เราจะทำการแปลงความเร่ง $\ddot{x}, \ddot{y}$ เข้าสู่พิกัดบนตัวรถด้วยเมทริกซ์การหมุน $R(\theta)$:
+$$\begin{bmatrix} \dot{v}_x - v_y r \\ \dot{v}_y + v_x r \end{bmatrix} = \begin{bmatrix} \cos\theta & \sin\theta \\ -\sin\theta & \cos\theta \end{bmatrix} \begin{bmatrix} \ddot{x} \\ \ddot{y} \end{bmatrix}$$
+
+และกำหนดให้แรงปฏิกิริยาพ่วงที่หมุนแปลงเข้าสู่พิกัดตัวรถ (Body-Fixed Hitch Forces) ให้มีทิศทางตามแกนหลักของวัตถุ:
+*   **สำหรับจุด $H_1$ (เข้าแกน Tractor):** 
+    $$\begin{bmatrix} F_{hx1} \\ F_{hy1} \end{bmatrix} = \begin{bmatrix} \cos\theta_0 & \sin\theta_0 \\ -\sin\theta_0 & \cos\theta_0 \end{bmatrix} \begin{bmatrix} -\lambda_1 \\ -\lambda_2 \end{bmatrix}$$
+*   **สำหรับจุด $H_2$ (เข้าแกน Dolly/Trailer):** 
+    $$\begin{bmatrix} F_{hx2} \\ F_{hy2} \end{bmatrix} = \begin{bmatrix} \cos\theta_2 & \sin\theta_2 \\ -\sin\theta_2 & \cos\theta_2 \end{bmatrix} \begin{bmatrix} \lambda_3 \\ \lambda_4 \end{bmatrix}$$
+
+### 2.2 แรงสัมผัสยางล้อและแรงขับ (Tire Forces and Traction)
+เมื่อพิจารณาแรงภายนอก $Q_i$ ที่กระทำต่อรถลากจูง ล้อหน้ามีมุมเลี้ยว $\delta$ ดังนั้นแรงต้านหน้ายางล้อหน้า $F_{yf}$ และแรงขับล้อหน้า $F_{xf}$ (ถ้ามี) ต้องแตกแรงเข้าแกนรถลากจูงดังนี้:
+$$F_{xf0} = F_{xf}\cos\delta - F_{yf}\sin\delta$$
+$$F_{yf0} = F_{xf}\sin\delta + F_{yf}\cos\delta$$
+
+สำหรับล้อเพลาอื่นๆ ที่ไม่มีมุมเลี้ยว (เช่น ล้อหลัง Tractor, ล้อ Dolly, ล้อ Trailer) แรงสัมผัสจะกระทำในแนวแกนพิกัดของตัวมันเองโดยตรง เช่น $F_{xr0} = F_{xr}, F_{yr0} = F_{yr}$
+(แรงด้านข้างคำนวณจากแบบจำลองหน้าสัมผัสยาง $F_y = -C \alpha$)
+
+### 2.3 สมการการเคลื่อนที่ของแต่ละชิ้นส่วน
+เมื่อแทนค่าการแปลงพิกัดและแตกแรงภายนอกเข้าแกนตัวรถลงในสมการจากข้อ 1.6 จะลดรูปกลายเป็นสมการการเคลื่อนที่ 9 สมการดังนี้:
+
+#### 1. รถลากจูง (Tractor)
+$$\text{Longitudinal:} \quad m(\dot{v}_x - v_y r) = F_{xr} + F_{xf}\cos\delta - F_{yf}\sin\delta - F_{hx1}$$
+$$\text{Lateral:} \quad m(\dot{v}_y + v_x r) = F_{yr} + F_{xf}\sin\delta + F_{yf}\cos\delta - F_{hy1}$$
+$$\text{Yaw:} \quad I_z \dot{r} = l_f (F_{yf}\cos\delta + F_{xf}\sin\delta) - l_r F_{yr} - d_h F_{hy1}$$
+
+#### 2. ดอลลี่ (Dolly)
+กำหนดให้ความแตกต่างของมุมพ่วงคือ $\Delta\theta_1 = \theta_0 - \theta_1$ และ $\Delta\theta_2 = \theta_1 - \theta_2$:
+$$\text{Longitudinal:} \quad m_d(\dot{v}_{xd} - v_{yd} r_d) = F_{xd} + F_{hx1}\cos\Delta\theta_1 + F_{hy1}\sin\Delta\theta_1 - F_{hx2}\cos\Delta\theta_2 - F_{hy2}\sin\Delta\theta_2$$
+$$\text{Lateral:} \quad m_d(\dot{v}_{yd} + v_{xd} r_d) = F_{yd} - F_{hx1}\sin\Delta\theta_1 + F_{hy1}\cos\Delta\theta_1 + F_{hx2}\sin\Delta\theta_2 - F_{hy2}\cos\Delta\theta_2$$
+$$\text{Yaw:} \quad I_{zd} \dot{r}_d = -l_{fd} (F_{hx1}\sin\Delta\theta_1 - F_{hy1}\cos\Delta\theta_1) + l_{rd} (F_{hx2}\sin\Delta\theta_2 - F_{hy2}\cos\Delta\theta_2)$$
+
+#### 3. รถพ่วงหลัก (Trailer Body)
+$$\text{Longitudinal:} \quad m_t(\dot{v}_{xt} - v_{yt} r_t) = F_{xt} + F_{hx2}$$
+$$\text{Lateral:} \quad m_t(\dot{v}_{yt} + v_{xt} r_t) = F_{yt} + F_{hy2}$$
+$$\text{Yaw:} \quad I_{zt} \dot{r}_t = -l_{ft} F_{hy2} - l_{rt} F_{yt}$$
+
+### 2.4 สมการเงื่อนไขบังคับเชิงความเร่ง (Hitch Acceleration Constraints)
+เพื่อให้มีจำนวนสมการเท่ากับจำนวนตัวแปรที่จะแก้ (รวมแรงพ่วง $F_{hx}, F_{hy}$) เราต้องหาอนุพันธ์เทียบกับเวลาของสมการจลนศาสตร์ความเร็วข้อต่อ เพื่อให้ได้เงื่อนไขเชิงความเร่ง ($\ddot{g} = 0$) ที่จุด $H_1$ และ $H_2$ 4 สมการดังนี้:
+
+**เงื่อนไขจุดต่อที่ 1 ($H_1$):**
+$$\dot{v}_{xd} - \dot{v}_x \cos\Delta\theta_1 - \dot{v}_y \sin\Delta\theta_1 + d_h \dot{r} \sin\Delta\theta_1 = (r - r_d) \left[-v_x \sin\Delta\theta_1 + (v_y - d_h r) \cos\Delta\theta_1\right]$$
+$$\dot{v}_{yd} + l_{fd} \dot{r}_d + \dot{v}_x \sin\Delta\theta_1 - \dot{v}_y \cos\Delta\theta_1 + d_h \dot{r} \cos\Delta\theta_1 = (r - r_d) \left[-v_x \cos\Delta\theta_1 - (v_y - d_h r) \sin\Delta\theta_1\right]$$
+
+**เงื่อนไขจุดต่อที่ 2 ($H_2$):**
+$$\dot{v}_{xt} - \dot{v}_{xd} \cos\Delta\theta_2 - \dot{v}_{yd} \sin\Delta\theta_2 + l_{rd} \dot{r}_d \sin\Delta\theta_2 = (r_d - r_t) \left[-v_{xd} \sin\Delta\theta_2 + (v_{yd} - l_{rd} r_d) \cos\Delta\theta_2\right]$$
+$$\dot{v}_{yt} + l_{ft} \dot{r}_t + \dot{v}_{xd} \sin\Delta\theta_2 - \dot{v}_{yd} \cos\Delta\theta_2 + l_{rd} \dot{r}_d \cos\Delta\theta_2 = (r_d - r_t) \left[-v_{xd} \cos\Delta\theta_2 - (v_{yd} - l_{rd} r_d) \sin\Delta\theta_2\right]$$
+
+สมการการเคลื่อนที่ 9 สมการรวมกับสมการเงื่อนไขความเร่ง 4 สมการนี้ จะนำไปสู่การจัดรูปเป็นสมการเมทริกซ์สถานะ (Matrix Formulation) ขนาด $13 \times 13$ สำหรับการคำนวณจำลองแบบเรียลไทม์ต่อไป
