@@ -75,14 +75,43 @@ $$V = 0 \implies L = T$$
 ## 2. การอนุพันธ์สมการการเคลื่อนที่ด้วยพิกัดทั่วไป
 
 ### 2.1 การหาอนุพันธ์ของสมการลากรานจ์ $L$
-*   **Tractor:** $\frac{d}{dt}\left(\frac{\partial L}{\partial \dot{x}_0}\right) = m \ddot{x}_0, \dots$
-*   **Drawbar:** $\frac{d}{dt}\left(\frac{\partial L}{\partial \dot{x}_d}\right) = m_d \ddot{x}_d, \dots$
-*   **Trailer:** $\frac{d}{dt}\left(\frac{\partial L}{\partial \dot{x}_t}\right) = m_t \ddot{x}_t, \dots$
+กำหนดให้เวกเตอร์พิกัดทั่วไป (Generalized Coordinates) ของระบบคือ:
+$$q = [x_0, y_0, \theta_0, x_d, y_d, \theta_1, x_t, y_t, \theta_2]^T$$
+
+จากสมการลากรานจ์ $L = T - V$ (โดยที่ $V=0$ ทำให้ $L=T$) เราทำการหาอนุพันธ์เทียบกับพิกัดทั่วไปและอัตราเร็วของพิกัดทั่วไปแต่ละตัวแปร เพื่อสร้างเทอมฝั่งซ้ายของสมการออยเลอร์-ลากรานจ์ $\frac{d}{dt}\left(\frac{\partial L}{\partial \dot{q}_i}\right) - \frac{\partial L}{\partial q_i}$:
+
+**1. พิกัดของรถลากจูง (Tractor): $q_1 \dots q_3$**
+*   $q_1 = x_0$: $\quad \frac{\partial L}{\partial \dot{x}_0} = m \dot{x}_0, \quad \frac{\partial L}{\partial x_0} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{x}_0}\right) - \frac{\partial L}{\partial x_0} = m \ddot{x}_0$
+*   $q_2 = y_0$: $\quad \frac{\partial L}{\partial \dot{y}_0} = m \dot{y}_0, \quad \frac{\partial L}{\partial y_0} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{y}_0}\right) - \frac{\partial L}{\partial y_0} = m \ddot{y}_0$
+*   $q_3 = \theta_0$: $\quad \frac{\partial L}{\partial \dot{\theta}_0} = I_z \dot{\theta}_0, \quad \frac{\partial L}{\partial \theta_0} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{\theta}_0}\right) - \frac{\partial L}{\partial \theta_0} = I_z \ddot{\theta}_0$
+
+**2. พิกัดของก้านลาก (Drawbar / Dolly): $q_4 \dots q_6$**
+*   $q_4 = x_d$: $\quad \frac{\partial L}{\partial \dot{x}_d} = m_d \dot{x}_d, \quad \frac{\partial L}{\partial x_d} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{x}_d}\right) - \frac{\partial L}{\partial x_d} = m_d \ddot{x}_d$
+*   $q_5 = y_d$: $\quad \frac{\partial L}{\partial \dot{y}_d} = m_d \dot{y}_d, \quad \frac{\partial L}{\partial y_d} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{y}_d}\right) - \frac{\partial L}{\partial y_d} = m_d \ddot{y}_d$
+*   $q_6 = \theta_1$: $\quad \frac{\partial L}{\partial \dot{\theta}_1} = I_{zd} \dot{\theta}_1, \quad \frac{\partial L}{\partial \theta_1} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{\theta}_1}\right) - \frac{\partial L}{\partial \theta_1} = I_{zd} \ddot{\theta}_1$
+
+**3. พิกัดของรถพ่วงหลัก (Trailer Body): $q_7 \dots q_9$**
+*   $q_7 = x_t$: $\quad \frac{\partial L}{\partial \dot{x}_t} = m_t \dot{x}_t, \quad \frac{\partial L}{\partial x_t} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{x}_t}\right) - \frac{\partial L}{\partial x_t} = m_t \ddot{x}_t$
+*   $q_8 = y_t$: $\quad \frac{\partial L}{\partial \dot{y}_t} = m_t \dot{y}_t, \quad \frac{\partial L}{\partial y_t} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{y}_t}\right) - \frac{\partial L}{\partial y_t} = m_t \ddot{y}_t$
+*   $q_9 = \theta_2$: $\quad \frac{\partial L}{\partial \dot{\theta}_2} = I_{zt} \dot{\theta}_2, \quad \frac{\partial L}{\partial \theta_2} = 0 \implies \frac{d}{dt}\left(\frac{\partial L}{\partial \dot{\theta}_2}\right) - \frac{\partial L}{\partial \theta_2} = I_{zt} \ddot{\theta}_2$
 
 ### 2.2 การหาแรงทั่วไป (Generalized Forces $Q_i$)
-*   **Tractor:** $Q_{x0}, Q_{y0}, Q_{\theta0}$
-*   **Drawbar:** $Q_{xd}, Q_{yd}, Q_{\theta1}$
-*   **Trailer:** $Q_{xt}, Q_{yt}, Q_{\theta2}$
+แรงทั่วไป $Q_i$ คือผลรวมของแรงภายนอกที่ไม่ใช่อนุรักษ์พลังงาน (ไม่รวมแรงปฏิกิริยาพ่วง $\lambda$) ที่ส่งผลกระทบต่อพิกัดทั่วไป $q_i$ ซึ่งสำหรับยานพาหนะนี้จะประกอบไปด้วย แรงหน้าสัมผัสยางล้อ (Tire Forces) และ แรงขับเคลื่อน (Traction Forces) ที่กระทำต่อวัตถุแต่ละชิ้น โดยสามารถนิยามได้ดังนี้:
+
+**1. รถลากจูง (Tractor): $Q_1 \dots Q_3$**
+*   $Q_1 = Q_{x0} = \sum F_{X0}$ (ผลรวมแรงภายนอกในแนวแกน X โลก)
+*   $Q_2 = Q_{y0} = \sum F_{Y0}$ (ผลรวมแรงภายนอกในแนวแกน Y โลก)
+*   $Q_3 = Q_{\theta0} = \sum M_{z0}$ (ผลรวมโมเมนต์ภายนอกรอบจุดศูนย์กลางมวลรถลากจูง)
+
+**2. ก้านลาก (Drawbar / Dolly): $Q_4 \dots Q_6$**
+*   $Q_4 = Q_{xd} = \sum F_{Xd}$ (ผลรวมแรงภายนอกในแนวแกน X โลก)
+*   $Q_5 = Q_{yd} = \sum F_{Yd}$ (ผลรวมแรงภายนอกในแนวแกน Y โลก)
+*   $Q_6 = Q_{\theta1} = \sum M_{zd}$ (ผลรวมโมเมนต์ภายนอกรอบจุดศูนย์กลางเพลาหน้าของก้านลาก)
+
+**3. รถพ่วงหลัก (Trailer Body): $Q_7 \dots Q_9$**
+*   $Q_7 = Q_{xt} = \sum F_{Xt}$ (ผลรวมแรงภายนอกในแนวแกน X โลก)
+*   $Q_8 = Q_{yt} = \sum F_{Yt}$ (ผลรวมแรงภายนอกในแนวแกน Y โลก)
+*   $Q_9 = Q_{\theta2} = \sum M_{zt}$ (ผลรวมโมเมนต์ภายนอกรอบจุดศูนย์กลางมวลรถพ่วงหลัก)
 
 ### 2.3 สมการการเคลื่อนที่ในพิกัดโลก (Inertial Equations of Motion)
 ประกอบสมการความเร่งโดยมีแรงปฏิกิริยาพ่วง $\lambda_1, \lambda_2$ (ที่ $H_1$) และ $\lambda_3, \lambda_4$ (ที่ $H_2$ ซึ่งอยู่ตำแหน่งเพลาหน้าของ Drawbar พอดี):
