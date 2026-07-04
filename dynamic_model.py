@@ -2,27 +2,28 @@ import numpy as np
 
 class TractorTrailerDynamicModel:
     def __init__(self, 
-                 m=3000.0, I_z=2600.0, l_f=0.64, l_r=0.64, d_h=0.62,
-                 m_d=50.0, I_zd=50.0, L_bar=1.5,
-                 m_t=12000.0, I_zt=10400.0, l_ft=0.64, l_rt=0.64,
+                 m_v=3000.0, I_v=2600.0, l_f=0.64, l_r=0.64, L_hitch=0.62,
+                 m_d=500.0, I_d=500.0, L_bar=1.5,
+                 m_t=12000.0, I_t=10400.0, L_trail=0.64, l_rt=0.64,
                  C_f=100000.0, C_r=150000.0, 
                  C_df=150000.0, C_tr=150000.0):
+        
         # Tractor Parameters
-        self.m = m
-        self.I_z = I_z
+        self.m_v = m_v
+        self.I_v = I_v
         self.l_f = l_f
         self.l_r = l_r
-        self.d_h = d_h
+        self.L_hitch = L_hitch
         
-        # Drawbar/Dolly Parameters
+        # Drawbar (Dolly) Parameters
         self.m_d = m_d
-        self.I_zd = I_zd
+        self.I_d = I_d
         self.L_bar = L_bar
         
-        # Trailer Body Parameters
+        # Trailer Parameters
         self.m_t = m_t
-        self.I_zt = I_zt
-        self.l_ft = l_ft
+        self.I_t = I_t
+        self.L_trail = L_trail
         self.l_rt = l_rt
         
         # Tire Cornering Stiffnesses
@@ -32,32 +33,47 @@ class TractorTrailerDynamicModel:
         self.C_tr = C_tr   # Trailer rear tires
         
     def _compute_tire_forces(self, state, steer_angle):
-        v_x, v_y, r, v_xd, v_yd, r_d, v_xt, v_yt, r_t = state['velocities']
+        v_x, v_y, r, r_d, r_t = state['velocities']
         
-        # Absolute minimum velocity to prevent divide-by-zero or backward slip angle flip
+        theta_v = state['positions'][2]
+        theta_d = state['positions'][3]
+        theta_t = state['positions'][4]
+        
+        u_v = v_x * np.cos(theta_v) + v_y * np.sin(theta_v)
+        w_v = -v_x * np.sin(theta_v) + v_y * np.cos(theta_v)
+        
         eps = 0.1
-        vx_safe = max(v_x, eps)
-        vxd_safe = max(v_xd, eps)
-        vxt_safe = max(v_xt, eps)
+        u_safe = max(u_v, eps)
 
-        # Tractor Tire Slip Angles (Using small-angle approx or bounded arctan)
-        alpha_f = np.arctan2(v_y + self.l_f * r, vx_safe) - steer_angle
-        alpha_r = np.arctan2(v_y - self.l_r * r, vx_safe)
+        alpha_f = steer_angle - np.arctan2(w_v + self.l_f * r, u_safe)
+        alpha_r = -np.arctan2(w_v - self.l_r * r, u_safe)
         
-        # Drawbar Tire Slip Angle
-        alpha_d = np.arctan2(v_yd, vxd_safe)
+        v_hx = v_x - self.L_hitch * r * np.sin(theta_v)
+        v_hy = v_y + self.L_hitch * r * np.cos(theta_v)
         
-        # Trailer Rear Tire Slip Angle
-        alpha_tr = np.arctan2(v_yt - self.l_rt * r_t, vxt_safe)
+        v_dx = v_hx - self.L_bar * r_d * np.sin(theta_d)
+        v_dy = v_hy + self.L_bar * r_d * np.cos(theta_d)
         
-        # Linear Tire Model: F_y = -C * alpha
-        F_yf = -self.C_f * alpha_f
-        F_yr = -self.C_r * alpha_r
-        F_yd = -self.C_df * alpha_d
-        F_ytr = -self.C_tr * alpha_tr
+        u_d = v_dx * np.cos(theta_d) + v_dy * np.sin(theta_d)
+        w_d = -v_dx * np.sin(theta_d) + v_dy * np.cos(theta_d)
+        ud_safe = max(u_d, eps)
         
-        # Cap tire forces to realistic friction limits (e.g., mu=0.8)
-        # F_max = mu * m * g. Tractor: 3000kg. Drawbar: 6000kg. Trailer: 6000kg.
+        alpha_d = -np.arctan2(w_d, ud_safe)
+        
+        v_tx = v_dx - self.L_trail * r_t * np.sin(theta_t)
+        v_ty = v_dy + self.L_trail * r_t * np.cos(theta_t)
+        
+        u_t = v_tx * np.cos(theta_t) + v_ty * np.sin(theta_t)
+        w_t = -v_tx * np.sin(theta_t) + v_ty * np.cos(theta_t)
+        ut_safe = max(u_t, eps)
+        
+        alpha_tr = -np.arctan2(w_t - self.l_rt * r_t, ut_safe)
+        
+        F_yf = self.C_f * alpha_f
+        F_yr = self.C_r * alpha_r
+        F_yd = self.C_df * alpha_d
+        F_ytr = self.C_tr * alpha_tr
+        
         max_F_tractor = 0.8 * 3000 * 9.81
         max_F_trailer = 0.8 * 6000 * 9.81
         
@@ -66,172 +82,129 @@ class TractorTrailerDynamicModel:
         F_yd = np.clip(F_yd, -max_F_trailer, max_F_trailer)
         F_ytr = np.clip(F_ytr, -max_F_trailer, max_F_trailer)
         
-        # Assuming no longitudinal driving/braking forces for now
+        return F_yf, F_yr, F_yd, F_ytr
+
+    def step(self, state, steer_angle, dt=0.01):
+        theta_v = state['positions'][2]
+        theta_d = state['positions'][3]
+        theta_t = state['positions'][4]
+        
+        v_x, v_y, r, r_d, r_t = state['velocities']
+        
+        F_yf, F_yr, F_yd, F_ytr = self._compute_tire_forces(state, steer_angle)
+        
+        # Simple cruise control to maintain forward speed
+        u_v = v_x * np.cos(theta_v) + v_y * np.sin(theta_v)
+        error = 5.0 - u_v
+        F_xr = 3000.0 * error * 5.0  # P-controller
         F_xf = 0.0
-        F_xr = 0.0
         F_xd = 0.0
         F_xtr = 0.0
         
-        return F_xf, F_yf, F_xr, F_yr, F_xd, F_yd, F_xtr, F_ytr
-
-    def step(self, state, steer_angle, dt=0.01):
-        """
-        Solves the 13x13 matrix system for the 9-DOF formulation
-        state: dictionary containing 'positions' and 'velocities'
-        """
-        # Positions: [x0, y0, theta0, xd, yd, theta1, xt, yt, theta2]
-        theta0 = state['positions'][2]
-        theta1 = state['positions'][5]
-        theta2 = state['positions'][8]
+        m_tot = self.m_v + self.m_d + self.m_t
+        mdt = self.m_d + self.m_t
         
-        # Velocities: [v_x, v_y, r, v_xd, v_yd, r_d, v_xt, v_yt, r_t]
-        v_x, v_y, r, v_xd, v_yd, r_d, v_xt, v_yt, r_t = state['velocities']
+        M = np.zeros((5, 5))
         
-        delta = steer_angle
-        d_theta1 = theta0 - theta1
-        d_theta2 = theta1 - theta2
+        M[0, 0] = m_tot
+        M[0, 1] = 0.0
+        M[0, 2] = mdt * self.L_hitch * np.sin(theta_v)
+        M[0, 3] = mdt * self.L_bar * np.sin(theta_d)
+        M[0, 4] = self.m_t * self.L_trail * np.sin(theta_t)
         
-        # Compute tire forces
-        F_xf, F_yf, F_xr, F_yr, F_xd, F_yd, F_xtr, F_ytr = self._compute_tire_forces(state, steer_angle)
+        M[1, 0] = 0.0
+        M[1, 1] = m_tot
+        M[1, 2] = -mdt * self.L_hitch * np.cos(theta_v)
+        M[1, 3] = -mdt * self.L_bar * np.cos(theta_d)
+        M[1, 4] = -self.m_t * self.L_trail * np.cos(theta_t)
         
-        # Initialize A matrix (13x13) and B vector (13x1)
-        A = np.zeros((13, 13))
-        B = np.zeros(13)
+        M[2, 0] = mdt * self.L_hitch * np.sin(theta_v)
+        M[2, 1] = -mdt * self.L_hitch * np.cos(theta_v)
+        M[2, 2] = self.I_v + mdt * self.L_hitch**2
+        M[2, 3] = mdt * self.L_hitch * self.L_bar * np.cos(theta_v - theta_d)
+        M[2, 4] = self.m_t * self.L_hitch * self.L_trail * np.cos(theta_v - theta_t)
         
-        # State vector X = [dv_x, dv_y, dr, dv_xd, dv_yd, dr_d, dv_xt, dv_yt, dr_t, F_hx1, F_hy1, F_hx2, F_hy2]
-        # Indices:        0     1     2     3      4      5     6      7      8     9      10     11     12
+        M[3, 0] = mdt * self.L_bar * np.sin(theta_d)
+        M[3, 1] = -mdt * self.L_bar * np.cos(theta_d)
+        M[3, 2] = mdt * self.L_hitch * self.L_bar * np.cos(theta_v - theta_d)
+        M[3, 3] = self.I_d + mdt * self.L_bar**2
+        M[3, 4] = self.m_t * self.L_bar * self.L_trail * np.cos(theta_d - theta_t)
         
-        # --- 1. Tractor Equations of Motion ---
-        # Longitudinal: m(dv_x - v_y r) = F_xr + F_xf cos(delta) - F_yf sin(delta) - F_hx1
-        A[0, 0] = self.m
-        A[0, 9] = 1.0
-        B[0] = F_xr + F_xf * np.cos(delta) - F_yf * np.sin(delta) + self.m * v_y * r
+        M[4, 0] = self.m_t * self.L_trail * np.sin(theta_t)
+        M[4, 1] = -self.m_t * self.L_trail * np.cos(theta_t)
+        M[4, 2] = self.m_t * self.L_hitch * self.L_trail * np.cos(theta_v - theta_t)
+        M[4, 3] = self.m_t * self.L_bar * self.L_trail * np.cos(theta_d - theta_t)
+        M[4, 4] = self.I_t + self.m_t * self.L_trail**2
         
-        # Lateral: m(dv_y + v_x r) = F_yr + F_xf sin(delta) + F_yf cos(delta) - F_hy1
-        A[1, 1] = self.m
-        A[1, 10] = 1.0
-        B[1] = F_yr + F_xf * np.sin(delta) + F_yf * np.cos(delta) - self.m * v_x * r
+        n = np.zeros(5)
+        n[0] = mdt * self.L_hitch * r**2 * np.cos(theta_v) + mdt * self.L_bar * r_d**2 * np.cos(theta_d) + self.m_t * self.L_trail * r_t**2 * np.cos(theta_t)
+        n[1] = mdt * self.L_hitch * r**2 * np.sin(theta_v) + mdt * self.L_bar * r_d**2 * np.sin(theta_d) + self.m_t * self.L_trail * r_t**2 * np.sin(theta_t)
+        n[2] = -mdt * self.L_hitch * self.L_bar * r_d**2 * np.sin(theta_v - theta_d) - self.m_t * self.L_hitch * self.L_trail * r_t**2 * np.sin(theta_v - theta_t)
+        n[3] = -mdt * self.L_hitch * self.L_bar * r**2 * np.sin(theta_v - theta_d) + self.m_t * self.L_bar * self.L_trail * r_t**2 * np.sin(theta_d - theta_t)
+        n[4] = -self.m_t * self.L_hitch * self.L_trail * r**2 * np.sin(theta_v - theta_t) - self.m_t * self.L_bar * self.L_trail * r_d**2 * np.sin(theta_d - theta_t)
         
-        # Yaw: I_z dr = l_f(F_yf cos(delta) + F_xf sin(delta)) - l_r F_yr + d_h F_hy1
-        A[2, 2] = self.I_z
-        A[2, 10] = -self.d_h
-        B[2] = self.l_f * (F_yf * np.cos(delta) + F_xf * np.sin(delta)) - self.l_r * F_yr
+        # Generalized Forces via Virtual Work
+        # Global Forces for each axle
+        FX_f = F_xf * np.cos(theta_v + steer_angle) - F_yf * np.sin(theta_v + steer_angle)
+        FY_f = F_xf * np.sin(theta_v + steer_angle) + F_yf * np.cos(theta_v + steer_angle)
         
-        # --- 2. Drawbar Equations of Motion ---
-        # Longitudinal: m_d(dv_xd - v_yd r_d) = F_xd + F_hx1 cos - F_hy1 sin - F_hx2 cos - F_hy2 sin
-        A[3, 3] = self.m_d
-        A[3, 9] = -np.cos(d_theta1)
-        A[3, 10] = np.sin(d_theta1)
-        A[3, 11] = np.cos(d_theta2)
-        A[3, 12] = np.sin(d_theta2)
-        B[3] = F_xd + self.m_d * v_yd * r_d
+        FX_r = F_xr * np.cos(theta_v) - F_yr * np.sin(theta_v)
+        FY_r = F_xr * np.sin(theta_v) + F_yr * np.cos(theta_v)
         
-        # Lateral: m_d(dv_yd + v_xd r_d) = F_yd + F_hx1 sin + F_hy1 cos + F_hx2 sin - F_hy2 cos
-        A[4, 4] = self.m_d
-        A[4, 9] = -np.sin(d_theta1)
-        A[4, 10] = -np.cos(d_theta1)
-        A[4, 11] = -np.sin(d_theta2)
-        A[4, 12] = np.cos(d_theta2)
-        B[4] = F_yd - self.m_d * v_xd * r_d
+        FX_d = F_xd * np.cos(theta_d) - F_yd * np.sin(theta_d)
+        FY_d = F_xd * np.sin(theta_d) + F_yd * np.cos(theta_d)
         
-        # Yaw: I_zd dr_d = L_bar(F_hx1 sin + F_hy1 cos)
-        A[5, 5] = self.I_zd
-        A[5, 9] = -self.L_bar * np.sin(d_theta1)
-        A[5, 10] = -self.L_bar * np.cos(d_theta1)
-        B[5] = 0.0
+        FX_t = F_xtr * np.cos(theta_t) - F_ytr * np.sin(theta_t)
+        FY_t = F_xtr * np.sin(theta_t) + F_ytr * np.cos(theta_t)
         
-        # --- 3. Trailer Body Equations of Motion ---
-        # Longitudinal: m_t(dv_xt - v_yt r_t) = F_xt + F_hx2
-        A[6, 6] = self.m_t
-        A[6, 11] = -1.0
-        B[6] = F_xtr + self.m_t * v_yt * r_t
+        Q = np.zeros(5)
+        # Translation in X and Y
+        Q[0] = FX_f + FX_r + FX_d + FX_t
+        Q[1] = FY_f + FY_r + FY_d + FY_t
         
-        # Lateral: m_t(dv_yt + v_xt r_t) = F_yt + F_hy2
-        A[7, 7] = self.m_t
-        A[7, 12] = -1.0
-        B[7] = F_ytr - self.m_t * v_xt * r_t
+        # Rotation of Tractor
+        # F_y in tractor frame
+        F_yf_v = FY_f * np.cos(theta_v) - FX_f * np.sin(theta_v)
+        F_yr_v = FY_r * np.cos(theta_v) - FX_r * np.sin(theta_v)
+        F_yd_v = FY_d * np.cos(theta_v) - FX_d * np.sin(theta_v)
+        F_yt_v = FY_t * np.cos(theta_v) - FX_t * np.sin(theta_v)
         
-        # Yaw: I_zt dr_t = l_ft F_hy2 - l_rt F_yt
-        A[8, 8] = self.I_zt
-        A[8, 12] = -self.l_ft
-        B[8] = -self.l_rt * F_ytr
+        Q[2] = F_yf_v * self.l_f - F_yr_v * self.l_r - F_yd_v * self.L_hitch - F_yt_v * self.L_hitch
         
-        # --- 4. Hitch 1 Acceleration Constraints ---
-        # X: dv_xd - dv_x cos + dv_y sin - d_h dr sin = ...
-        A[9, 3] = 1.0
-        A[9, 0] = -np.cos(d_theta1)
-        A[9, 1] = np.sin(d_theta1)
-        A[9, 2] = -self.d_h * np.sin(d_theta1)
-        B[9] = (r - r_d) * (-v_x * np.sin(d_theta1) - (v_y - self.d_h * r) * np.cos(d_theta1))
+        # Rotation of Drawbar
+        F_yd_d = FY_d * np.cos(theta_d) - FX_d * np.sin(theta_d)
+        F_yt_d = FY_t * np.cos(theta_d) - FX_t * np.sin(theta_d)
+        Q[3] = -F_yd_d * self.L_bar - F_yt_d * self.L_bar
         
-        # Y: dv_yd + L_bar dr_d - dv_x sin - dv_y cos + d_h dr cos = ...
-        A[10, 4] = 1.0
-        A[10, 5] = self.L_bar
-        A[10, 0] = -np.sin(d_theta1)
-        A[10, 1] = -np.cos(d_theta1)
-        A[10, 2] = self.d_h * np.cos(d_theta1)
-        B[10] = (r - r_d) * (v_x * np.cos(d_theta1) - (v_y - self.d_h * r) * np.sin(d_theta1))
+        # Rotation of Trailer
+        F_yt_t = FY_t * np.cos(theta_t) - FX_t * np.sin(theta_t)
+        Q[4] = -F_yt_t * (self.L_trail + self.l_rt)
         
-        # --- 5. Hitch 2 Acceleration Constraints ---
-        # X: dv_xt - dv_xd cos + dv_yd sin = ...
-        A[11, 6] = 1.0
-        A[11, 3] = -np.cos(d_theta2)
-        A[11, 4] = np.sin(d_theta2)
-        B[11] = (r_d - r_t) * (-v_xd * np.sin(d_theta2) - v_yd * np.cos(d_theta2))
-        
-        # Y: dv_yt + l_ft dr_t - dv_xd sin - dv_yd cos = ...
-        A[12, 7] = 1.0
-        A[12, 8] = self.l_ft
-        A[12, 3] = -np.sin(d_theta2)
-        A[12, 4] = -np.cos(d_theta2)
-        B[12] = (r_d - r_t) * (v_xd * np.cos(d_theta2) - v_yd * np.sin(d_theta2))
-
-        # Solve for accelerations and hitch forces
         try:
-            X = np.linalg.solve(A, B)
+            q_ddot = np.linalg.solve(M, Q - n)
         except np.linalg.LinAlgError:
             print("WARNING: Matrix is singular!")
-            X = np.zeros(13)
-
-        # Extract accelerations
-        dv_x, dv_y, dr, dv_xd, dv_yd, dr_d, dv_xt, dv_yt, dr_t = X[0:9]
+            q_ddot = np.zeros(5)
+            
+        dv_x, dv_y, dr, dr_d, dr_t = q_ddot
         
-        # Update independent velocities
         v_x_new = v_x + dv_x * dt
         v_y_new = v_y + dv_y * dt
         r_new = r + dr * dt
-        
         r_d_new = r_d + dr_d * dt
         r_t_new = r_t + dr_t * dt
-
-        # Enforce exact kinematic velocity constraints to prevent numerical drift (Baumgarte alternative)
-        # Hitch 1 Velocity Constraint (in Drawbar frame):
-        v_xd_new = v_x_new * np.cos(d_theta1) - (v_y_new - self.d_h * r_new) * np.sin(d_theta1)
-        v_yd_new = v_x_new * np.sin(d_theta1) + (v_y_new - self.d_h * r_new) * np.cos(d_theta1) - self.L_bar * r_d_new
         
-        # Hitch 2 Velocity Constraint (in Trailer frame):
-        v_xt_new = v_xd_new * np.cos(d_theta2) - v_yd_new * np.sin(d_theta2)
-        v_yt_new = v_xd_new * np.sin(d_theta2) + v_yd_new * np.cos(d_theta2) - self.l_ft * r_t_new
-
-        # Update positions (Global frame)
-        x0, y0 = state['positions'][0:2]
-        x0_new = x0 + (v_x_new * np.cos(theta0) - v_y_new * np.sin(theta0)) * dt
-        y0_new = y0 + (v_x_new * np.sin(theta0) + v_y_new * np.cos(theta0)) * dt
-        theta0_new = theta0 + r_new * dt
-
-        # For dependent bodies, we could integrate their velocities, 
-        # but to prevent numerical drift, we strictly enforce the kinematic geometry:
-        xd_new = x0_new - self.d_h * np.cos(theta0_new) - self.L_bar * np.cos(theta1 + r_d_new * dt)
-        yd_new = y0_new - self.d_h * np.sin(theta0_new) - self.L_bar * np.sin(theta1 + r_d_new * dt)
-        theta1_new = theta1 + r_d_new * dt
+        x_v = state['positions'][0]
+        y_v = state['positions'][1]
+        x_v_new = x_v + v_x_new * dt
+        y_v_new = y_v + v_y_new * dt
+        theta_v_new = theta_v + r_new * dt
+        theta_d_new = theta_d + r_d_new * dt
+        theta_t_new = theta_t + r_t_new * dt
         
-        xt_new = xd_new - self.l_ft * np.cos(theta2 + r_t_new * dt)
-        yt_new = yd_new - self.l_ft * np.sin(theta2 + r_t_new * dt)
-        theta2_new = theta2 + r_t_new * dt
-
         return {
-            'positions': np.array([x0_new, y0_new, theta0_new, xd_new, yd_new, theta1_new, xt_new, yt_new, theta2_new]),
-            'velocities': np.array([v_x_new, v_y_new, r_new, v_xd_new, v_yd_new, r_d_new, v_xt_new, v_yt_new, r_t_new]),
-            'accelerations': np.array([dv_x, dv_y, dr, dv_xd, dv_yd, dr_d, dv_xt, dv_yt, dr_t]),
-            'hitch_forces': np.array([X[9], X[10], X[11], X[12]]) # Fhx1, Fhy1, Fhx2, Fhy2
+            'positions': np.array([x_v_new, y_v_new, theta_v_new, theta_d_new, theta_t_new]),
+            'velocities': np.array([v_x_new, v_y_new, r_new, r_d_new, r_t_new]),
+            'accelerations': np.array([dv_x, dv_y, dr, dr_d, dr_t]),
+            'hitch_forces': np.array([0.0, 0.0, 0.0, 0.0])
         }

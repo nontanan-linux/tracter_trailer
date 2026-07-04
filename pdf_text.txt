@@ -1,0 +1,1205 @@
+Kinematic Bicycle Model ( Desired point is at the counter of gravity
+
+or
+
+co
+
+ล
+
+&
+ห. = %COS( +OL)
+
+Is
+
+·· PreTr
+
+=Sin (+ El
+
+①r
+
+S=
+
+-
+
+↳
+
+R=
+
+·
+
+ล
+
+v
+↳
+
+Rans
+
+·
+
+Cr
+
+Cosy tanscoss
+
+= น=tonSCo
+
+s
+
+/
+
+·ท
+
+Chitch
+
+B = ?" (tand
+
+↳ba
+
+Lnitor
+
+>
+
+↳trail
+
+·LarSino
+le..?
+
+↳trail
+
+ChitchSinOp
+
+-
+
+% LbarSinGr
+
+·
+
+↳trail
+
+⑧
+
+↳nitchen Cos Op
+
+↳barSinGG
+
+Uy,&c ↳barCos Gg
+
+Py = Up - WhitenCos
+On - ↳bar Costa - CtrailCOSOt
+It = Up- UnitchSinOn- ↳barSinG - L trailSinOt
+
+⑦
+
+↳bar Costg
+
+↳trail SinOt
+
+Key =(Earth,Los On- ↳bar Posts - CtraPCOSO)
+
+8+
+
+use, ↳trail
+
+COSE
+
+=- Sen +↳Sin On t ↳barSint, st ↳trailSinGO
+
+↳traisSinot
+
+It =
+
+trail COSGt
+
+&
+
+หุ้
+
+I thinSinOperthbarSing &G
+if = 64 6 = & Up - Cr.GosOr- ↳barCost) &po
+
+in = Get = ↳ You - WithSin & hbarSin ) = yw- With Str- ↳barcostaG
+
+②r
+·
+
+↳bar
+
+·
+
+↳bar
+
+tan" / evtans)
+
+By : Or-Whitmain Pr- ↳barSinGg
+
+⑤t
+
+Cost
+
+3=
+
+By : Up - UnitGosOr - ↳barCost
+
+>
+
+&jatg
+
+l
+
+tan
+
+j
+
+·
+
+a.y;
+
+&
+
+&( En - WhiteGin hbarSin ↳trailSinOf
+Or-
+
+Go -
+
+=- Yo - WhiteRosOpOp- ↳barCos GoOct trail Cos+ Ot
+
+#Kinetics energy
+
+are
+
+derive based on Planar
+
+17
+a)
+
+Right. Body Dynamic. For any rigid body moring on
+
+a
+
+2D
+
+consists of two components
+energy
+Transition Kinetic Energy: Associated with the absolute linear welocity of the center of mas
+
+kinetics
+
+Rotational Kinetic
+
+Energy: Associated with its rotation ( you rate) about the vertical
+
+=- asis
+
+plane. I total
+
+passing + rough
+
+it counter of mas
+
+General formula for the kinetic energy To of boby i is
+
+Ti = Im, city?) + :
+
+tow tracte
+
+Implicit )+
+
+To =
+
+#bar
+To = Ima line ) + I = mo (Sep + LitGinOptr +
+
+↳barSing ) + (- WhiteCOStr- ↳barcoSGO)")+1 ห
+
+=Imalien + With!SintOrtav ①SinOrtairthitcher SinOn t civLbavOSing + CChitch bar GinOrSino) + ( + City cos +O อง O-ayrnitin①Cost-CyvLbareCosOc+Chaitchba r OveCoseCosOr D
+&
+
+= Imotient + Pitch ( SintOpt Cost &a) +!เ (Sint On tCoin) + ChitchorlieSinOr-jrCostr) +CLbavalier SinO-jvCosEc) +CLnitchLbartvOc (SinOrSinty +CosGrCosGc)+
+2
+
+=Im cert yp + With t ↳BarOct 2 ChitchorlieSinGr- jrCostr) +Charlier Sing- jvCosc) +CLnitchLbarfrOcCos( Er- Or)+1
+#le
+
+Ty = I m, City , ) + I l El = My (Cert UnitchECintpt Car①Sin Oct CtrailOrSint) + (Yu- Watches OpOp-
+
+↳barCosy, Oct trail Cos GO1)+
+
+= milies + Lite!SintOtherOSin Oct Chair SinOn t CLnitchen OSinOne t ClarisEco Sin Art CL PrSinE +CLnitch
+↳เคย ①GinOrSin Oct2 ChitchL trail Or &SinOpSin &++2Lbartraitling SinO+
+trail
+,
+
++( +Chitch h ฮง COROp +↳
+
+ว CostG +L r -Cost #+ - CLnitcher Gr Cos O↳- abbarev Cost
+c
+
+(Sin +CosEd +
+
+Levain Or (SintO, +Cos) +CInitch Op LienSin Or -To Costa +Char ELiSinc -jr
+
+Or
+
++CLnitch เคย
+
+ว (Ginta Sinc +CosGre Cosal 2 Chitch L trail OrEDinGpSin Of+CostpCo&1) +2Lbar trai
++
+
+สู
+
+ยู่
+
+สู
+
+ซี
+
+ที
+
+=Implies + ' ' + Kitchen t Last train
++22barLtrain %O Cos ( Ec- 81)+1,
+
+ส้
+
+&1) +
+
+2 - CLtrailYrOCost++ ChhitchLbar On GCos GreCos O&+ CLnitchLtrai M Or &Co
+
+ai
+
+=mliegt+thr (Sint +CostOr) + ↳ เ
+
+ล้
+
+น้
+
+นิ
+
+เ้้
+สู่
+
+Energ
+
+kinetic
+
++ 2Unitch Ope View in Or- YoCosta ) + CLbar
+
+Rollin &Sin + +CoSO Cosy+2
+
+strCos O+CLbarLtrairCos Go Cos
+
+Costr) +2↳trail OlirCinOt-IICos &
+
+:
+
+OlivSinGc- น Costr) + 22trail OlivCinO+- Los &1) +CLwitch bar ⑤CosCOp-OL) +2 ChitchLtraiM Or &Cos (Op
+
+-O
+
+T = Top + To + + +
+
+=Template) + Item cr +Ye +With t &BarO + 2ChitchOr CirSinOr- jrCostr) + CLbarOIRUSinO- jvCostc) +C Unitch ↳barOvOcCos(Gr- ②2) +104 +
++2
+
+lnitch %o lienSinOr- YoCos Ep ) + CLbar%(inSinfc- น Gostr) +2
+
+OR
+
++
+
++R, LtrailEl CCASINO - IICOSOI) + ( My TM 1) Chitch ↳barOur El COSCORTOc) +
+
+Total Potential
+
+Timeline +IP +Chatcher +Libac+train
+
+↳rail ①CirCinOt-Cos &1) +CLwitch Larสู①CosCO-OL) 2 Chitch L trail Ov Of Cos CE-OA) +CLnartraRO #Co SCO-One L
+
+=- I plant my + my/in + Impthat m ) + O +Cont My I hitch +&Inte
+
+Energ
+
+,
+
+motMILLjar + + + My La Prair/Our + coothy)↳witch On KerCinOn- jpCostp) + (MotMICLbavec LivSinO- juCosOc
+
+My WhitchL trail On O Cos ( Ep- Ol) + My ↳barLtrain %Ol Cos CEc- Ol
+
+V=
+
+#Lagrangiare
+2= T+ V
+L:
+
+T
+
+↳= !pen + my + my/in + Imp+Mot m ) +
+
+Ent Chat MACFitch +Int cmotMILLjar + + + My La Prair/Our + coothy)↳witch On KerCinOn- jpCostp) + (MotMICLeave
+
+trailEl CCASINO - IICOSOI) + ( My TM 1) Chitch ↳barOur El COSCORTOc) +
+
++R, L
+
+VivSinO- juCosOc
+
+My WhitchL trail On O Cos ( Ep- Ol) + My ↳barLtrain %Ol Cos CEc- Ol
+
+generic !
+!
+
+Read
+
+for
+
+Q
+
+Generalized Coordinates
+
+gitser; if = Sep
+
+:CL =
+
+·
+
+·=Eurl In the p my + myline +E# Comput mot MDire+E#Ent Cont Ma Littl +Ear (Int motM, >Load + #CE + + My Literaie + EachMother)↳nitchOGenSinOn- Top Costa
++
+
+!
+
+" ค km,+MIC↳barliso -juCostcl) "in /R,↳trail#CCASINO-IICosOrtCar /Mo+M1) Whitch h Ibar Or Oc Cos COr-Oc) +Ever /MyUnitch trail Or On Cos CO
+
+-On tEar /My↳bar train %Cos COc
+
+Sin @
+
+= ( Wx + Mother) Der + ( my + my ( Whitch OrSinor + (
+①Sinot
+MOTMA) ↳barOsSinEd + Mthai
+
+le? - El =
+
+มี
+
+วั
+
+Total Kinetic Energ
+
+(mat+ m
+
+1) it + ( mo + M ) Chitch ( SinOpt OCostr) + ( motMA) ↳bar(SinOctoCase +
+
+my htrail (#Sing + Cost): Qu
+
+-01
+
+giTYp
+
+:
+
+&i = Yo
+
+b =Ein !I there
+-
+
++ m
+
+st +Ey#I Comput mot M ) 2 + EE #Encant Ma Littl +ByIntcmotM,>Load + #E + + My Litrai Our+By /Cathy ↳nitchOGenSinOn- Top Costa
+
++ milie
+
+!
+
++ ได (m+MI ↳bar%c liso Si %- juCostc) +E/R ↳traiROCCrSin &-IICosOr)
+n
+
+El = There t best 1) in
+o
+
+m
+
+Motm + M )
+
+for
+
+gi = On
+
+mothy)
+
+ope -
+
+/OL) - OL = (
+
+,
+
++Ey(M+MI) Chitch Lbar O El Cos CE-Oc) +E/M+Unitchhtrail ONO CoSCE-OH) En ↳barltrain %O Cos ( Ed' %1)
++
+
+pr
+
+hitch On Costp- (Mothy) ↳barCosta - MyLtrainCos
+
+- my +My Chitch ( On COSOp- &SinOr) - (motMIIIbar ( Costa - SinOc) - my trailCost - "SinO) = Gy
+
+If = Op
+
+= Get = Good l In the #homeliette# Materin De- ForERumC Littl+You ar
+
+#ALL Ofte+ #Chernier +forMother)↳nitchOGenSinOn-Top Costa
+!
+
+-Go (Mother lies jrCostc)) + to /R, ↳training- I CosOr)) + for (MotMI) Whitch ↳barOur On Cos COr' %c) + &on 1My Chitch trail Ov On Cos COn- OH) + E
+
+o /My ↳bar total CosCOC- +
+
+Sin -
+
+=- cmothy)
+
+hitch ว (SepCos OptypSin 8p) - (Mo+M1) ↳hitch h Ibar Or #Sin COp'Oc) - myhhiththail Or GSinCOr-By
+
+=- Gol In the#ht lit +Gol#>-CoE Internet My Littl +BorderColor GoThePraieTOYO +BookMother)↳nitchOGenSinOn-Top Costa
+my
+
+m
+
+!
+
++Go (mothe#View Sing - jrCostc)) + /Re ↳tra
+#LUSinQ- ICosOut/Mc+MI) Chitch ↳barPre CosCOriod) +Co /My ChitchL
+=- In + smart my)nit + Conster)Chitch (CinOn-ipCostp) + ( MotM1) Chitch ↳barO COSCORTOc) + My Whitchhtrain Of Cos ( Or- Ot
+
+Color = " + (mc + my)if ⑤ <mo 13 Chitch (>Sin On t Pr OpOn - jpCos On t IpSinOrOr) + (motmy) ChitchLbar ( Cos (
++
+
++my L witch
+
++M
+
+Cos
+
+trail
+
+Or- Od- fpSinL On -
+
+OrOCosCOu-
+
+OH) +Co ↳barLtrain O #Cos COCO
+My
+
+&It SinL On - Gol
+
+I trail E Cos ( Or- Of) -On the SinCOp-&1)
+
+↓leL) - - In + <mc + ( 1 )if + <met me Chitch Listen in the inCostr +DipSirop) + ( My ChitchLaCos COp- Od- #IOn-+!Sin( On - Oc
+Unitch ( Cos C Of) 2) +Sin Op- 81)) - ( mothy)#Gen
+OptipSintp) + ( Motel
+CONOur Sincer'Oc) +
+#bar
+mthit Sincer Coste)
++
+Casino
+La
+G
+Chitch
+Cosl
+(
+1
+)
+Ed
++
+(
+Unitch
+My
+MCTM)
+if
++
+sloll- : =In + (mc +
+Mother) Chitch La!GinCEpGc) + my L witchtrailCos (
+Of) + My L witch L
+OrSinCOr- 81)) Mot
+
++my
+
+trail
+
+Los
+
+Or-
+
+มั
+
+Mot
+
+วู
+
+ด้
+
+for
+
+Or-
+
+&
+
+Or-
+
+trail
+
+Go
+
+for Gifts =
+
+By : Goo =Good l In the#htmlitter # More imple-olEErmitted to do#Load Of+GoEther
+PraieTOYO +BookMother#GenSinOn-Top Costa d!
+
++ อ (M++MIC↳barliso -juCostc) "Goo /R,↳tra,#SinQ
+-JICosOr+Go /Mo+M1) Whitch h Lbar Or CosCOr-Oc) +Go/MyChitch trail Or On Cos COr
+-On t# /My↳bar↳traiROOCos COc-01
+SinO
+
+#
+
+=( mo + M1) ↳bar ( So Cos Oct IrSirEc) + ( MctM1) Lhitch ↳bar O #Sin COp- &c) -
+
+My ↳bar-train GOSinCOd'Oll
+
+=livent +EPoste+
+me) ==:IEC
+Little% (d) + <motm, Lady G+Go#
+GenSinOn- IP Costa1+My Lorrai +Bookmother
+mc + my
+
++ อ /Ma+MIC↳barclioSinO-juCostc)) +#/ReLLUSinQ
+-ICosOr+to /Mc+MI) Whitch h Lar PreLos COROL+Go/MyUnit
+
+-OH) +/My↳bar train %Co SCOc
+#Cos
+
+=- Ro + ( motM, ILjar + (MotMI) ↳barCCrSinOc- jpCostc) + (
+
+MO + My) ↳witch ↳bar Our Cos ( Or- &c) + My
+
+CO
+
+↳bar trail # Cos C Ed'Ol
+
+Hello= Ro + c motm, /Load + ( Motor ) LbarLinSin Oct inCostc + ①clienCostc +INSinOc) + (MotMy) (hitchLbar) - OrSinLOr-&c) + OrOSinLOr-Oc + นCos (fr -Go +My L L trail - GOSinIOc-1) +&Sin (G) + Cos-te
+bar
+
+jrSinOd + (MotMy)ChitchLbar) - OrSinLOr-&c) +LOr-&c) +Cos ( On- Ed)) + My L bart trail -#LOC-+1) +Sin( Go ) + Cos E- tel
+/22 - &L = &20 + ( mc +M , (Lpara + ( mctMA)↳bari Sin Oct inCosOctosOc+
+So Cos
+- mot #
+( Oct ErSired) - ( motMI) Chitch ↳basin
+COr' &c) + My ↳barttrail
+
+#COc'
+
+O
+
+อั
+
+มื
+
+มื
+
+/24 - = &20 + ( mc +M , 1Load + (mc +MI) La CepSin Oct Costc) + (Mc+My) ↳witch EaCosCOr- &c) - (motM) WhitchLa Quintp- E + MyLbar trailOCOSCOC- OH) + Mchbar trail Our SinCOjO)=Go
+
+for
+
+gi = On
+
+&= ·t
+
+#Direct # #EnterLittl
+homeletter# More
+=Glo =Po+I there#
+GenSinOn- Episodม
+Gold#Load + GoraieTOYO + GoMother
+!
+
++ อบ /motM)↳Liv -jrCostc)) +Go/Re↳trailEl CCASINO-IICosOr)) + &on (MotMI) Chi
+On Los Cor-Oc) +Go/MyUnitch htrail Or &CosCE-Or+
+
+(
+M
+
+SinO
+
+=- My Ctrails (CrCos Oct IISinOy) + My WhitchL trail Op Or Sin C Or- Ol) +
+
+=- GoldMen +
+
+me + my
+
+My ↳bar train GOSinCOd'Ol
+
+↳barltrain %O Cos ( Ed' %1)
+
+line +Go#Empt mot me) -#Entert My Litt+2 + motm,>Load + Go El + + My Litrain toposter) ↳nitchOGenSinOn- Top Costa
+!
+
++ ด(Ma+MIC↳barliso SinO-juCostc) "ER,↳traiROCCASINO-IICosOr
+
++to /Mo
+
++M1) Whitch h Ibar Or Oc CosCOr
+
+= 1 1 + My Le rail / + My trail CErSinOc- IICOSOy) + My Whitchh trail Op Cos ( Op- Ol) + My ↳bar trail %Cos C Ed'Oll
+
+allol = 2 + + my La Praia/on + my L trail ( sinSinty -Cost + ( inCosO++yeSinO)) + Litch
+My
+
+↳ trail
+
+-Oct &O/MyChitchI trail Ov On Cos COr-OH) +#My↳bar train %Cos COc
+
+-01
+
+/On Cos CON- 1) - EPSinCOr- &) + Ev Sin Off) + My Lear trail CosCE,- 8) -SinCO- &1) +EOSinStc- D
+
+#COD
+Op-)) + M - ↳barh trailCosCEc- Ay) -SinCO- +
+Global = 2 + + me Livraison + my L trail Sensity - jjCost + + y+SinA)) + Chitch (trail ( ①CosCOn- #) - GPSinCOrQ) + Onl
+My
+
+-mettrail *#LosOctISinOy) - My Whitchhtrail #
+COp- Or) - My ↳barttrail #Sin ( OC'O+
+
+วั
+
+ม็
+
+Global ว = 1 1 + My La Praiel + MyL trail (inSinOy- +Cost) + My LitchLtrail OrCosCEr- &1) + My Lbar train ฮวCos( Gc- Of) - MyLhitchL
+
+trail
+
+OrSinCOp- Ot) - MyLbar train O"SinCEc- Of) = Qt
+
+ด้
+
+ซื้
+
+ole) - El =
+
+(Mother +me Listener + ( mo + M ) Chitch (
+
+↳motmy)
+
+ChitchSinOr (
+
+/OL) - OL = (
+
+Motm + M )
+
+⑦SinOptCostr) + ( My + MA) Lbar) Sin OctoCost + myhtrail (
+By Sinot
+
+mot my)
+
+ChitchOPCOSOR ( MotMy) ↳barSint,( my +My)
+
+bar
+
+#Cost): Qu
+
+้อ Costo m yLtrailSinO+MyLtrai&Co
+
+- my +My Chitch ( On COSOp- &SinOr) - (motMIIIbar ( Costa - SinOc) - my trailCost - "SinO) = Gy
+
+sloll- : =In + (mc + ( 1 )if + MCTM) Unitch CasinoCoste) +
+
+MotMy Chitch La GCosl Or- Ed + ( Mother) Chitch La G
+
+!GinCEpic + my L witch Ltrail % Cos ( Or- Of) + my L witch trail OrSinCOr- 81)) - Go
+
+/24 - = &20 + ( mc +M , 1Load + (mc +MI) La CepSin Oct Costc) + (Mc+My) ↳witch EaCosCOr- &c) - (motM) WhitchLa Quintp- E + MyLbar trailOCOSCOC- 8) + Merbar trail Our SinCOjO)=Go
+
+Global ว = 1 1 + My La Praiel + MyL trail (inSinOy- +Cost) + My LitchLtrail OrCosCEr- &1) + My Lbar train ฮวCos( Gc- Of) - MyLhitchL
+Multi- Body
+
+1st - rac
+
+Body Dynamic Form
+
+Rigid
+
+My =
+
+Megig + 11Gig) = ②
+
+Magic =
+
+Mic =
+Ai
+
+in
+
+I
+
+On
+
+8
+
+On
+
+ML
+
+Mac
+
+M13
+
+Mix
+
+M13
+
+Mar
+
+Mee
+
+Mee
+
+Mea
+
+Ms.
+
+Mar
+
+Mas
+
+Max
+
+M41
+
+Mac
+
+MP3
+
+May
+
+Mes
+
+Em
+
+M51
+
+Mac
+
+Mes
+
+Mac
+
+M5
+
+Ot
+
+!
+
+2nd - 20 น
+
+Mes
+
+M
+
+&
+
+My
+
+Mee = mptmotMy
+
+·0
+
+Mr = (Mot My ) Chitch SinOr
+
+Mes = (MO +MA)LitchCostp
+
+/
+
+&po
+
+M1y = (
+
+MotMA)↳barSint,
+
+Max = - (MotMIILbarCostG
+
+↳
+
+I gr
+
+My s = M +htrailSinGt
+
+OrSinCOp- Ot) - MyLbar train O"SinCEc- Of) = Qt
+
+3th- row
+
+Mel = ·
+
+Mar + my + M+
+
+trail
+
+4th -ro
+1 = ( motmy)
+
+ChitchSinOp
+
+My = (
+
+5th- ro
+Ms 1 =
+
+MO+M1) ↳barSinc
+
+M
+
++htrailSinOt
+
+MSc = (MotMA)ChitchCostp
+
+My2 = - (motMILLbar Cos &G
+
+Mys = In + motme)itch
+
+Mp3 = 1 MotMyLChitchtbarCosIOr- Gol
+
+My 3 = myLhitchtrailCosCOp- Et)
+
+Mz4 = ( Mc+My) ChitchtbarCosIOp- &c)
+
+Mp4 = ↳6 +( Methyl Lyr
+
+MSp = MyLbarttrailCos ( Oct
+
+My 3 = myLhitchtrail Cos COp- Et)
+
+Mys = MyLbartrail Cos ( OcO+)
+
+MS3 = If + my hetrail
+
+MC3 = -MyL traidCost +
+
+Ms2 = -MyLtrailCost
++
+
+·
+
+WeMc+MIILwitch OrCostr + ( my + MA) ↳bar Go Cost + My train &Costt
+
+by (motm)↳hitzhSinOr+(Mc +
+
+ugig) =
+
+My ↳bartc Sint + myLtrail Or, SinOf
+
+no = (motML) ↳witch bar &SinC Er"ม
+
+Od) + My Whitchhtrain "Sin( Or- +I
+
+mothr) Whitch Lbar Or Sin ( Er- Od +
+
+↳+ -MyChitchhtrail OrSin( Or-
+
+CMptM + My
+<mot my) Chitch
+
+·
+
+my +my
+
+·
+
+My Lbarhtrain &Sin Or- All
+
+Of) - MyLbarL train G&Cin( Gc- Oth
+
++M
+
++
+
+SinOr (MotMA)ChitchCostp
+
+(m)+My) ↳basSintc - (MotM1) ↳bar Costa (
+M
+
++
+
+↳trailSinGt
+
+- myL traidCost +
+
+( mo + M1) Lhitch Sin
+Ope
+
+(my + M1) LbasSinc
+
+M
+
+(my+M1)ChitchGos &p
+
+-(MotM1) ↳bar Cos &G
+
+-MyL traidCost +
+
+2
+
+La + CMC + M1) Chitch
+Mc+my) LnitchLbar CosIOp- Gol
+
+myLhitchLtrail Cos COp- Et)
+
+(MC + My ) L hitchtbarCos( Of - Gol
+
+↳6 + (M2+My
+
+MyLbar-trailCos ( Oc Ot
+
++
+
+↳trailSinGt
+
+myLhitchtrail Cos COp- &1)
+myLbartrail Cos( OcOH)
+
+It + my Le trail
+
+jj
+
+MotmylLwitch &rCostr + (my + MA) ↳bar GCost + My train &Costt
+
+jp
+
+↳my +11)↳hitzhSinOr + (Mc + My ↳bartc
+
+Ep
+
+#g
+-
+
+Ot
+
+Sint + myLtrail Or, SinOf
+
+mothy) ↳witch Lbar &Sin ( Er- Od +
+
+My Whitchhtrain "Sin( Or- +I
+
+mothr) Whitch Lbar Or Sin ( Er- Od +
+
+My Lbarhtrain &Sin Or- All
+
+-Whitchhtrail Gr Sin( Or-OT) - MyLbarL trail &Cin(
+
+Gc- Of
+
+Qu
+
+②y
+①
+
+⑦G
+Qt
+
+Ra
+
+a
+
+ล
+
+this
+
+writ en
+
+↳
+
+http
+Fyf
+
+-at
+พ
+
+If
+
+·· PreDr
+On
+
+#
+
+Rut
+
+t
+
+Ort
+
+&Es = nicer
+
+↑เ
+
+(Os
+
+↳trail
+
+Nt
+
+&Fa = #- FerSing - Ruf- Pro- Ra- RoCosIOr- Od-WSints = Que
+
+Lu
+
+·
+
+IE = min
+
+&Fy = FrCosS + Far- RaSinIOn- &c) = Qy
+
+Drag forcel
+Ra = 1 PCALL
+
+:. Ral Aerodynamic
+
+EMn = Int
+
+&Mr
+
+Lateral Tire Forc
+
+FrCostily - Fyrilr + RaSinJOn- &c) Chitch = &G
+
+front Wheel
+
+Tire
+
+Slip Angle
+
+&
+
+yo
+
+u rate
+
+Fyf = - Cat1 1 = 8 - tant -Per
+
+(Fy6)
+
+/4
+
+EMo = 1.
+
+Rear Wheel
+
+&Mc = - Eichbar - EsthbarCos ( Oc- &1) - ( RottWySinOcChbarSinCO- &1) = & !
+
+Fyr = - Carar
+
+&My = 1,
+
+Cr =
+
+tanl lodi
+
+(Fyt
+
+&My = - Fythtrail = Qt
+
+- Eichbar - Fachbar Cos ( Oc- Or) - ( RottWySinOcChbarSinCO- &1) = & !
+-Fat Ltrail = Qt
+
+( mo + M1) Lhitch Sin
+Ope
+
+·
+
+CMptM + My
+
+my +my +M
+
+·
+
++
+
+( mo + my) ChitchSin Or (
+
+My +M1)ChitchCosOp
+
+(mC+My) ↳basSintc - (MotM1) ↳barCos %o
+
+ห้
+
+M
+
++
+
+↳trailSinGt
+
+- myL trailCost +
+
+(my + M1) LbasSinc
+
+(my+M1)ChitchGos &p
+
+-(MotM1) ↳bar Cos &G
+
+2
+
+In + ( motmy) Chitch
+(MC+my) ChitchtbarCos( Gr -
+
+mc + my) ChitchtbarCos( Or- GO)
+
+Go ) + (MO+my)↳ อ
+
+my LhitchLtrail Cos COp- &1)
+
+MyLbar trail Cos ( Oc- &+)
+
+M
+
++
+
+↳trailSinGt
+
+-MyL traidCost +
+
+myLhitchtrail CosCOp- &1)
+myLbartrail Cos( OcOH)
+
+If + myLtrail
+
+jlg
+-
+
+%p
+
+Ep
+
+#g
+-
+
+Ot
+
+Cost + My train &Costt
+
+↳Mc + My ILwitch OrCostr + ( My + MA) ↳bar G
+
+↳my +11)↳hitzhSinOr + (Mc + My ↳bartc
+
+mothy) ↳witch Lbar &Sin ( Er- Od +
+
+Sint + myLtrail Or, SinOf
+
+My Whitchhtrain "Sin( Or- +I
+
+mothr) Whitch Lbar Or Sin ( Er- Od + My Lbarhtrain O!Sin
+
+-MIChitchhtrail Gr Sin( Or-Gy) - MyLbarL trail &Cin(
+
+Ec- Of
+
+Or- All
+
+E- FyyCinG- Ruf- Ror- Ra- RcCosLOu- Od- WSinOs
+
+Fe CosS + Fr- RoSin( On - Oc
+
+EgCosS' - Ferer + RaSinLOr - ALL witch
+-Fishbar - FitlbarCos ( Ec- FII- IRottWtSinO,SinCE- Oth
+- Fyth trail
+
+

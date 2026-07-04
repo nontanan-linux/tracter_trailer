@@ -21,7 +21,7 @@ class TractorTrailerSimulator:
         self.tractor_width = 1.3
         
         # Trailer: front and rear overhang = 0.2m
-        self.trailer_front = self.model.l_ft + 0.4
+        self.trailer_front = self.model.L_trail + 0.4
         self.trailer_rear = self.model.l_rt + 0.4
         self.trailer_width = 1.3
         
@@ -41,31 +41,37 @@ class TractorTrailerSimulator:
     def get_coordinates(self, state):
         pos = state['positions']
         
-        x0, y0, theta0 = pos[0], pos[1], pos[2]
-        xd, yd, theta1 = pos[3], pos[4], pos[5]
-        xt, yt, theta2 = pos[6], pos[7], pos[8]
+        x_v, y_v, theta_v, theta_d, theta_t = pos[0:5]
         
-        p0 = np.array([x0, y0])
-        p0_f = p0 + self.model.l_f * np.array([np.cos(theta0), np.sin(theta0)])
-        p0_r = p0 - self.model.l_r * np.array([np.cos(theta0), np.sin(theta0)])
+        # Calculate derived positions kinematically
+        x_h1 = x_v - self.model.L_hitch * np.cos(theta_v)
+        y_h1 = y_v - self.model.L_hitch * np.sin(theta_v)
         
-        h1 = p0 - self.model.d_h * np.array([np.cos(theta0), np.sin(theta0)])
-        p_axle_f = np.array([xd, yd])  # Drawbar axle = Trailer Front Axle
+        x_d = x_h1 - self.model.L_bar * np.cos(theta_d)
+        y_d = y_h1 - self.model.L_bar * np.sin(theta_d)
+        
+        x_t = x_d - self.model.L_trail * np.cos(theta_t)
+        y_t = y_d - self.model.L_trail * np.sin(theta_t)
+        
+        p0 = np.array([x_v, y_v])
+        p0_f = p0 + self.model.l_f * np.array([np.cos(theta_v), np.sin(theta_v)])
+        p0_r = p0 - self.model.l_r * np.array([np.cos(theta_v), np.sin(theta_v)])
+        # Tractor: from CG to Hitch
+        h1 = p0 - self.model.L_hitch * np.array([np.cos(theta_v), np.sin(theta_v)])
+        p_axle_f = np.array([x_d, y_d])  # Drawbar axle = Trailer Front Axle
         
         # Actually, Trailer CG is at (xt, yt), so rear axle is at (xt - l_rt*cos(theta2), yt - l_rt*sin(theta2))
-        p_axle_r = np.array([xt - self.model.l_rt * np.cos(theta2), yt - self.model.l_rt * np.sin(theta2)])
+        p_axle_r = np.array([x_t - self.model.l_rt * np.cos(theta_t), y_t - self.model.l_rt * np.sin(theta_t)])
         
-        return [p0, p0_f, p0_r, h1, p_axle_f, p_axle_r]
+        return [p0, p0_f, p0_r, h1, p_axle_f, p_axle_r, x_d, y_d, x_t, y_t]
 
     def run_simulation(self):
-        # Initial State [x0, y0, theta0, xd, yd, theta1, xt, yt, theta2]
-        initial_pos = np.array([0.0, 0.0, 0.0, 
-                                -self.model.d_h - self.model.L_bar, 0.0, 0.0,
-                                -self.model.d_h - self.model.L_bar - self.model.l_ft, 0.0, 0.0])
+        # Initial State [x_v, y_v, theta_v, theta_d, theta_t]
+        initial_pos = np.array([0.0, 0.0, 0.0, 0.0, 0.0])
                                 
-        # Initial Velocities [v_x, v_y, r, v_xd, v_yd, r_d, v_xt, v_yt, r_t]
+        # Initial Velocities [v_x, v_y, r, r_d, r_t] (Global frame)
         v0 = 5.0
-        initial_vel = np.array([v0, 0.0, 0.0, v0, 0.0, 0.0, v0, 0.0, 0.0])
+        initial_vel = np.array([v0, 0.0, 0.0, 0.0, 0.0])
         
         state = {'positions': initial_pos, 'velocities': initial_vel}
         
@@ -140,19 +146,35 @@ class TractorTrailerSimulator:
         pos = state['positions']
         vels = state['velocities']
         
-        vx_curr = vels[0]
-        vxt_curr = vels[6]
+        x_v, y_v, theta_v, theta_d, theta_t = pos[0:5]
+        v_x, v_y, r, r_d, r_t = vels[0:5]
+        
+        # Tractor forward speed (body frame)
+        u_v = v_x * np.cos(theta_v) + v_y * np.sin(theta_v)
+        
+        # Trailer body global speed
+        # First find Trailer CG global velocity
+        v_hx = v_x - self.model.L_hitch * r * np.sin(theta_v)
+        v_hy = v_y + self.model.L_hitch * r * np.cos(theta_v)
+        
+        v_dx = v_hx - self.model.L_bar * r_d * np.sin(theta_d)
+        v_dy = v_hy + self.model.L_bar * r_d * np.cos(theta_d)
+        
+        v_tx = v_dx - self.model.L_trail * r_t * np.sin(theta_t)
+        v_ty = v_dy + self.model.L_trail * r_t * np.cos(theta_t)
+        
+        u_t = v_tx * np.cos(theta_t) + v_ty * np.sin(theta_t)
         
         if i % 10 == 0:
-            print(f"t={i*self.dt:05.2f}s | Tractor: v={vx_curr:05.2f} m/s | Trailer: v={vxt_curr:05.2f} m/s")
+            print(f"t={i*self.dt:05.2f}s | Tractor: v={u_v:05.2f} m/s | Trailer: v={u_t:05.2f} m/s")
             sys.stdout.flush()
             
-        status_texts[0].set_text(f'Tractor Vx: {vx_curr:.2f} m/s\nSteer: {np.degrees(delta_curr):.1f} deg')
+        status_texts[0].set_text(f'Tractor Vx: {u_v:.2f} m/s\nSteer: {np.degrees(delta_curr):.1f} deg')
         
-        psi = pos[2] - pos[5] # theta0 - theta1 (Drawbar relative to Tractor)
+        psi = theta_v - theta_d # Drawbar relative to Tractor
         psi = (psi + np.pi) % (2 * np.pi) - np.pi
         
-        status_texts[1].set_text(f'Trailer Vxt: {vxt_curr:.2f} m/s\nDrawbar Ang: {np.degrees(psi):.1f} deg')
+        status_texts[1].set_text(f'Trailer Vxt: {u_t:.2f} m/s\nDrawbar Ang: {np.degrees(psi):.1f} deg')
         
         coords = self.get_coordinates(state)
         p0 = coords[0]
@@ -161,10 +183,15 @@ class TractorTrailerSimulator:
         h1 = coords[3]
         p_axle_f = coords[4] # Front steerable axle of trailer (Drawbar Axle)
         p_axle_r = coords[5] # Rear fixed axle of trailer
+        x_d, y_d, x_t, y_t = coords[6:10]
         
-        x0, y0, theta0 = pos[0:3]
-        xd, yd, theta1 = pos[3:6]
-        xt, yt, theta2 = pos[6:9]
+        theta0 = theta_v
+        theta1 = theta_d
+        theta2 = theta_t
+        x0 = x_v
+        y0 = y_v
+        xt = x_t
+        yt = y_t
         
         # Dynamic Camera Tracking
         ax.set_xlim(x0 - 10, x0 + 20)
@@ -217,16 +244,16 @@ class TractorTrailerSimulator:
         ax.set_ylim(-10, 50)
         ax.grid(True)
         
-        ax.set_title(f"Tractor-Trailer Dynamic Simulation (9-DOF Lagrangian Matrix)")
+        ax.set_title(f"Tractor-Trailer Dynamic Simulation (5-DOF Lagrangian Matrix)")
         ax.set_xlabel("X [m]")
         ax.set_ylabel("Y [m]")
         
         status_texts = []
-        t_text = ax.text(0.05, 0.95, '', transform=ax.transAxes, fontsize=10, color='orangered',
+        t_text = ax.text(0.05, 0.95, '', transform_v=ax.transAxes, fontsize=10, color='orangered',
                          verticalalignment='top', fontweight='bold', bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.6, edgecolor='none'))
         status_texts.append(t_text)
         
-        tr_text = ax.text(0.05, 0.82, '', transform=ax.transAxes, fontsize=10, color='blue',
+        tr_text = ax.text(0.05, 0.82, '', transform_v=ax.transAxes, fontsize=10, color='blue',
                           verticalalignment='top', fontweight='bold', bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.6, edgecolor='none'))
         status_texts.append(tr_text)
         
